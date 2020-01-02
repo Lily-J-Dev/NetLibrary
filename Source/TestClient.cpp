@@ -1,3 +1,4 @@
+#include <thread>
 #include "TestClient.h"
 
 TestClient::TestClient()
