@@ -4,140 +4,140 @@
 	<Project>
 		<Option title="CTP"/>
 		<Option makefile_is_custom="1"/>
-		<Option compiler="gcc"/>
+		<Option compiler="msvc8"/>
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/toby/Desktop/NetLibrary/cmake-build-debug"/>
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="rebuild_cache">
-				<Option working_dir="/home/toby/Desktop/NetLibrary/cmake-build-debug"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="CTP">
-				<Option output="/home/toby/Desktop/NetLibrary/cmake-build-debug/CTP" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/toby/Desktop/NetLibrary/cmake-build-debug"/>
+				<Option output="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug/CTP.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
-				<Option compiler="gcc"/>
+				<Option compiler="msvc8"/>
 				<Compiler>
-					<Add directory="/home/toby/Desktop/NetLibrary/Headers"/>
-					<Add directory="/home/toby/Desktop/NetLibrary/Source"/>
-					<Add directory="/home/toby/Desktop/NetLibrary/Headers/Linux"/>
-					<Add directory="/home/toby/Desktop/NetLibrary/Source/Linux"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 CTP"/>
-					<CompileFile command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 CTP"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="CTP/fast">
-				<Option output="/home/toby/Desktop/NetLibrary/cmake-build-debug/CTP" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/toby/Desktop/NetLibrary/cmake-build-debug"/>
+				<Option output="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug/CTP.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
-				<Option compiler="gcc"/>
+				<Option compiler="msvc8"/>
 				<Compiler>
-					<Add directory="/home/toby/Desktop/NetLibrary/Headers"/>
-					<Add directory="/home/toby/Desktop/NetLibrary/Source"/>
-					<Add directory="/home/toby/Desktop/NetLibrary/Headers/Linux"/>
-					<Add directory="/home/toby/Desktop/NetLibrary/Source/Linux"/>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 CTP/fast"/>
-					<CompileFile command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 CTP/fast"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/home/toby/Desktop/NetLibrary/cmake-build-debug"/>
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -f &quot;/home/toby/Desktop/NetLibrary/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/ClientDataHandler.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientDataHandler.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/ClientInfo.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientInfo.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/DataPacket.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/DataPacket.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/Linux/Client.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ServerDataHandler.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/Linux/Server.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/TestClient.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/ServerDataHandler.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/TestServer.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/TestClient.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Client.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Headers/TestServer.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Server.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Source/ClientDataHandler.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ClientDataHandler.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Source/Linux/Client.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ServerDataHandler.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Source/Linux/Server.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/TestClient.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Source/ServerDataHandler.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/TestServer.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Source/TestClient.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows/Client.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/Source/TestServer.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows/Server.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/main.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/main.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="/home/toby/Desktop/NetLibrary/CMakeLists.txt">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

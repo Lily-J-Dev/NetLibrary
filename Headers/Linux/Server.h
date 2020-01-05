@@ -26,6 +26,7 @@ public:
 
     std::function<void(DataPacket*)> processPacket;
     std::function<void(ClientInfo)> processNewClient;
+    std::function<void(unsigned int)> processDisconnectedClient;
 
 private:
     void ProcessNetworkEvents();
