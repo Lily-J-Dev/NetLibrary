@@ -11,7 +11,7 @@ public:
     Client() = default;
     ~Client();
 
-    int Start(const std::string& ipv4);
+    bool Start(const std::string& ipv4);
     void Stop();
 
     void SendMessage(const char* data, int dataLength);
@@ -20,11 +20,10 @@ public:
 private:
     void ProcessNetworkEvents();
 
-    //SOCKET sock = INVALID_SOCKET;
+    int sock = -1;
     std::queue<DataPacket> outData;
 
     std::atomic_bool running;
-    std::mutex deleteSafeguard;
-    std::mutex outQueueMutex;
+    std::mutex* deleteSafeguard;
 };
 

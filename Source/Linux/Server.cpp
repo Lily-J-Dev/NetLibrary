@@ -19,7 +19,7 @@ bool Server::Start()
 {
     deleteSafeguard = new std::mutex();
     // Create a socket
-    int listening = socket(AF_INET, SOCK_STREAM, 0);
+    listening = socket(AF_INET, SOCK_STREAM, 0);
     if(listening == -1)
     {
         std::cerr << "Failed to create socket" << std::endl;;
@@ -34,7 +34,8 @@ bool Server::Start()
 
     if(bind(listening, (sockaddr*)&hint, sizeof(hint)) == -1)
     {
-        std::cerr << "Failed to bind socket to IP or Port" << std::endl;;
+        std::cerr << "Failed to bind socket to IP or Port" << std::endl;
+        std::cout << gai_strerror(errno) << std::endl;
         return false;
     }
 
@@ -60,6 +61,11 @@ void Server::Stop()
 {
     running = false;
     close(listening);
+    for(auto const& socket : sockets)
+    {
+        close(socket);
+    }
+    sockets.clear();
 }
 
 void Server::ProcessNetworkEvents()
@@ -67,30 +73,34 @@ void Server::ProcessNetworkEvents()
     deleteSafeguard->lock();
     running = true;
 
-    while(running)
-    {
+    while(running) {
         fd_set mCopy = master;
-        unsigned int socketCount = select(0, &mCopy, nullptr, nullptr, nullptr);
+        unsigned int socketCount = select(SOMAXCONN + 1, &mCopy, nullptr, nullptr, nullptr);
 
-        for(unsigned int i = 0; i < socketCount; i++)
+
+        if (FD_ISSET(listening, &mCopy))
         {
-            int sock = mCopy.fds_bits[i];
-
-            if(sock == listening)
+            HandleConnectionEvent();
+        }
+        else
+        {
+            for (auto const &socket : sockets)
             {
-                HandleConnectionEvent();
-            }
-            else
-            {
-                HandleMessageEvent(sock, i);
+                if (FD_ISSET(socket, &mCopy))
+                {
+                    HandleMessageEvent(socket);
+                }
             }
         }
     }
+
+    deleteSafeguard->unlock();
 }
 
 void Server::HandleConnectionEvent()
 {
     sockaddr_in client;
+    client.sin_family = AF_INET;
     socklen_t clientSize;
     char host[NI_MAXHOST];
     char svc[NI_MAXSERV];
@@ -104,6 +114,7 @@ void Server::HandleConnectionEvent()
 
     // Add new connection to master set
     FD_SET(clientSocket, &master);
+    sockets.push_front(clientSocket);
 
     // Assign the connection a uid
     ClientInfo newClient;
@@ -121,13 +132,15 @@ void Server::HandleConnectionEvent()
                              NI_MAXSERV,
                              0);
 
-    if(result)
+    if(result == 0)
     {
-        newClient.name = host;
-        newClient.ipv4 = svc;
+        newClient.name = svc;
+        newClient.ipv4 = host;
+
     }
     else
     {
+        std::cout << gai_strerror(result) << std::endl;
         inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
 
         newClient.name = host;
@@ -138,7 +151,7 @@ void Server::HandleConnectionEvent()
     processNewClient(newClient);
 }
 
-void Server::HandleMessageEvent(int sock, unsigned int id) {
+void Server::HandleMessageEvent(int sock) {
     memset(cBuf, 0, 4096);
 
     int bytesReceived = recv(sock, cBuf, 4096, 0);
@@ -146,6 +159,7 @@ void Server::HandleMessageEvent(int sock, unsigned int id) {
     {
         close(sock);
         FD_CLR(sock, &master);
+        sockets.remove(sock);
         std::cout << "Client disconnected" << std::endl;
     }
     else
