@@ -84,7 +84,7 @@ void Server::ProcessNetworkEvents()
             }
             else
             {
-                HandleMessageEvent(sock, i);
+                HandleMessageEvent(sock);
             }
         }
     }

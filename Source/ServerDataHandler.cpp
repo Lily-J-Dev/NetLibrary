@@ -4,6 +4,7 @@ void ServerDataHandler::Start()
 {
     server.processPacket = std::bind(&ServerDataHandler::ProcessPacket, this,  std::placeholders::_1);
     server.processNewClient = std::bind(&ServerDataHandler::ProcessNewClient, this,  std::placeholders::_1);
+    server.processDisconnectedClient = std::bind(&ServerDataHandler::ProcessDisconnectedClient, this,  std::placeholders::_1);
     server.Start();
 }
 
@@ -72,10 +73,12 @@ void ServerDataHandler::ProcessDisconnectedClient(unsigned int clientUid)
 {
     clientInfoLock.lock();
 
-    auto remove = std::find(connectedClients.begin(), connectedClients.end(), clientUid);
-    if(remove != connectedClients.end())
-    {
-        connectedClients.erase(remove);
+    for(auto it = connectedClients.begin(); it != connectedClients.end(); ++it) {
+        if(it->uid == clientUid)
+        {
+            connectedClients.erase(it);
+            break;
+        }
     }
     clientInfoLock.unlock();
 }
