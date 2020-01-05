@@ -112,10 +112,6 @@ void Server::HandleConnectionEvent()
     // Add a quick lookup for the index of this socket in the master set
     indexLookup[newClient.uid] = master.fd_count-1;
 
-    // Send a welcome message
-    //std::string welcomeMsg = "Welcome to the chatroom!";
-    //send(client, welcomeMsg.c_str(), welcomeMsg.size() + 1, 0);
-
     char host[NI_MAXHOST]; // Client's remote name
     char ip[NI_MAXHOST]; // Client ip adress
     char service[NI_MAXSERV]; // Port the client is connected on
@@ -142,7 +138,7 @@ void Server::HandleConnectionEvent()
     processNewClient(newClient);
 }
 
-void Server::HandleMessageEvent(const SOCKET& sock, unsigned int id)
+void Server::HandleMessageEvent(const SOCKET& sock)
 {
     // Accept a new message
     ZeroMemory(cBuf, 4096);
@@ -155,6 +151,7 @@ void Server::HandleMessageEvent(const SOCKET& sock, unsigned int id)
         std::cout << "Client Disconnected.";
         // Re-make the lookup table as the indices have changed
         indexLookup.clear();
+        processDisconnectedClient(uidLookup[sock]);
         uidLookup.erase(sock);
         for(size_t i = 0; i < master.fd_count; i++)
         {
@@ -169,22 +166,6 @@ void Server::HandleMessageEvent(const SOCKET& sock, unsigned int id)
         packet->dataLength = bytesReceived;
         packet->senderId = uidLookup[sock];
         processPacket(packet);
-
-        /*
-        // Send message to all OTHER clients
-        for (int i = 0; i < master.fd_count; i++)
-        {
-            SOCKET outSock = master.fd_array[i];
-            if (outSock != listening && outSock != sock)
-            {
-                std::ostringstream ss;
-                ss << "SOCKET #" << sock << ": " << cBuf << "\r\n";
-                std::string strOut = ss.str();
-
-                send(outSock, strOut.c_str(), strOut.size() + 1, 0);
-                std::cout << strOut;
-            }
-        }*/
     }
 }
 

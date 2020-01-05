@@ -161,6 +161,7 @@ void Server::HandleMessageEvent(int sock) {
         FD_CLR(sock, &master);
         sockets.remove(sock);
         std::cout << "Client disconnected" << std::endl;
+        processDisconnectedClient(sock);
     }
     else
     {

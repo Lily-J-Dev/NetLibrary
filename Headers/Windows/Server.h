@@ -20,11 +20,12 @@ public:
 
     std::function<void(DataPacket*)> processPacket;
     std::function<void(ClientInfo)> processNewClient;
+    std::function<void(unsigned int)> processDisconnectedClient;
 
 private:
     void ProcessNetworkEvents();
     void HandleConnectionEvent();
-    void HandleMessageEvent(const SOCKET& sock, unsigned int id);
+    void HandleMessageEvent(const SOCKET& sock);
 
     fd_set master;
     SOCKET listening = INVALID_SOCKET;

@@ -67,3 +67,15 @@ void ServerDataHandler::ProcessNewClient(ClientInfo info)
     connectedClients.push_back(info);
     clientInfoLock.unlock();
 }
+
+void ServerDataHandler::ProcessDisconnectedClient(unsigned int clientUid)
+{
+    clientInfoLock.lock();
+
+    auto remove = std::find(connectedClients.begin(), connectedClients.end(), clientUid);
+    if(remove != connectedClients.end())
+    {
+        connectedClients.erase(remove);
+    }
+    clientInfoLock.unlock();
+}

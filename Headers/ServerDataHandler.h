@@ -21,6 +21,7 @@ public:
 private:
     void ProcessPacket(DataPacket* data);
     void ProcessNewClient(ClientInfo info);
+    void ProcessDisconnectedClient(unsigned int clientUid);
 
     Server server;
     std::queue<DataPacket*> messages;
