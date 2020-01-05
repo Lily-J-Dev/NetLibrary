@@ -5,6 +5,8 @@
 #include <map>
 #include <sys/types.h>
 #include <netdb.h>
+#include <forward_list>
+
 
 #include "DataPacket.h"
 #include "ClientInfo.h"
@@ -28,15 +30,14 @@ public:
 private:
     void ProcessNetworkEvents();
     void HandleConnectionEvent();
-    void HandleMessageEvent(int sock, unsigned int id);
+    void HandleMessageEvent(int sock);
 
     fd_set master;
-    int listening = -1;
+    unsigned int listening = 0;
     sockaddr_in hint;
     char cBuf[4096];
 
     std::atomic_bool running;
     std::mutex* deleteSafeguard;
-
-
+    std::forward_list<int> sockets;
 };

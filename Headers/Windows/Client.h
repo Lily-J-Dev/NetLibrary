@@ -27,6 +27,5 @@ private:
 
     std::atomic_bool running;
     std::mutex deleteSafeguard;
-    std::mutex outQueueMutex;
 };
 
