@@ -98,6 +98,9 @@
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientInfo.h">
 			<Option target="CTP"/>
 		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Constants.h">
+			<Option target="CTP"/>
+		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/DataPacket.h">
 			<Option target="CTP"/>
 		</Unit>
