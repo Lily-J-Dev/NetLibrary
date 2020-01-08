@@ -181,15 +181,4 @@
     </state>
     <state x="96" y="26" width="672" height="678" key="search.everywhere.popup/67.27.733.573@67.27.733.573" timestamp="1578067278144" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Source/ServerDataHandler.cpp</url>
-          <line>73</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
 </project>
