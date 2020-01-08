@@ -10,10 +10,9 @@ public:
     ClientDataHandler() = default;
     ~ClientDataHandler() = default;
 
-    void Start();
     void SendMessage(const char* data, int dataLength);
 
-    void ConnectToIP(const std::string& ipv4);
+    void ConnectToIP(const std::string& ipv4, int port);
     bool MessagesPending();
     DataPacket* GetNextMessage();
 

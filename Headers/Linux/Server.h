@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <forward_list>
 
-
+#include "Constants.h"
 #include "DataPacket.h"
 #include "ClientInfo.h"
 
@@ -19,7 +19,7 @@ public:
     Server& operator=(Server const&) = delete;
     ~Server();
 
-    bool Start();
+    bool Start(int port);
     void Stop();
 
     void SendMessage(const char* data, int dataLength, unsigned int client);
@@ -36,7 +36,7 @@ private:
     fd_set master;
     unsigned int listening = 0;
     sockaddr_in hint;
-    char cBuf[4096];
+    char cBuf[MAX_PACKET_SIZE];
 
     std::atomic_bool running;
     std::mutex* deleteSafeguard;

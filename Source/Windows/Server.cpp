@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sstream>
 #include <thread>
 #include "Server.h"
 
@@ -15,11 +14,14 @@ Server::~Server()
 void Server::Stop()
 {
     running = false;
-    closesocket(listening);
+    for(unsigned int i = 0; i<master.fd_count; i++)
+    {
+        closesocket(master.fd_array[i]);
+    }
     WSACleanup();
 }
 
-bool Server::Start()
+bool Server::Start(int port)
 {
     std::cout << "Initializing Server..." << std::endl;
 
@@ -45,7 +47,7 @@ bool Server::Start()
 
     // Bind an ip and port to the socket
     hint.sin_family = AF_INET;
-    hint.sin_port = htons(54000);
+    hint.sin_port = htons(port);
     hint.sin_addr.S_un.S_addr = INADDR_ANY;
 
     bind(listening, (sockaddr*)&hint, sizeof(hint));
@@ -113,7 +115,7 @@ void Server::HandleConnectionEvent()
     indexLookup[newClient.uid] = master.fd_count-1;
 
     char host[NI_MAXHOST]; // Client's remote name
-    char ip[NI_MAXHOST]; // Client ip adress
+    char ip[NI_MAXHOST]; // Client ip address
     char service[NI_MAXSERV]; // Port the client is connected on
 
     ZeroMemory(host, NI_MAXHOST);
@@ -141,8 +143,8 @@ void Server::HandleConnectionEvent()
 void Server::HandleMessageEvent(const SOCKET& sock)
 {
     // Accept a new message
-    ZeroMemory(cBuf, 4096);
-    int bytesReceived = recv(sock, cBuf, 4096, 0);
+    ZeroMemory(cBuf, MAX_PACKET_SIZE);
+    int bytesReceived = recv(sock, cBuf, MAX_PACKET_SIZE, 0);
 
     if (bytesReceived <= 0)
     {

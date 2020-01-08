@@ -6,6 +6,7 @@
 #include <map>
 #include "DataPacket.h"
 #include "ClientInfo.h"
+#include "Constants.h"
 
 class Server
 {
@@ -13,7 +14,7 @@ public:
     Server() = default;
     ~Server();
 
-    bool Start();
+    bool Start(int port);
     void Stop();
 
     void SendMessage(const char* data, int dataLength, unsigned int client);
@@ -30,7 +31,7 @@ private:
     fd_set master;
     SOCKET listening = INVALID_SOCKET;
     sockaddr_in hint;
-    char cBuf[4096];
+    char cBuf[MAX_PACKET_SIZE];
     std::map<SOCKET, unsigned int> uidLookup; // Get the UID of the given socket
     std::map<unsigned int, size_t> indexLookup; // Gets the index in the master fd_set of the socket of a given ID
     unsigned int nextUid = 0;

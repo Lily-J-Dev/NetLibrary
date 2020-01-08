@@ -1,11 +1,11 @@
 #include "ServerDataHandler.h"
 
-void ServerDataHandler::Start()
+void ServerDataHandler::Start(int port)
 {
     server.processPacket = std::bind(&ServerDataHandler::ProcessPacket, this,  std::placeholders::_1);
     server.processNewClient = std::bind(&ServerDataHandler::ProcessNewClient, this,  std::placeholders::_1);
     server.processDisconnectedClient = std::bind(&ServerDataHandler::ProcessDisconnectedClient, this,  std::placeholders::_1);
-    server.Start();
+    server.Start(port);
 }
 
 void ServerDataHandler::ProcessAndSendData(const char *data, int dataLength, unsigned int clientUid)

@@ -7,7 +7,7 @@
 class ServerDataHandler
 {
 public:
-    void Start();
+    void Start(int port);
 
     void SendMessageTo(const char* data, int dataLength, unsigned int clientUid);
     void SendMessageToAll(const char* data, int dataLength);

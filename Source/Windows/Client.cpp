@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
+#include "Constants.h"
 
 #pragma comment (lib, "Ws2_32.lib")
 
@@ -19,11 +20,9 @@ void Client::Stop()
     WSACleanup();
 }
 
-int Client::Start(const std::string& ipv4)
+int Client::Start(const std::string& ipv4, int port)
 {
     std::cout << "Initializing Client..." << std::endl;
-
-    int port = 54000;
 
     // Initilise winsock
     WSAData data;
@@ -75,13 +74,13 @@ void Client::ProcessNetworkEvents()
     deleteSafeguard.lock();
     running = true;
     // Loop to send and receive data
-    char buf[4096];
+    char buf[MAX_PACKET_SIZE];
 
     while(running)
     {
         // Wait for response
-        ZeroMemory(buf, 4096);
-        int bytesReceived = recv(sock, buf, 4096, 0);
+        ZeroMemory(buf, MAX_PACKET_SIZE);
+        int bytesReceived = recv(sock, buf, MAX_PACKET_SIZE, 0);
 
         if (bytesReceived > 0)
         {
@@ -90,8 +89,6 @@ void Client::ProcessNetworkEvents()
             memcpy(packet->data,buf, bytesReceived);
             packet->dataLength = bytesReceived;
             processPacket(packet);
-            // Echo response to console
-            //std::cout << std::string(buf, 0, bytesReceived) << std::endl;
         }
     }
 
@@ -108,33 +105,4 @@ void Client::SendMessage(const char* data, int dataLength)
     {
         std::cerr << "Error in sending data error number : " << WSAGetLastError() << std::endl;
     }
-}
-
-// An implementation for inet_pton for older compiler versions found here: https://gist.github.com/oswjk/6292616
-int Client::inetPton(int family, const char *src, void *dst)
-{
-    int rc;
-    struct sockaddr_storage addr;
-    int addr_len;
-
-    addr.ss_family = family;
-
-    rc = WSAStringToAddressA((char *) src, family, NULL, (struct sockaddr *) &addr, &addr_len);
-    if (rc != 0)
-    {
-        return -1;
-    }
-
-    if (family == AF_INET)
-    {
-        memcpy(dst, &((struct sockaddr_in *)&addr)->sin_addr,
-               sizeof(struct in_addr));
-    }
-    else if (family == AF_INET6)
-    {
-        memcpy(dst, &((struct sockaddr_in6 *)&addr)->sin6_addr,
-               sizeof(struct in6_addr));
-    }
-
-    return 1;
 }
