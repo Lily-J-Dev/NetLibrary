@@ -13,9 +13,10 @@ Server::~Server()
     Stop();
     deleteSafeguard->lock();
     deleteSafeguard->unlock();
+    delete deleteSafeguard;
 }
 
-bool Server::Start()
+bool Server::Start(int port)
 {
     deleteSafeguard = new std::mutex();
     // Create a socket
@@ -28,7 +29,7 @@ bool Server::Start()
 
     // Bind the socket to an ip and port
     hint.sin_family = AF_INET;
-    hint.sin_port = htons(54000);
+    hint.sin_port = htons(port);
     inet_pton(AF_INET, "0.0.0.0", &hint.sin_addr);
 
 
@@ -152,9 +153,9 @@ void Server::HandleConnectionEvent()
 }
 
 void Server::HandleMessageEvent(int sock) {
-    memset(cBuf, 0, 4096);
+    memset(cBuf, 0, MAX_PACKET_SIZE);
 
-    int bytesReceived = recv(sock, cBuf, 4096, 0);
+    int bytesReceived = recv(sock, cBuf, MAX_PACKET_SIZE, 0);
     if (bytesReceived <= 0)
     {
         close(sock);

@@ -11,7 +11,7 @@ public:
     Client() = default;
     ~Client();
 
-    bool Start(const std::string& ipv4);
+    bool Start(const std::string& ipv4, int port);
     void Stop();
 
     void SendMessage(const char* data, int dataLength);

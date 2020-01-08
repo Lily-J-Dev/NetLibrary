@@ -8,6 +8,7 @@
 #include <thread>
 
 #include "Client.h"
+#include "Constants.h"
 
 Client::~Client()
 {
@@ -22,7 +23,7 @@ void Client::Stop()
     close(sock);
 }
 
-bool Client::Start(const std::string &ipv4)
+bool Client::Start(const std::string &ipv4, int port)
 {
     deleteSafeguard = new std::mutex();
     std::cout << "Initializing Client..." << std::endl;
@@ -35,8 +36,6 @@ bool Client::Start(const std::string &ipv4)
     }
 
     // Create hint structure
-    int port = 54000;
-
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(port);
@@ -76,13 +75,13 @@ void Client::ProcessNetworkEvents()
     deleteSafeguard->lock();
     running = true;
     // Loop to send and receive data
-    char buf[4096];
+    char buf[MAX_PACKET_SIZE];
 
     while(running)
     {
         // Wait for response
-        memset(buf,0, 4096);
-        int bytesReceived = recv(sock, buf, 4096, 0);
+        memset(buf,0, MAX_PACKET_SIZE);
+        int bytesReceived = recv(sock, buf, MAX_PACKET_SIZE, 0);
 
         if (bytesReceived > 0)
         {

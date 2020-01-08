@@ -1,9 +1,9 @@
 #include "ClientDataHandler.h"
 
-void ClientDataHandler::ConnectToIP(const std::string& ipv4)
+void ClientDataHandler::ConnectToIP(const std::string& ipv4, int port)
 {
     client.processPacket = std::bind(&ClientDataHandler::ProcessPacket, this, std::placeholders::_1);
-    client.Start(ipv4);
+    client.Start(ipv4, port);
 }
 
 void ClientDataHandler::SendMessage(const char *data, int dataLength)
