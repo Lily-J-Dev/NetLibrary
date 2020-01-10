@@ -1,4 +1,5 @@
 #include "ServerDataHandler.h"
+#include <iterator>
 
 void ServerDataHandler::Start(int port)
 {
@@ -8,15 +9,21 @@ void ServerDataHandler::Start(int port)
     server.Start(port);
 }
 
-void ServerDataHandler::ProcessAndSendData(const char *data, int dataLength, unsigned int clientUid)
+void ServerDataHandler::SendPacket(DataPacket* packet)
 {
-
+    server.SendMessageToClient(packet->data, packet->dataLength, packet->senderId);
+    delete packet;
 }
 
 // Sends a message to only the specified client
 void ServerDataHandler::SendMessageTo(const char *data, int dataLength, unsigned int clientUid)
 {
-    server.SendMessage(data, dataLength, clientUid);
+    auto packet = new DataPacket();
+    packet->data = new char[dataLength];
+    packet->dataLength = dataLength;
+    std::copy(data, data+dataLength, packet->data);
+    packet->senderId = clientUid;
+    ProcessAndSendData(packet);
 }
 
 // Sends a message to all connected clients
@@ -25,7 +32,7 @@ void ServerDataHandler::SendMessageToAll(const char *data, int dataLength)
     clientInfoLock.lock();
     for(const ClientInfo &info : connectedClients)
     {
-        server.SendMessage(data, dataLength, info.uid);
+        SendMessageTo(data, dataLength, info.uid);
     }
     clientInfoLock.unlock();
 }
@@ -38,21 +45,11 @@ void ServerDataHandler::SendMessageToAllExcluding(const char *data, int dataLeng
     {
         if(info.uid != clientUid)
         {
-            server.SendMessage(data, dataLength, info.uid);
+            SendMessageTo(data, dataLength, info.uid);
         }
     }
     clientInfoLock.unlock();
 }
-
-// Function that gets called by the client every time a network message is received.
-void ServerDataHandler::ProcessPacket(DataPacket* data)
-{
-    // Here is where the data will be processed (decrypt/uncompress/etc)
-    messageLock.lock();
-    messages.push(data);
-    messageLock.unlock();
-}
-
 
 
 void ServerDataHandler::ProcessNewClient(ClientInfo info)
@@ -78,30 +75,7 @@ void ServerDataHandler::ProcessDisconnectedClient(unsigned int clientUid)
     clientInfoLock.unlock();
 }
 
-// Returns true if there are messages pending (get with GetNextMessage)
-bool ServerDataHandler::MessagesPending()
-{
-    messageLock.lock();
-    bool reBool = !messages.empty();
-    messageLock.unlock();
-    return reBool;
-}
 
-// Returns the oldest message in the queue. Data returned from this method is no longer used by the library
-// so the user must manage its memory (ie delete it when no longer being used.)
-DataPacket* ServerDataHandler::GetNextMessage()
-{
-    messageLock.lock();
-    if(messages.empty())
-    {
-        messageLock.unlock();
-        return nullptr;
-    }
-    auto returnPacket = messages.front();
-    messages.pop();
-    messageLock.unlock();
-    return returnPacket;
-}
 
 // Returns true if there are newly connected clients (get with GetNextNewClient)
 bool ServerDataHandler::AreNewClients()

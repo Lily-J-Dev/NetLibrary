@@ -14,7 +14,7 @@ public:
     bool Start(const std::string& ipv4, int port);
     void Stop();
 
-    void SendMessage(const char* data, int dataLength);
+    void SendMessageToServer(const char* data, unsigned int dataLength);
 
     std::function<void(DataPacket*)> processPacket;
 private:

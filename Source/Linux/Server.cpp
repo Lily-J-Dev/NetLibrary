@@ -175,7 +175,7 @@ void Server::HandleMessageEvent(int sock) {
     }
 }
 
-void Server::SendMessage(const char *data, int dataLength, unsigned int client)
+void Server::SendMessageToClient(const char *data, unsigned int dataLength, unsigned int client)
 {
     if(dataLength > 0)
     {

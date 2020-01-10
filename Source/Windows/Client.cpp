@@ -95,7 +95,7 @@ void Client::ProcessNetworkEvents()
     deleteSafeguard.unlock();
 }
 
-void Client::SendMessage(const char* data, int dataLength)
+void Client::SendMessageToServer(const char* data, unsigned int dataLength)
 {
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)

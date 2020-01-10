@@ -3,7 +3,7 @@
 
 TestServer::TestServer()
 {
-    server.Start();
+    server.Start(24000);
 }
 
 int TestServer::Update()

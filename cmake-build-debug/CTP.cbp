@@ -104,6 +104,9 @@
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/DataPacket.h">
 			<Option target="CTP"/>
 		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/NetworkDevice.h">
+			<Option target="CTP"/>
+		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ServerDataHandler.h">
 			<Option target="CTP"/>
 		</Unit>
@@ -120,6 +123,9 @@
 			<Option target="CTP"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ClientDataHandler.cpp">
+			<Option target="CTP"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/NetworkDevice.cpp">
 			<Option target="CTP"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ServerDataHandler.cpp">

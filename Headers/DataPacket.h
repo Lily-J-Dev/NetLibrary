@@ -3,8 +3,10 @@
 
 struct DataPacket
 {
+    ~DataPacket(){delete[] data;};
+
     char* data;
-    int dataLength;
+    unsigned int dataLength;
     unsigned int senderId;
 };
 
