@@ -171,7 +171,7 @@ void Server::HandleMessageEvent(const SOCKET& sock)
     }
 }
 
-void Server::SendMessage(const char* data, int dataLength, unsigned int client)
+void Server::SendMessageToClient(const char* data, unsigned int dataLength, unsigned int client)
 {
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)

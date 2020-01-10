@@ -2,25 +2,23 @@
 #define CTP_CLIENTDATAHANDLER_H
 
 #include <queue>
+#include <map>
 #include "Client.h"
+#include "NetworkDevice.h"
 
-class ClientDataHandler
+class ClientDataHandler : public NetworkDevice
 {
 public:
     ClientDataHandler() = default;
     ~ClientDataHandler() = default;
 
-    void SendMessage(const char* data, int dataLength);
+    void SendMessageToServer(const char* data, int dataLength);
 
     void ConnectToIP(const std::string& ipv4, int port);
-    bool MessagesPending();
-    DataPacket* GetNextMessage();
 
 private:
-    void ProcessPacket(DataPacket* data);
+    void SendPacket(DataPacket *packet) override;
     Client client;
-    std::queue<DataPacket*> messages;
-    std::mutex messageLock;
 };
 
 #endif //CTP_CLIENTDATAHANDLER_H

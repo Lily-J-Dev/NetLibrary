@@ -57,7 +57,7 @@ bool Client::Start(const std::string &ipv4, int port)
     return true;
 }
 
-void Client::SendMessage(const char *data, int dataLength)
+void Client::SendMessageToServer(const char *data, unsigned int dataLength)
 {
     // If there is no data dont send it
     if(dataLength > 0)

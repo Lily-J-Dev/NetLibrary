@@ -22,7 +22,7 @@ public:
     bool Start(int port);
     void Stop();
 
-    void SendMessage(const char* data, int dataLength, unsigned int client);
+    void SendMessageToClient(const char* data, unsigned int dataLength, unsigned int client);
 
     std::function<void(DataPacket*)> processPacket;
     std::function<void(ClientInfo)> processNewClient;

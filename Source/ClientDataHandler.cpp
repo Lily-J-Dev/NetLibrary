@@ -1,4 +1,5 @@
 #include "ClientDataHandler.h"
+#include "Constants.h"
 
 void ClientDataHandler::ConnectToIP(const std::string& ipv4, int port)
 {
@@ -6,32 +7,17 @@ void ClientDataHandler::ConnectToIP(const std::string& ipv4, int port)
     client.Start(ipv4, port);
 }
 
-void ClientDataHandler::SendMessage(const char *data, int dataLength)
+void ClientDataHandler::SendPacket(DataPacket* packet)
 {
-    client.SendMessage(data, dataLength);
+    client.SendMessageToServer(packet->data, packet->dataLength);
+    //delete packet;
 }
 
-void ClientDataHandler::ProcessPacket(DataPacket* data)
+void ClientDataHandler::SendMessageToServer(const char *data, int dataLength)
 {
-    // Here is where the data will be processed (decrypt/uncompress/etc)
-    messageLock.lock();
-    messages.push(data);
-    messageLock.unlock();
-}
-
-DataPacket* ClientDataHandler::GetNextMessage()
-{
-    messageLock.lock();
-    auto returnPacket = messages.front();
-    messages.pop();
-    messageLock.unlock();
-    return returnPacket;
-}
-
-bool ClientDataHandler::MessagesPending()
-{
-    messageLock.lock();
-    bool reBool = !messages.empty();
-    messageLock.unlock();
-    return reBool;
+    auto packet = new DataPacket();
+    packet->data = new char[dataLength];
+    packet->dataLength = dataLength;
+    std::copy(data, data+dataLength, packet->data);
+    ProcessAndSendData(packet);
 }

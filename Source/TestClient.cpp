@@ -3,7 +3,7 @@
 
 TestClient::TestClient()
 {
-    client.ConnectToIP("127.0.0.1");
+    client.ConnectToIP("127.0.0.1", 24000);
     std::thread tr(&TestClient::GetInput, this);
     tr.detach();
 }
@@ -26,6 +26,6 @@ void TestClient::GetInput()
     {
         std::string input = "";
         std::getline(std::cin, input);
-        client.SendMessage(input.c_str(), input.size()+1);
+        client.SendMessageToServer(input.c_str(), input.size()+1);
     }
 }
