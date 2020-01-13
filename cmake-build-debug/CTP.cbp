@@ -92,7 +92,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientDataHandler.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientConnection.h">
 			<Option target="CTP"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientInfo.h">
@@ -110,7 +110,7 @@
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/NetworkDevice.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ServerDataHandler.h">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ServerConnection.h">
 			<Option target="CTP"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/TestClient.h">
@@ -125,13 +125,13 @@
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Server.h">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ClientDataHandler.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ClientConnection.cpp">
 			<Option target="CTP"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/NetworkDevice.cpp">
 			<Option target="CTP"/>
 		</Unit>
-		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ServerDataHandler.cpp">
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ServerConnection.cpp">
 			<Option target="CTP"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/TestClient.cpp">

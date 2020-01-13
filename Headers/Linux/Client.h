@@ -21,6 +21,7 @@ private:
     void ProcessNetworkEvents();
 
     int sock = -1;
+    int sockCopy = -1;
     std::queue<DataPacket> outData;
 
     std::atomic_bool running;

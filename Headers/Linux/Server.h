@@ -39,6 +39,7 @@ private:
     char cBuf[MAX_PACKET_SIZE];
 
     std::atomic_bool running;
-    std::mutex* deleteSafeguard;
+    std::mutex* deleteLock;
+    std::mutex* fdLock;
     std::forward_list<int> sockets;
 };

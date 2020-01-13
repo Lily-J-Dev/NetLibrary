@@ -11,14 +11,16 @@
 Server::~Server()
 {
     Stop();
-    deleteSafeguard->lock();
-    deleteSafeguard->unlock();
-    delete deleteSafeguard;
+    deleteLock->lock();
+    deleteLock->unlock();
+    delete deleteLock;
+    delete fdLock;
 }
 
 bool Server::Start(int port)
 {
-    deleteSafeguard = new std::mutex();
+    deleteLock = new std::mutex();
+    fdLock = new std::mutex();
     // Create a socket
     listening = socket(AF_INET, SOCK_STREAM, 0);
     if(listening == -1)
@@ -61,8 +63,8 @@ bool Server::Start(int port)
 void Server::Stop()
 {
     running = false;
-    deleteSafeguard->lock();
-    deleteSafeguard->unlock();
+    deleteLock->lock();
+    deleteLock->unlock();
     close(listening);
     for(auto const& socket : sockets)
     {
@@ -73,11 +75,13 @@ void Server::Stop()
 
 void Server::ProcessNetworkEvents()
 {
-    deleteSafeguard->lock();
+    deleteLock->lock();
     running = true;
 
     while(running) {
+        fdLock->lock();
         fd_set mCopy = master;
+        fdLock->unlock();
         unsigned int socketCount = select(SOMAXCONN + 1, &mCopy, nullptr, nullptr, nullptr);
 
 
@@ -87,17 +91,20 @@ void Server::ProcessNetworkEvents()
         }
         else
         {
+            fdLock.lock();
             for (auto const &socket : sockets)
             {
                 if (FD_ISSET(socket, &mCopy))
                 {
                     HandleMessageEvent(socket);
+                    break;
                 }
             }
         }
+        fdLock.unlock();
     }
 
-    deleteSafeguard->unlock();
+    deleteLock->unlock();
 }
 
 void Server::HandleConnectionEvent()
@@ -115,9 +122,11 @@ void Server::HandleConnectionEvent()
         std::cerr << "Client failed to connect" << std::endl;;
     }
 
+    fdLock->lock();
     // Add new connection to master set
     FD_SET(clientSocket, &master);
     sockets.push_front(clientSocket);
+    fdLock->unlock();
 
     // Assign the connection a uid
     ClientInfo newClient;

@@ -25,6 +25,7 @@ private:
 
     void ProcessNewClient(ClientInfo info);
     void ProcessDisconnectedClient(unsigned int clientUid);
+    void ProcessDeviceSpecificEvent(DataPacket* data) override;
 
     Server server;
     std::queue<ClientInfo> newClients;
