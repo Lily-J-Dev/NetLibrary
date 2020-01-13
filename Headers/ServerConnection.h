@@ -1,10 +1,10 @@
-#ifndef CTP_SERVERDATAHANDLER_H
-#define CTP_SERVERDATAHANDLER_H
+#ifndef CTP_SERVERCONNECTION_H
+#define CTP_SERVERCONNECTION_H
 
 #include "Server.h"
 #include "NetworkDevice.h"
 
-class ServerDataHandler : public NetworkDevice
+class ServerConnection : public NetworkDevice
 {
 public:
     void Start(int port);
@@ -21,7 +21,7 @@ public:
 
     std::vector<ClientInfo> GetClientInfo() {return connectedClients;} // Gets the connection information for all current clients (Read only)
 private:
-    void SendPacket(DataPacket* packet) override;
+    void SendPacket(DataPacket* data) override;
 
     void ProcessNewClient(ClientInfo info);
     void ProcessDisconnectedClient(unsigned int clientUid);
@@ -35,4 +35,4 @@ private:
 };
 
 
-#endif //CTP_SERVERDATAHANDLER_H
+#endif //CTP_SERVERCONNECTION_H

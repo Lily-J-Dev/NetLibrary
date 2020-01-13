@@ -18,7 +18,8 @@ protected:
     void ProcessPacket(DataPacket* data);
     void ProcessMultiPacket(unsigned int senderId, unsigned int id);
 
-    virtual void SendPacket(DataPacket* packet) = 0;
+    virtual void SendPacket(DataPacket* data) = 0;
+    virtual void ProcessDeviceSpecificEvent(DataPacket* data) = 0;
 private:
     std::map<std::pair<unsigned int, unsigned int>, MultiPacketContainer> recMultiPackets;
     unsigned int packetID = 0;

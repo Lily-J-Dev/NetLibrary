@@ -5,7 +5,7 @@
 #include <atomic>
 #include <iostream>
 #include <sstream>
-#include "ClientDataHandler.h"
+#include "ClientConnection.h"
 
 class TestClient
 {
@@ -17,7 +17,7 @@ public:
 private:
     void GetInput();
 
-    ClientDataHandler client;
+    ClientConnection client;
 
     std::atomic_bool inputRunning;
 };

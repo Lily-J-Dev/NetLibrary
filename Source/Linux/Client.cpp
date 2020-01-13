@@ -20,6 +20,8 @@ Client::~Client()
 void Client::Stop()
 {
     running = false;
+    deleteSafeguard->lock();
+    deleteSafeguard->unlock();
     close(sock);
 }
 

@@ -13,7 +13,7 @@ IF(WIN32)
     include_directories(Source/Windows)
     add_executable(CTP
             main.cpp
-            Headers/Windows/Client.h Source/Windows/Client.cpp Headers/Windows/Server.h Source/Windows/Server.cpp Source/ClientDataHandler.cpp Headers/ClientDataHandler.h Source/ServerDataHandler.cpp Headers/ServerDataHandler.h Headers/ClientInfo.h Headers/DataPacket.h Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h Headers/Constants.h Source/NetworkDevice.cpp Headers/NetworkDevice.h)
+            Headers/Windows/Client.h Source/Windows/Client.cpp Headers/Windows/Server.h Source/Windows/Server.cpp Source/ClientConnection.cpp Headers/ClientConnection.h Source/ServerConnection.cpp Headers/ServerConnection.h Headers/ClientInfo.h Headers/DataPacket.h Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h Headers/Constants.h Source/NetworkDevice.cpp Headers/NetworkDevice.h Headers/ConnectionInfo.h)
     target_link_libraries(CTP ws2_32 wsock32)
 
 ELSEIF(UNIX)
@@ -22,7 +22,10 @@ ELSEIF(UNIX)
     include_directories(Source/Linux)
     add_executable(CTP
             main.cpp
-            Source/ClientDataHandler.cpp Headers/ClientDataHandler.h Source/ServerDataHandler.cpp Headers/ServerDataHandler.h Headers/ClientInfo.h Headers/DataPacket.h Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h Source/Linux/Client.cpp Headers/Linux/Client.h Source/Linux/Server.cpp Headers/Linux/Server.h Headers/Constants.h Source/NetworkDevice.cpp Headers/NetworkDevice.h Headers/MultiPacketContainer.h)
+            Source/ClientConnection.cpp Headers/ClientConnection.h Source/ServerConnection.cpp Headers/ServerConnection.h Headers/ClientInfo.h Headers/DataPacket.h Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h Source/Linux/Client.cpp Headers/Linux/Client.h Source/Linux/Server.cpp Headers/Linux/Server.h Headers/Constants.h Source/NetworkDevice.cpp Headers/NetworkDevice.h Headers/MultiPacketContainer.h Headers/ConnectionInfo.h)
+
+    add_library(CTP)
+
 ENDIF()
 
 

@@ -61,6 +61,8 @@ bool Server::Start(int port)
 void Server::Stop()
 {
     running = false;
+    deleteSafeguard->lock();
+    deleteSafeguard->unlock();
     close(listening);
     for(auto const& socket : sockets)
     {
