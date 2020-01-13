@@ -37,7 +37,8 @@ private:
     unsigned int nextUid = 1;
 
     std::atomic_bool running;
-    std::mutex deleteSafeguard;
+    std::mutex fdLock;
+    std::mutex deleteLock;
 
 
 };

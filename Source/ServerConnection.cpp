@@ -51,6 +51,10 @@ void ServerConnection::SendMessageToAllExcluding(const char *data, int dataLengt
     clientInfoLock.unlock();
 }
 
+void ServerConnection::ProcessDeviceSpecificEvent(DataPacket *data)
+{
+
+}
 
 void ServerConnection::ProcessNewClient(ClientInfo info)
 {

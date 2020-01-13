@@ -22,6 +22,7 @@ private:
     void ProcessNetworkEvents();
 
     SOCKET sock = INVALID_SOCKET;
+    SOCKET sockCopy = INVALID_SOCKET;
 
     std::atomic_bool running;
     std::mutex deleteSafeguard;

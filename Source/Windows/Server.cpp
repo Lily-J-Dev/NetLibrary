@@ -7,15 +7,15 @@
 Server::~Server()
 {
     Stop();
-    deleteSafeguard.lock();
-    deleteSafeguard.unlock();
+    deleteLock.lock();
+    deleteLock.unlock();
 }
 
 void Server::Stop()
 {
     running = false;
-    deleteSafeguard.lock();
-    deleteSafeguard.unlock();
+    deleteLock.lock();
+    deleteLock.unlock();
     for(unsigned int i = 0; i<master.fd_count; i++)
     {
         closesocket(master.fd_array[i]);
@@ -70,12 +70,14 @@ bool Server::Start(int port)
 
 void Server::ProcessNetworkEvents()
 {
-    deleteSafeguard.lock();
+    deleteLock.lock();
     running = true;
 
     while (running)
     {
+        fdLock.lock();
         fd_set mCopy = master;
+        fdLock.unlock();
         unsigned int socketCount = select(0, &mCopy, nullptr, nullptr, nullptr);
 
         for (unsigned int i = 0; i < socketCount; i++)
@@ -92,7 +94,7 @@ void Server::ProcessNetworkEvents()
             }
         }
     }
-    deleteSafeguard.unlock();
+    deleteLock.unlock();
 }
 
 void Server::HandleConnectionEvent()
@@ -101,6 +103,7 @@ void Server::HandleConnectionEvent()
     SOCKET client = accept(listening, nullptr, nullptr);
 
     // Add the new connection to the master file set
+    fdLock.lock();
     FD_SET(client, &master);
 
     // Assign the connection a uid
@@ -115,6 +118,7 @@ void Server::HandleConnectionEvent()
 
     // Add a quick lookup for the index of this socket in the master set
     indexLookup[newClient.uid] = master.fd_count-1;
+    fdLock.unlock();
 
     char host[NI_MAXHOST]; // Client's remote name
     char ip[NI_MAXHOST]; // Client ip address
@@ -150,6 +154,7 @@ void Server::HandleMessageEvent(const SOCKET& sock)
 
     if (bytesReceived <= 0)
     {
+        fdLock.lock();
         closesocket(sock);
         FD_CLR(sock, &master);
         std::cout << "Client Disconnected.";
@@ -161,6 +166,7 @@ void Server::HandleMessageEvent(const SOCKET& sock)
         {
             indexLookup[uidLookup[master.fd_array[i]]] = i;
         }
+        fdLock.unlock();
     }
     else
     {
@@ -178,5 +184,7 @@ void Server::SendMessageToClient(const char* data, unsigned int dataLength, unsi
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)
         return;
+    fdLock.lock();
     send(master.fd_array[indexLookup[client]], data,dataLength, 0);
+    fdLock.unlock();
 }

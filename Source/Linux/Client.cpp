@@ -53,6 +53,7 @@ bool Client::Start(const std::string &ipv4, int port)
 
     std::cout << "Client successfully initilized!" << std::endl;
 
+    sockCopy = sock;
     std::thread tr(&Client::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -64,7 +65,7 @@ void Client::SendMessageToServer(const char *data, unsigned int dataLength)
     // If there is no data dont send it
     if(dataLength > 0)
     {
-        int sendResult = send(sock, data, dataLength, 0);
+        int sendResult = send(sockCopy, data, dataLength, 0);
         if (sendResult == -1)
         {
             std::cerr << "Error in sending data" << std::endl;
