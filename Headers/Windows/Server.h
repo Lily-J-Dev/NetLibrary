@@ -34,7 +34,7 @@ private:
     char cBuf[MAX_PACKET_SIZE];
     std::map<SOCKET, unsigned int> uidLookup; // Get the UID of the given socket
     std::map<unsigned int, size_t> indexLookup; // Gets the index in the master fd_set of the socket of a given ID
-    unsigned int nextUid = 0;
+    unsigned int nextUid = 1;
 
     std::atomic_bool running;
     std::mutex deleteSafeguard;

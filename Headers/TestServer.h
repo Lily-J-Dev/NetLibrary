@@ -1,6 +1,6 @@
 #ifndef CTP_TESTSERVER_H
 #define CTP_TESTSERVER_H
-#include "ServerDataHandler.h"
+#include "ServerConnection.h"
 
 class TestServer
 {
@@ -9,7 +9,7 @@ public:
     int Update();
 
 private:
-    ServerDataHandler server;
+    ServerConnection server;
 };
 
 

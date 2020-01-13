@@ -44,7 +44,7 @@ void NetworkDevice::ProcessAndSendData(DataPacket* packet)
             pack->dataLength = totalPacketSize;
             pack->data = nData;
             pack->senderId = packet->senderId;
-            
+
             SendPacket(pack);
 
             packet->dataLength -= packetSize;
@@ -114,6 +114,15 @@ void NetworkDevice::ProcessPacket(DataPacket* data)
         {
             ProcessMultiPacket(data->senderId, id);
         }
+    }
+    else if(data->data[0] == (char)MessageType::PING_REQUEST)
+    {
+        data->data[0] = (char)MessageType::PING_RESPONSE;
+        SendPacket(data);
+    }
+    else
+    {
+        ProcessDeviceSpecificEvent(data);
     }
 }
 

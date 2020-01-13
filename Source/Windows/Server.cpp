@@ -14,6 +14,8 @@ Server::~Server()
 void Server::Stop()
 {
     running = false;
+    deleteSafeguard.lock();
+    deleteSafeguard.unlock();
     for(unsigned int i = 0; i<master.fd_count; i++)
     {
         closesocket(master.fd_array[i]);
