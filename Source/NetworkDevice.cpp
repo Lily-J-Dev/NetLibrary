@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include <cassert>
 #include <iostream>
+#include <chrono>
 
 NetworkDevice::NetworkDevice()
 {
@@ -15,6 +16,48 @@ NetworkDevice::NetworkDevice()
     assert(MAX_PACKET_SIZE > offsets[3] +1);
     maxPacketDataLen = MAX_PACKET_SIZE - 1;
     maxMultiPacketDataLen = MAX_PACKET_SIZE - offsets[3];
+}
+
+void NetworkDevice::Start()
+{
+    running = true;
+    // Clear out the message queue in case a message slipped through while the device was shutting down
+    while(!outQueue.empty())
+    {
+        outQueue.pop();
+    }
+
+    deleteLock.lock();
+    std::thread tr(&NetworkDevice::Run, this);
+    tr.detach();
+}
+
+void NetworkDevice::Stop()
+{
+    running = false;
+    deleteLock.lock();
+    deleteLock.unlock();
+    recMultiPackets.clear();
+}
+
+void NetworkDevice::Run()
+{
+    while (running)
+    {
+        // Send all messages in queue
+        outQueueLock.lock();
+        while(!outQueue.empty())
+        {
+            SendPacket(outQueue.front());
+            outQueue.pop();
+        }
+        outQueueLock.unlock();
+
+        UpdateNetworkStats();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    deleteLock.unlock();
 }
 
 void NetworkDevice::ProcessAndSendData(DataPacket* packet)
@@ -45,7 +88,9 @@ void NetworkDevice::ProcessAndSendData(DataPacket* packet)
             pack->data = nData;
             pack->senderId = packet->senderId;
 
-            SendPacket(pack);
+            outQueueLock.lock();
+            outQueue.push(pack);
+            outQueueLock.unlock();
 
             packet->dataLength -= packetSize;
             startIndex += packetSize;
@@ -56,13 +101,16 @@ void NetworkDevice::ProcessAndSendData(DataPacket* packet)
     else
     {
         char* nData = new char[packet->dataLength+offsets[0]];
+
         nData[0] = (char)MessageType::SINGLE_USER_MESSAGE;
         std::copy(packet->data, packet->data+packet->dataLength, nData+offsets[0]);
 
         delete[] packet->data;
         packet->data = nData;
         packet->dataLength += offsets[0];
-        SendPacket(packet);
+        outQueueLock.lock();
+        outQueue.push(packet);
+        outQueueLock.unlock();
     }
 }
 
@@ -118,7 +166,9 @@ void NetworkDevice::ProcessPacket(DataPacket* data)
     else if(data->data[0] == (char)MessageType::PING_REQUEST)
     {
         data->data[0] = (char)MessageType::PING_RESPONSE;
-        SendPacket(data);
+        outQueueLock.lock();
+        outQueue.push(data);
+        outQueueLock.unlock();
     }
     else
     {
@@ -167,9 +217,9 @@ bool NetworkDevice::MessagesPending()
     messageLock.unlock();
     return reBool;
 }
-
-// Returns the oldest message in the queue. Data returned from this method is no longer used by the library
-// so the user must manage its memory (ie delete it when no longer being used.)
+/// Returns the oldest message in the queue. Data returned from this method is no longer used by the library
+/// so the user must manage its memory (ie delete it when no longer being used.)
+/// \return
 DataPacket* NetworkDevice::GetNextMessage()
 {
     messageLock.lock();

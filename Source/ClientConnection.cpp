@@ -1,16 +1,9 @@
 #include "ClientConnection.h"
 #include "Constants.h"
 
-ClientConnection::~ClientConnection()
-{
-    Disconnect();
-}
-
 void ClientConnection::Disconnect()
 {
-    running = false;
-    deleteLock.lock();
-    deleteLock.unlock();
+    Stop();
     client.Stop();
 }
 
@@ -19,12 +12,13 @@ void ClientConnection::ConnectToIP(const std::string& ipv4, int port)
 {
     client.processPacket = std::bind(&ClientConnection::ProcessPacket, this, std::placeholders::_1);
     client.Start(ipv4, port);
+    Start();
 }
 
 void ClientConnection::SendPacket(DataPacket* data)
 {
     client.SendMessageToServer(data->data, data->dataLength);
-    //delete data;
+    delete data;
 }
 
 void ClientConnection::SendMessageToServer(const char *data, int dataLength)
@@ -43,10 +37,35 @@ void ClientConnection::ProcessDeviceSpecificEvent(DataPacket *data)
         uid = *reinterpret_cast<unsigned int*>(&data->data[1]);
         delete data;
     }
-    if(data->data[0] == (char)MessageType::PING_RESPONSE)
+    else if(data->data[0] == (char)MessageType::PING_RESPONSE)
     {
-
+        using clock = std::chrono::steady_clock;
+        clientInfoLock.lock();
+        connectionInfo.ping = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count();
+        waitingForPing = false;
+        clientInfoLock.unlock();
+        delete data;
     }
+}
+
+void ClientConnection::UpdateNetworkStats()
+{
+    // Handle pings
+    using clock = std::chrono::steady_clock;
+    clientInfoLock.lock();
+    if(!waitingForPing && std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count() > PING_FREQUENCY)
+    {
+        waitingForPing = true;
+        auto packet = new DataPacket();
+        packet->data = new char[1];
+        packet->dataLength = 1;
+        packet->data[0] = (char)MessageType::PING_REQUEST;
+        outQueueLock.lock();
+        outQueue.push(packet);
+        outQueueLock.unlock();
+        timeOfLastPing = clock::now();
+    }
+    clientInfoLock.unlock();
 }
 
 // Returns a ConnectionInfo struct with information about the current network conditions.

@@ -7,6 +7,7 @@
 class ServerConnection : public NetworkDevice
 {
 public:
+
     void Start(int port);
 
     void SendMessageTo(const char* data, int dataLength, unsigned int clientUid);
@@ -26,6 +27,7 @@ private:
     void ProcessNewClient(ClientInfo info);
     void ProcessDisconnectedClient(unsigned int clientUid);
     void ProcessDeviceSpecificEvent(DataPacket* data) override;
+    void UpdateNetworkStats() override;
 
     Server server;
     std::queue<ClientInfo> newClients;
