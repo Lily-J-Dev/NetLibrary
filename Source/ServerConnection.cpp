@@ -1,5 +1,6 @@
 #include "ServerConnection.h"
 #include <iterator>
+#include <iostream>
 
 void ServerConnection::Start(int port)
 {
@@ -7,6 +8,7 @@ void ServerConnection::Start(int port)
     server.processNewClient = std::bind(&ServerConnection::ProcessNewClient, this, std::placeholders::_1);
     server.processDisconnectedClient = std::bind(&ServerConnection::ProcessDisconnectedClient, this, std::placeholders::_1);
     server.Start(port);
+    NetworkDevice::Start();
 }
 
 void ServerConnection::SendPacket(DataPacket* data)
@@ -53,7 +55,22 @@ void ServerConnection::SendMessageToAllExcluding(const char *data, int dataLengt
 
 void ServerConnection::ProcessDeviceSpecificEvent(DataPacket *data)
 {
-
+    if(data->data[0] == (char)MessageType::PING_RESPONSE)
+    {
+        using clock = std::chrono::steady_clock;
+        clientInfoLock.lock();
+        for(ClientInfo& client : connectedClients)
+        {
+            if(client.uid == data->senderId)
+            {
+                client.connectionInfo.ping = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - client.timeOfLastPing).count();
+                client.waitingForPing = false;
+                break;
+            }
+        }
+        delete data;
+        clientInfoLock.unlock();
+    }
 }
 
 void ServerConnection::ProcessNewClient(ClientInfo info)
@@ -62,6 +79,18 @@ void ServerConnection::ProcessNewClient(ClientInfo info)
     newClients.push(info);
     connectedClients.push_back(info);
     clientInfoLock.unlock();
+
+    auto packet = new DataPacket();
+    packet->dataLength = 1+ sizeof(unsigned int);
+    packet->data = new char[packet->dataLength];
+    packet->data[0] = (char)MessageType::SET_CLIENT_UID;
+    packet->senderId = info.uid;
+    auto uidAsChar = reinterpret_cast<const char*>(&info.uid);
+    std::copy(uidAsChar, uidAsChar + sizeof(unsigned int), packet->data+1);
+
+    outQueueLock.lock();
+    outQueue.push(packet);
+    outQueueLock.unlock();
 }
 
 void ServerConnection::ProcessDisconnectedClient(unsigned int clientUid)
@@ -79,7 +108,29 @@ void ServerConnection::ProcessDisconnectedClient(unsigned int clientUid)
     clientInfoLock.unlock();
 }
 
-
+void ServerConnection::UpdateNetworkStats()
+{
+    // Handle pings
+    using clock = std::chrono::steady_clock;
+    clientInfoLock.lock();
+    for(ClientInfo& client : connectedClients) {
+        if (!client.waitingForPing &&
+            std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - client.timeOfLastPing).count() >
+            PING_FREQUENCY) {
+            client.waitingForPing = true;
+            auto packet = new DataPacket();
+            packet->data = new char[1];
+            packet->dataLength = 1;
+            packet->data[0] = (char) MessageType::PING_REQUEST;
+            packet->senderId = client.uid;
+            outQueueLock.lock();
+            outQueue.push(packet);
+            outQueueLock.unlock();
+            client.timeOfLastPing = clock::now();
+        }
+    }
+    clientInfoLock.unlock();
+}
 
 // Returns true if there are newly connected clients (get with GetNextNewClient)
 bool ServerConnection::AreNewClients()

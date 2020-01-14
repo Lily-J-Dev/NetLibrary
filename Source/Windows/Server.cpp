@@ -108,10 +108,6 @@ void Server::HandleConnectionEvent()
 
     // Assign the connection a uid
     ClientInfo newClient;
-    if(uidLookup.count(client) > 0)
-    {
-        std::cout << "Duplicate socket, this needs re-working!" << std::endl;
-    }
     newClient.uid = nextUid;
     uidLookup[client] = nextUid;
     nextUid++;
@@ -157,7 +153,7 @@ void Server::HandleMessageEvent(const SOCKET& sock)
         fdLock.lock();
         closesocket(sock);
         FD_CLR(sock, &master);
-        std::cout << "Client Disconnected.";
+        std::cout << "Client " << uidLookup[sock] << " has disconnected." << std::endl;
         // Re-make the lookup table as the indices have changed
         indexLookup.clear();
         processDisconnectedClient(uidLookup[sock]);
@@ -185,6 +181,11 @@ void Server::SendMessageToClient(const char* data, unsigned int dataLength, unsi
     if(dataLength <= 0)
         return;
     fdLock.lock();
-    send(master.fd_array[indexLookup[client]], data,dataLength, 0);
+    int wsResult = send(master.fd_array[indexLookup[client]], data,dataLength, 0);
+
+    if (wsResult == SOCKET_ERROR)
+    {
+        std::cerr << "Failed to send message error code: " << WSAGetLastError() << std::endl;
+    }
     fdLock.unlock();
 }

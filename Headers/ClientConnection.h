@@ -11,7 +11,7 @@ class ClientConnection : public NetworkDevice
 {
 public:
     ClientConnection() = default;
-    ~ClientConnection();
+    ~ClientConnection() = default;
 
     void SendMessageToServer(const char* data, int dataLength);
 
@@ -24,16 +24,16 @@ public:
 private:
     void ProcessDeviceSpecificEvent(DataPacket* data) override;
     void SendPacket(DataPacket *data) override;
+    void UpdateNetworkStats() override;
     Client client;
 
     unsigned int uid = 0;
     ConnectionInfo connectionInfo;
 
-    std::queue<DataPacket*> outQueue;
-    std::mutex outQueueLock;
-    std::mutex deleteLock;
     std::mutex clientInfoLock;
-    std::atomic_bool running;
+
+    std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
+    bool waitingForPing = false;
 };
 
 #endif //CTP_CLIENTCONNECTION_H

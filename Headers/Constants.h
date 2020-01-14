@@ -1,7 +1,8 @@
 #ifndef CTP_CONSTANTS_H
 #define CTP_CONSTANTS_H
 
-const int MAX_PACKET_SIZE = 30;
+const int MAX_PACKET_SIZE = 100;
+const float PING_FREQUENCY = 1000;
 
 // Every network message will start with a MessageType enum which defines how the rest of the message should be read.
 enum class MessageType : char
