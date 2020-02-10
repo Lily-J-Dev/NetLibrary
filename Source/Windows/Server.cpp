@@ -129,15 +129,9 @@ void Server::HandleConnectionEvent()
         //std::cout << host << " Connected on port " << service << std::endl;
         newClient.name = host;
     }
-    //else
-    //{
-        inet_ntop(AF_INET, &hint.sin_addr, ip, NI_MAXHOST);
-        //std::cout << ip << " connected on port " << ntohs(hint.sin_port) << std::endl;
-        //char *addr = inet_ntoa(hint.sin_addr);
-        //std::cout << addr << " connected on address " << ntohs(hint.sin_port) << std::endl;
-    //}
 
-    newClient.ipv4 = ip;
+    newClient.ipv4 = inet_ntoa(hint.sin_addr);
+
     std::cout << "New client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
     processNewClient(newClient);
 }

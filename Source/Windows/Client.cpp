@@ -38,6 +38,7 @@ int Client::Start(const std::string& ipv4, int port)
     }
 
     // Create socket
+
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET)
     {
@@ -47,13 +48,41 @@ int Client::Start(const std::string& ipv4, int port)
     }
 
     // Fill in hint struct
-    sockaddr_in hint;
-    hint.sin_family = AF_INET;
-    hint.sin_port = htons(port);
-    inet_pton(AF_INET, ipv4.c_str(), &hint.sin_addr);
+    //sockaddr_in hint;
+    //hint.sin_family = AF_INET;
+    //hint.sin_port = htons(port);
+
+    //inet_pton(AF_INET, ipv4.c_str(), &hint.sin_addr);
+
+    struct addrinfo *info;
+    struct addrinfo *node;
+    struct addrinfo hints;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+
+    int result = getaddrinfo(ipv4.c_str(), std::to_string(port).c_str(), &hints, &info);
+
+    if(result != 0)
+    {
+        std::cerr << "Failed to get address info: " << WSAGetLastError() << std::endl;
+        closesocket(sock);
+        WSACleanup();
+        return -1;
+    }
+
 
     // Connect to server
-    int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+    int connResult = SOCKET_ERROR;
+    for(node = info; node != NULL; node->ai_next)
+    {
+        connResult = connect(sock, node->ai_addr, node->ai_addrlen);
+        if(connResult != SOCKET_ERROR)
+            break;
+    }
+
     if (connResult == SOCKET_ERROR)
     {
         std::cerr << "Failed to connect to server error number: " << WSAGetLastError() << std::endl;
@@ -62,7 +91,18 @@ int Client::Start(const std::string& ipv4, int port)
         return -1;
     }
 
-    std::cout << "Client successfully initilized!" << std::endl;
+    freeaddrinfo(info);
+
+    //int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+    //if (connResult == SOCKET_ERROR)
+    //{
+    //    std::cerr << "Failed to connect to server error number: " << WSAGetLastError() << std::endl;
+    //    closesocket(sock);
+    //    WSACleanup();
+    //    return -1;
+    //}
+
+    std::cout << "Client successfully initialised!" << std::endl;
 
     // Create a copy to avoid threading issues when using the socket
     sockCopy = sock;
