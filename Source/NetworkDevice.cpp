@@ -3,6 +3,8 @@
 #include <cassert>
 #include <iostream>
 #include <chrono>
+#include <thread>
+#include <math.h>
 
 NetworkDevice::NetworkDevice()
 {
