@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.9.0)
 
+OPTION(STATIC_NETLIB "Builds the library as static" ON)
+
 project(NetLib)
 set(netlib_VERSION_MAJOR "0")
 set(netlib_VERSION_MINOR "3")
@@ -51,13 +53,13 @@ source_group("Configs" FILES ${PROJECT_CONFIG})
 #        -DGLFW_INCLUDE_NONE
 #        -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
-#if(ENGINE_SHARED_LIB)
+if(STATIC_NETLIB)
     add_library(
-            NetLib SHARED Source/ServerConnection.cpp)
-#else()
-#   add_library(
-#           NetLibDLL STATIC Source/ServerConnection.cpp )
-#endif()
+            NetLib STATIC Source/Windows/Server.cpp)
+else()
+   add_library(
+           NetLib SHARED Source/Windows/Server.cpp )
+endif()
 
 target_sources(NetLib
         PUBLIC
@@ -96,7 +98,7 @@ target_compile_features(NetLib PUBLIC cxx_std_14)
 #endif()
 
 # Dependencies on other libraries
-target_link_libraries(NetLib ws2_32 wsock32)
+target_link_libraries(NetLib PUBLIC ws2_32 wsock32)
 #target_link_libraries(NetLib PUBLIC ${LINK_LIBS})
 
 # This makes the project importable from the build directory
@@ -116,8 +118,8 @@ set_target_properties(
 
 #include_directories(Headers/Windows)
 #include_directories(Source/Windows)
-add_executable(netlib_test
-        main.cpp
-        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
+#add_executable(netlib_test
+ #       main.cpp
+  #      Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
 
-target_link_libraries(netlib_test NetLib)
+##target_link_libraries(netlib_test NetLib)
