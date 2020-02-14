@@ -3,7 +3,13 @@
 
 TestClient::TestClient()
 {
-    client.ConnectToIP("127.0.0.1", 24000);
+    std::cout << "Enter server IP: ";
+    std::string input = "";
+    std::getline(std::cin, input);
+    std::getline(std::cin, input);
+    if(input == "localhost" || "")
+        input = "127.0.0.1";
+    client.ConnectToIP(input, 24000);
 }
 
 int TestClient::Update()
@@ -15,6 +21,7 @@ int TestClient::Update()
         {
             case netlib::NetworkEvent::EventType::ONCONNECT:
             {
+                std::cout << "Connected to the server!" << std::endl;
                 std::thread tr(&TestClient::GetInput, this);
                 tr.detach();
                 break;

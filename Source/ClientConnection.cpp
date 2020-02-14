@@ -252,6 +252,8 @@ std::vector<netlib::Lobby> netlib::ClientConnection::GetAllLobbyInfo()
 // Creates a new lobby and adds this client to it
 void netlib::ClientConnection::CreateLobby(std::string lobbyName, int lobbySize)
 {
+    if(lobbySize < 1)
+        lobbySize = 1;
     if(lobbyName.size() > MAX_PACKET_SIZE-10)
         lobbyName.resize(MAX_PACKET_SIZE-10);
     auto event = new NetworkEvent();
