@@ -52,7 +52,6 @@ namespace netlib {
         std::mutex clientInfoLock;
 
         // Lobby
-        unsigned int nameLen = 0;
         unsigned int lobbyUID = 0;
         std::recursive_mutex lobbyLock;
         std::map<unsigned int, Lobby> lobbies;

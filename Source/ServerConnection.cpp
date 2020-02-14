@@ -143,15 +143,14 @@ void netlib::ServerConnection::CreateNewLobby(NetworkEvent* event)
     lobbyLock.lock();
     lobbies[lobbyUID].lobbyID = lobbyUID;
 
-    //std::copy(event->data.data() + 1 + sizeof(unsigned int), event->data.data() + 1 + (sizeof(unsigned int)*2), &nameLen);
-
-    //lobbies[lobbyUID].name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*2), nameLen);
-    lobbies[lobbyUID].name = "fuckthis";
+    unsigned int nameLen = *reinterpret_cast<unsigned int*>(&event->data[1+ sizeof(unsigned int)]);
+    lobbies[lobbyUID].name = std::string(event->data[0] + 1 + (sizeof(unsigned int)*2), nameLen);
     lobbyLock.unlock();
     unsigned int senderID = event->senderId;
 
     // Signal to all clients there is a new lobby
-    std::copy(&lobbyUID, &lobbyUID + sizeof(unsigned int), event->data.data()+1);
+    auto idAsChar = reinterpret_cast<char*>(&lobbyUID);
+    std::copy(idAsChar, idAsChar + sizeof(unsigned int), event->data.data()+1);
     event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
     SendEventToAll(event);
 
@@ -166,18 +165,23 @@ void netlib::ServerConnection::AddPlayerToLobby(unsigned int player, unsigned in
     event->senderId = player;
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::SET_ACTIVE_LOBBY;
-    std::copy(&lobbyUID, &lobbyUID + sizeof(unsigned int), event->data.data()+1);
+    auto idAsChar = reinterpret_cast<char*>(&lobbyUID);
+    std::copy(idAsChar, idAsChar + sizeof(unsigned int), event->data.data()+1);
     SendEvent(event);
 
     // Tell all other clients a new client has joined a lobby
     event = new NetworkEvent();
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
-    std::copy(&lobby, &lobby + sizeof(unsigned int), event->data.data()+1);
-    std::copy(&player, &player + sizeof(unsigned int), event->data.data() + 1 + sizeof(unsigned int));
+    auto lobbyAsChar = reinterpret_cast<char*>(&lobby);
+    auto playerAsChar = reinterpret_cast<char*>(&player);
+    std::copy(lobbyAsChar, lobbyAsChar + sizeof(unsigned int), event->data.data()+1);
+    std::copy(playerAsChar, playerAsChar + sizeof(unsigned int), event->data.data() + 1 + sizeof(unsigned int));
     clientInfoLock.lock();
     unsigned int nameLen = connectedClients[player].name.size() + 1;
-    std::copy(&nameLen, &nameLen + sizeof(unsigned int),event->data.data() + 1 + (sizeof(unsigned int) *2));
+    auto lenAsChar = reinterpret_cast<char*>(&nameLen);
+
+    std::copy(lenAsChar, lenAsChar + sizeof(unsigned int),event->data.data() + 1 + (sizeof(unsigned int) *2));
     std::copy(connectedClients[player].name.data(),
               connectedClients[player].name.data() +  nameLen,
               event->data.data() + 1 + (sizeof(unsigned int) *3));
