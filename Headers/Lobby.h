@@ -10,7 +10,7 @@ namespace netlib
         {
         std::string name = "";
         unsigned int lobbyID = 0;
-        //std::vector<netlib::LobbyMember> memberInfo;
+        std::vector<netlib::LobbyMember> memberInfo;
         int clientsInRoom = 0;
         int maxClientsInRoom = 0;
         bool open = true;

@@ -3,11 +3,7 @@
 
 TestClient::TestClient()
 {
-
     client.ConnectToIP("127.0.0.1", 24000);
-    std::thread tr(&TestClient::GetInput, this);
-    tr.detach();
-
 }
 
 int TestClient::Update()
@@ -17,6 +13,12 @@ int TestClient::Update()
     {
         switch (events.front().eventType)
         {
+            case netlib::NetworkEvent::EventType::ONCONNECT:
+            {
+                std::thread tr(&TestClient::GetInput, this);
+                tr.detach();
+                break;
+            }
             case netlib::NetworkEvent::EventType::MESSAGE:
             {
                 auto test = events.front();
@@ -50,9 +52,11 @@ void TestClient::GetInput()
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     inputRunning = true;
+    std::string input = "";
+    std::getline(std::cin, input);
     while(inputRunning)
     {
-        std::string input = "";
+        std::cout << "";
         std::getline(std::cin, input);
         if(input == "#getlobbies")
         {
@@ -60,7 +64,13 @@ void TestClient::GetInput()
             auto lobbies = client.GetAllLobbyInfo();
             for(auto& lobby : lobbies)
             {
-                std::cout << "Name: " << lobby.name << " ID: " << lobby.lobbyID << std::endl;
+                std::cout << "Name: " << lobby.name << " ID: " << lobby.lobbyID
+                          << " (" << lobby.clientsInRoom << "/" << lobby.maxClientsInRoom << ")" <<  std::endl;
+                std::cout << "Clients: " << std::endl;
+                for(auto& member : lobby.memberInfo)
+                {
+                    std::cout << "\t Name: " << member.name << " ID: " << member.uid << std::endl;
+                }
             }
             std::cout << std::endl;
         }
@@ -76,8 +86,11 @@ void TestClient::GetInput()
             std::getline(std::cin, input);
             client.JoinLobby(std::atoi(input.data()));
         }
-        input = std::to_string(client.GetUID()) + ": " + input;
-        client.SendMessageToServer(input.c_str(), input.size()+1);
+        else
+        {
+            input = std::to_string(client.GetUID()) + ": " + input;
+            client.SendMessageToServer(input.c_str(), input.size() + 1);
+        }
     }
 
 }

@@ -5,8 +5,6 @@
 namespace netlib {
     struct NetworkEvent
     {
-        NetworkEvent() = default;
-
         enum class EventType : int
          {
             // These events are created by the various SendMessageToX methods on client/server, the contents of the
@@ -31,6 +29,19 @@ namespace netlib {
         EventType eventType = EventType::MESSAGE; // What kind of event is this?
         std::vector<char> data; // Contains the data for MESSAGE events
         unsigned int senderId = 0; // On the server this contains the unique ID for the client that the event was generated for
+
+        template <class T>
+        void WriteData(T newData, int writePos)
+        {
+            char* dataAsChar = reinterpret_cast<char*>(&newData);
+            std::copy(dataAsChar, dataAsChar + sizeof(T), data.data() + writePos);
+        };
+
+        template <class T>
+        T ReadData(int readPos)
+        {
+            return *reinterpret_cast<T*>(data.data() + readPos);
+        };
     };
 }
 #endif //NETLIB_NETWORKEVENT_H
