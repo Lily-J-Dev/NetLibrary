@@ -14,7 +14,7 @@ namespace netlib {
         PING_RESPONSE, // A 1 byte type only packet that signifies the response of a PING_REQUEST
 
         // Events a client can send to the server
-        REQUEST_NEW_LOBBY, // Signals for the server to create a new lobby and add this client to it - uint(blank) -> uint(size of name) -> char...(lobby name)
+        REQUEST_NEW_LOBBY, // Signals for the server to create a new lobby and add this client to it - uint(blank) -> int(roomSize) -> uint(size of name) -> char...(lobby name)
         REMOVE_FROM_LOBBY, // Tells the server to remove the given client from its current lobby - uint(clientUID)
         JOIN_LOBBY, // Tells the server to add this client to the chosen lobby - uint(lobby uid)
 
@@ -24,7 +24,7 @@ namespace netlib {
         LOBBY_CLIENT_LEFT, // Tells the client that another client has left a lobby - uint(lobby uid) -> uint(left client uid)
         UPDATE_PEER_CONNECTION_INFO, // Tells the client to update its current lobby peerInfo connection values - int(infoCount) -> float(ping) -- repeat per infoCount
         SET_CLIENT_READY, // Tells the client that a client has set been set to active/inactive - uint(client uid) -> bool(isReady)
-        ADD_NEW_LOBBY, // Tells the client there is a new lobby open - uint(lobby uid) -> uint(size of name) ->  char...(lobby name)
+        ADD_NEW_LOBBY, // Tells the client there is a new lobby open - uint(lobby uid) -> int(roomSize) -> uint(size of name) ->  char...(lobby name)
         REMOVE_LOBBY, // Tells the client to close a lobby - uint(lobby uid)
 
 

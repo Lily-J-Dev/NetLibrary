@@ -35,7 +35,11 @@ int TestClient::Update()
                 std::cout << "Joined new Lobby: " << client.GetCurrentLobbyInfo().name << std::endl;
                 break;
             }
-
+            case netlib::NetworkEvent::EventType::REMOVEDFROMLOBBY:
+            {
+                std::cout << "Removed from lobby." << std::endl;
+                break;
+            }
             default:
             {
                 break;
@@ -49,7 +53,6 @@ int TestClient::Update()
 
 void TestClient::GetInput()
 {
-
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     inputRunning = true;
     std::string input = "";
@@ -78,13 +81,22 @@ void TestClient::GetInput()
         {
             std::cout << "Enter New Lobby Name: ";
             std::getline(std::cin, input);
-            client.CreateLobby(input);
+            std:: string lobbySize;
+            std::cout << "Enter Lobby size: ";
+            std::getline(std::cin, lobbySize);
+            client.CreateLobby(input, std::atoi(lobbySize.c_str()));
         }
         else if(input == "#joinlobby")
         {
             std::cout << "Enter New Lobby Number to Join: ";
             std::getline(std::cin, input);
             client.JoinLobby(std::atoi(input.data()));
+        }
+        else if(input == "#kick")
+        {
+            std::cout << "Enter client id to remove: ";
+            std::getline(std::cin, input);
+            client.RemoveFromLobby(std::atoi(input.data()));
         }
         else
         {

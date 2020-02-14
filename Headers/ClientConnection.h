@@ -25,8 +25,9 @@ namespace netlib {
         ConnectionInfo GetConnectionInfo();
         unsigned int GetUID();
 
-        void CreateLobby(std::string lobbyName);
+        void CreateLobby(std::string lobbyName, int lobbySize);
         void JoinLobby(unsigned int lobbyUID);
+        void RemoveFromLobby(unsigned int playerUID);
 
         std::vector<Lobby> GetAllLobbyInfo();
         Lobby GetCurrentLobbyInfo();
