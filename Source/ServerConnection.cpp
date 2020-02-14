@@ -144,7 +144,9 @@ void netlib::ServerConnection::CreateNewLobby(NetworkEvent* event)
     lobbies[lobbyUID].lobbyID = lobbyUID;
 
     unsigned int nameLen = *reinterpret_cast<unsigned int*>(&event->data[1+ sizeof(unsigned int)]);
-    lobbies[lobbyUID].name = std::string(event->data[0] + 1 + (sizeof(unsigned int)*2), nameLen);
+    lobbies[lobbyUID].name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*2), nameLen);
+
+
     lobbyLock.unlock();
     unsigned int senderID = event->senderId;
 
@@ -165,23 +167,27 @@ void netlib::ServerConnection::AddPlayerToLobby(unsigned int player, unsigned in
     event->senderId = player;
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::SET_ACTIVE_LOBBY;
-    auto idAsChar = reinterpret_cast<char*>(&lobbyUID);
-    std::copy(idAsChar, idAsChar + sizeof(unsigned int), event->data.data()+1);
+    event->WriteData<unsigned int>(lobbyUID, 1);
     SendEvent(event);
 
     // Tell all other clients a new client has joined a lobby
     event = new NetworkEvent();
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
-    auto lobbyAsChar = reinterpret_cast<char*>(&lobby);
-    auto playerAsChar = reinterpret_cast<char*>(&player);
-    std::copy(lobbyAsChar, lobbyAsChar + sizeof(unsigned int), event->data.data()+1);
-    std::copy(playerAsChar, playerAsChar + sizeof(unsigned int), event->data.data() + 1 + sizeof(unsigned int));
-    clientInfoLock.lock();
-    unsigned int nameLen = connectedClients[player].name.size() + 1;
-    auto lenAsChar = reinterpret_cast<char*>(&nameLen);
+    event->WriteData<unsigned int>(lobby, 1);
+    event->WriteData<unsigned int>(player, 1 + sizeof(unsigned int));
 
-    std::copy(lenAsChar, lenAsChar + sizeof(unsigned int),event->data.data() + 1 + (sizeof(unsigned int) *2));
+    clientInfoLock.lock();
+    // Add the player into the lobby onto the server
+    lobbyLock.lock();
+    lobbies[lobby].clientsInRoom++;
+    lobbies[lobby].memberInfo.emplace_back();
+    lobbies[lobby].memberInfo.back().name = connectedClients[player].name;
+    lobbies[lobby].memberInfo.back().uid = player;
+
+    unsigned int nameLen = connectedClients[player].name.size() + 1;
+    event->WriteData<unsigned int>(nameLen, 1 + (sizeof(unsigned int) *2));
+
     std::copy(connectedClients[player].name.data(),
               connectedClients[player].name.data() +  nameLen,
               event->data.data() + 1 + (sizeof(unsigned int) *3));
@@ -220,12 +226,28 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
     packet->data.resize(MAX_PACKET_SIZE);
     packet->data[0] = (char)MessageType::SET_CLIENT_UID;
     packet->senderId = info.uid;
-    auto uidAsChar = reinterpret_cast<const char*>(&info.uid);
-    std::copy(uidAsChar, uidAsChar + sizeof(unsigned int), packet->data.data()+1);
+    packet->WriteData<unsigned int>(info.uid, 1);
 
-    outQueueLock.lock();
-    outQueue.push(packet);
-    outQueueLock.unlock();
+    SendEvent(packet);
+
+    // Tell the new client of all active lobbies
+    lobbyLock.lock();
+    for(auto& lobby : lobbies)
+    {
+        auto event = new NetworkEvent();
+        event->data.resize(MAX_PACKET_SIZE);
+
+        event->WriteData<unsigned int>(lobby.first, 1);
+        event->WriteData<unsigned int>(lobby.second.name.size() + 1, 1 + sizeof(unsigned int));
+
+        std::copy(lobby.second.name.data(), lobby.second.name.data() + lobby.second.name.size(), event->data.data() + 1 + (sizeof(unsigned int)*2));
+        event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
+        event->senderId = info.uid;
+        SendEvent(event);
+    }
+    lobbyLock.unlock();
+
+
 }
 
 void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID) {
