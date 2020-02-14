@@ -1,5 +1,6 @@
 #include "TestServer.h"
 #include <iostream>
+#include <string>
 
 TestServer::TestServer()
 {
@@ -8,24 +9,34 @@ TestServer::TestServer()
 
 int TestServer::Update()
 {
-    while(server.AreNewClients())
+    using namespace netlib;
+    auto events = server.GetNetworkEvents();
+    while(!events.empty())
     {
-        // Do something based on new client
-        server.GetNextNewClient();
+        NetworkEvent& event = events.front();
+        switch (events.front().eventType)
+        {
+            case NetworkEvent::EventType::MESSAGE:
+            {
+                server.SendMessageToAllExcluding(event.data, event.senderId);
+                break;
+            }
+            case NetworkEvent::EventType::ONCONNECT:
+            {
+                std::cout << "New Client " + server.GetClientInfo(event.senderId).name + " connected." << std::endl;
+                break;
+            }
+            case NetworkEvent::EventType::ONDISCONNECT:
+            {
+                std::cout << "Client " + std::to_string(event.senderId) + " disconnected." << std::endl;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        events.pop();
     }
-
-    while(server.AreDisconnectedClients())
-    {
-        // Do something based on disconnected client
-        server.GetNextDisconnectedClient();
-    }
-
-    while (server.MessagesPending())
-    {
-        auto packet = server.GetNextMessage();
-        server.SendMessageToAllExcluding(packet->data, packet->dataLength, packet->senderId);
-        delete packet;
-    }
-
     return 0;
 }

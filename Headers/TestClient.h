@@ -17,7 +17,7 @@ public:
 private:
     void GetInput();
 
-    ClientConnection client;
+    netlib::ClientConnection client;
 
     std::atomic_bool inputRunning;
 };

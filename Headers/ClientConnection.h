@@ -3,37 +3,53 @@
 
 #include <queue>
 #include <map>
-#include "Client.h"
+#include "Windows/Client.h"
 #include "NetworkDevice.h"
 #include "ConnectionInfo.h"
+#include "Lobby.h"
 
-class ClientConnection : public NetworkDevice
-{
-public:
-    ClientConnection() = default;
-    ~ClientConnection() = default;
+namespace netlib {
+    class ClientConnection : public NetworkDevice {
+    public:
+        ClientConnection();
 
-    void SendMessageToServer(const char* data, int dataLength);
+        ~ClientConnection();
 
-    void ConnectToIP(const std::string& ipv4, int port);
-    void Disconnect();
+        void SendMessageToServer(const std::vector<char>& data);
+        void SendMessageToServer(const char* data, int dataLen);
 
-    ConnectionInfo GetConnectionInfo();
+        // Tries to connect to the given ip and port, returning true if successful.
+        bool ConnectToIP(const std::string &ipv4, int port);
+        void Disconnect();
 
-    unsigned int GetUID();
-private:
-    void ProcessDeviceSpecificEvent(DataPacket* data) override;
-    void SendPacket(DataPacket *data) override;
-    void UpdateNetworkStats() override;
-    Client client;
+        ConnectionInfo GetConnectionInfo();
+        unsigned int GetUID();
 
-    unsigned int uid = 0;
-    ConnectionInfo connectionInfo;
+        void CreateLobby(std::string lobbyName);
+        void JoinLobby(unsigned int lobbyUID);
 
-    std::mutex clientInfoLock;
+        std::vector<Lobby> GetAllLobbyInfo();
+        Lobby GetCurrentLobbyInfo();
 
-    std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
-    bool waitingForPing = false;
-};
+    private:
+        void ProcessDeviceSpecificEvent(NetworkEvent *event) override;
+        void SendPacket(NetworkEvent *event) override;
+        void UpdateNetworkStats() override;
+        void ProcessDisconnect();
 
+        Client client;
+
+        unsigned int uid = 0;
+        ConnectionInfo connectionInfo;
+
+        std::mutex *clientInfoLock = nullptr;
+
+        std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
+        bool waitingForPing = false;
+
+        std::mutex lobbyLock;
+        std::vector<Lobby> allLobbies;
+        unsigned int activeLobby;
+    };
+}
 #endif //CTP_CLIENTCONNECTION_H

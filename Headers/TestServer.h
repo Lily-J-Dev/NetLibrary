@@ -9,7 +9,7 @@ public:
     int Update();
 
 private:
-    ServerConnection server;
+    netlib::ServerConnection server;
 };
 
 

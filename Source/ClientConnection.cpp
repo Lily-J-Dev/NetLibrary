@@ -1,87 +1,207 @@
+#include <iostream>
 #include "ClientConnection.h"
 #include "Constants.h"
 
-void ClientConnection::Disconnect()
+netlib::ClientConnection::ClientConnection()
+{
+    clientInfoLock = new std::mutex();
+}
+
+netlib::ClientConnection::~ClientConnection()
+{
+    delete clientInfoLock;
+}
+
+void netlib::ClientConnection::Disconnect()
 {
     Stop();
     client.Stop();
 }
 
 
-void ClientConnection::ConnectToIP(const std::string& ipv4, int port)
+bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, int port)
 {
     client.processPacket = std::bind(&ClientConnection::ProcessPacket, this, std::placeholders::_1);
-    client.Start(ipv4, port);
-    Start();
+    client.processDisconnect = std::bind(&ClientConnection::ProcessDisconnect, this);
+    if(client.Start(ipv4, port))
+    {
+        Start();
+        return true;
+    }
+    return false;
 }
 
-void ClientConnection::SendPacket(DataPacket* data)
+void netlib::ClientConnection::ProcessDisconnect()
 {
-    client.SendMessageToServer(data->data, data->dataLength);
-    delete data;
+    messageLock.lock();
+    ClearQueue();
+    messages.emplace();
+    messages.back().eventType = NetworkEvent::EventType::ONDISCONNECT;
+    messageLock.unlock();
+    Disconnect();
 }
 
-void ClientConnection::SendMessageToServer(const char *data, int dataLength)
+void netlib::ClientConnection::SendPacket(NetworkEvent* event)
 {
-    auto packet = new DataPacket();
-    packet->data = new char[dataLength];
-    packet->dataLength = dataLength;
-    std::copy(data, data+dataLength, packet->data);
+    client.SendMessageToServer(event->data.data(), event->data.size());
+    delete event;
+}
+
+void netlib::ClientConnection::SendMessageToServer(const std::vector<char>& data)
+{
+    auto packet = new NetworkEvent();
+    packet->data.resize(data.size());
+    std::copy(data.data(), data.data() + data.size(), packet->data.data());
     ProcessAndSendData(packet);
 }
 
-void ClientConnection::ProcessDeviceSpecificEvent(DataPacket *data)
+void netlib::ClientConnection::SendMessageToServer(const char* data, int dataLen)
 {
-    if(data->data[0] == (char)MessageType::SET_CLIENT_UID)
+    auto packet = new NetworkEvent();
+    packet->data.resize(dataLen);
+    std::copy(data, data + dataLen, packet->data.data());
+    ProcessAndSendData(packet);
+}
+
+void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
+{
+    switch ((MessageType)event->data[0])
     {
-        uid = *reinterpret_cast<unsigned int*>(&data->data[1]);
-        delete data;
-    }
-    else if(data->data[0] == (char)MessageType::PING_RESPONSE)
-    {
-        using clock = std::chrono::steady_clock;
-        clientInfoLock.lock();
-        connectionInfo.ping = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count();
-        waitingForPing = false;
-        clientInfoLock.unlock();
-        delete data;
+        case MessageType::SET_CLIENT_UID:
+        {
+            uid = *reinterpret_cast<unsigned int*>(&event->data[1]);
+            messageLock.lock();
+            ClearQueue();
+            messages.emplace();
+            messages.front().eventType = NetworkEvent::EventType::ONCONNECT;
+            messageLock.unlock();
+            delete event;
+            break;
+        }
+        case MessageType::PING_RESPONSE:
+        {
+            using clock = std::chrono::steady_clock;
+            clientInfoLock->lock();
+            connectionInfo.ping = static_cast<float>(
+                    std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count());
+            waitingForPing = false;
+            clientInfoLock->unlock();
+            delete event;
+            break;
+        }
+        case MessageType::ADD_NEW_LOBBY:
+        {
+            lobbyLock.lock();
+            allLobbies.emplace_back();
+            std::copy(event->data.data()+1, event->data.data() +1 + sizeof(unsigned int), &allLobbies.back().lobbyID);
+            unsigned int nameLen;
+            std::copy(event->data.data() + 1 + sizeof(unsigned int), event->data.data() + 1 + (sizeof(unsigned int) * 2), &nameLen);
+            allLobbies.back().name = std::string(event->data.data()+1+(sizeof(unsigned int) *3), nameLen);
+
+            auto test = allLobbies.back();
+            std::cout << test.name << std::endl;
+            lobbyLock.unlock();
+            delete event;
+            break;
+        }
+        case MessageType::SET_ACTIVE_LOBBY:
+        {
+            lobbyLock.lock();
+            std::copy(event->data.data()+1, event->data.data() +1 + sizeof(unsigned int), &activeLobby);
+            lobbyLock.unlock();
+            delete event;
+
+            messageLock.lock();
+            ClearQueue();
+            messages.emplace();
+            messages.back().eventType = NetworkEvent::EventType::ONLOBBYJOIN;
+            messageLock.unlock();
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
     }
 }
 
-void ClientConnection::UpdateNetworkStats()
+void netlib::ClientConnection::UpdateNetworkStats()
 {
     // Handle pings
     using clock = std::chrono::steady_clock;
-    clientInfoLock.lock();
+    clientInfoLock->lock();
     if(!waitingForPing && std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count() > PING_FREQUENCY)
     {
         waitingForPing = true;
-        auto packet = new DataPacket();
-        packet->data = new char[1];
-        packet->dataLength = 1;
+        auto packet = new NetworkEvent();
+        packet->data.resize(MAX_PACKET_SIZE);
         packet->data[0] = (char)MessageType::PING_REQUEST;
         outQueueLock.lock();
         outQueue.push(packet);
         outQueueLock.unlock();
         timeOfLastPing = clock::now();
     }
-    clientInfoLock.unlock();
+    clientInfoLock->unlock();
 }
 
 // Returns a ConnectionInfo struct with information about the current network conditions.
-ConnectionInfo ClientConnection::GetConnectionInfo()
+netlib::ConnectionInfo netlib::ClientConnection::GetConnectionInfo()
 {
-    clientInfoLock.lock();
+    clientInfoLock->lock();
     ConnectionInfo returnInfo = connectionInfo;
-    clientInfoLock.unlock();
+    clientInfoLock->unlock();
     return returnInfo;
 }
 
 // Returns this clients unique id in the network, returns 0 if the uid has not been set yet
-unsigned int ClientConnection::GetUID()
+unsigned int netlib::ClientConnection::GetUID()
 {
-    clientInfoLock.lock();
+    clientInfoLock->lock();
     unsigned int returnInfo = uid;
-    clientInfoLock.unlock();
+    clientInfoLock->unlock();
     return returnInfo;
+}
+
+/// Returns the currently active lobby
+netlib::Lobby netlib::ClientConnection::GetCurrentLobbyInfo()
+{
+    std::lock_guard<std::mutex> guard(lobbyLock);
+    for(Lobby& lobby : allLobbies)
+    {
+        if(lobby.lobbyID == activeLobby)
+            return lobby;
+    }
+    std::cerr << "WARNING: Calling GetCurrentLobbyInfo when the client is not connected to a lobby! Returning an empty Lobby struct." << std::endl;
+    return Lobby();
+}
+
+std::vector<netlib::Lobby> netlib::ClientConnection::GetAllLobbyInfo()
+{
+    std::lock_guard<std::mutex> guard(lobbyLock);
+    return allLobbies;
+}
+
+void netlib::ClientConnection::CreateLobby(std::string lobbyName)
+{
+    if(lobbyName.size() > MAX_PACKET_SIZE-10)
+        lobbyName.resize(MAX_PACKET_SIZE-10);
+    auto event = new NetworkEvent();
+    event->data.resize(MAX_PACKET_SIZE);
+    event->data[0] = (char)MessageType::REQUEST_NEW_LOBBY;
+    unsigned int nameSize = 0;
+    nameSize += lobbyName.size()+1;
+    std::copy(&nameSize, &nameSize + sizeof(unsigned int), event->data.data() + 1 + sizeof(unsigned int));
+    std::copy(&nameSize, &nameSize + sizeof(unsigned int), event->data.data() + 1);
+    std::copy(lobbyName.data(), lobbyName.data() + lobbyName.size()+1, event->data.data()+ 1 + (sizeof(unsigned int)*2));
+    SendEvent(event);
+}
+
+void netlib::ClientConnection::JoinLobby(unsigned int lobbyUID)
+{
+    auto event = new NetworkEvent();
+    event->data.resize(MAX_PACKET_SIZE);
+    event->data[0] = (char)MessageType::JOIN_LOBBY;
+    std::copy(&lobbyUID, &lobbyUID + sizeof(unsigned int), event->data.data()+1);
+    SendEvent(event);
 }

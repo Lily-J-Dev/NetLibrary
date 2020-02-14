@@ -1,8 +1,18 @@
-#include "ServerConnection.h"
+#include "../Headers/ServerConnection.h"
 #include <iterator>
 #include <iostream>
 
-void ServerConnection::Start(int port)
+netlib::ServerConnection::ServerConnection()
+{
+
+}
+
+netlib::ServerConnection::~ServerConnection()
+{
+
+}
+
+void netlib::ServerConnection::Start(int port)
 {
     server.processPacket = std::bind(&ServerConnection::ProcessPacket, this, std::placeholders::_1);
     server.processNewClient = std::bind(&ServerConnection::ProcessNewClient, this, std::placeholders::_1);
@@ -11,161 +21,282 @@ void ServerConnection::Start(int port)
     NetworkDevice::Start();
 }
 
-void ServerConnection::SendPacket(DataPacket* data)
+void netlib::ServerConnection::SendPacket(NetworkEvent* event)
 {
-    server.SendMessageToClient(data->data, data->dataLength, data->senderId);
-    delete data;
+    server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId);
+    delete event;
 }
 
 // Sends a message to only the specified client
-void ServerConnection::SendMessageTo(const char *data, int dataLength, unsigned int clientUid)
+void netlib::ServerConnection::SendMessageTo(const std::vector<char>& data, unsigned int clientUid)
 {
-    auto packet = new DataPacket();
-    packet->data = new char[dataLength];
-    packet->dataLength = dataLength;
-    std::copy(data, data+dataLength, packet->data);
+    auto packet = new NetworkEvent();
+    packet->data.resize(data.size());
+    std::copy(data.data(), data.data() + data.size(), packet->data.data());
     packet->senderId = clientUid;
     ProcessAndSendData(packet);
 }
 
+// Sends a message to only the specified client
+void netlib::ServerConnection::SendMessageTo(const char* data, int dataLen, unsigned int clientUID)
+{
+    auto packet = new NetworkEvent();
+    packet->data.resize(dataLen);
+    std::copy(data, data + dataLen, packet->data.data());
+    packet->senderId = clientUID;
+    ProcessAndSendData(packet);
+}
+
 // Sends a message to all connected clients
-void ServerConnection::SendMessageToAll(const char *data, int dataLength)
+void netlib::ServerConnection::SendMessageToAll(const std::vector<char>& data)
 {
     clientInfoLock.lock();
-    for(const ClientInfo &info : connectedClients)
+    for(const auto &info : connectedClients)
     {
-        SendMessageTo(data, dataLength, info.uid);
+        SendMessageTo(data, info.second.uid);
+    }
+    clientInfoLock.unlock();
+}
+
+void netlib::ServerConnection::SendMessageToAll(const char* data, int dataLen)
+{
+    clientInfoLock.lock();
+    for(const auto &info : connectedClients)
+    {
+        SendMessageTo(data, dataLen, info.second.uid);
     }
     clientInfoLock.unlock();
 }
 
 // Sends a message to all connected clients excluding the specified client
-void ServerConnection::SendMessageToAllExcluding(const char *data, int dataLength, unsigned int clientUid)
+void netlib::ServerConnection::SendMessageToAllExcluding(const std::vector<char>& data, unsigned int clientUID)
 {
     clientInfoLock.lock();
-    for(const ClientInfo &info : connectedClients)
+    for(const auto &info : connectedClients)
     {
-        if(info.uid != clientUid)
-        {
-            SendMessageTo(data, dataLength, info.uid);
-        }
+        if(info.first == clientUID)
+            continue;
+        SendMessageTo(data, info.first);
     }
     clientInfoLock.unlock();
 }
 
-void ServerConnection::ProcessDeviceSpecificEvent(DataPacket *data)
+void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int dataLen, unsigned int clientUID)
 {
-    if(data->data[0] == (char)MessageType::PING_RESPONSE)
+    clientInfoLock.lock();
+    for(const auto &info : connectedClients)
     {
-        using clock = std::chrono::steady_clock;
-        clientInfoLock.lock();
-        for(ClientInfo& client : connectedClients)
+        if(info.first == clientUID)
+            continue;
+        SendMessageTo(data, dataLen,  info.first);
+    }
+    clientInfoLock.unlock();
+}
+
+void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
+{
+    switch ((MessageType)event->data[0])
+    {
+        case MessageType ::PING_RESPONSE:
         {
-            if(client.uid == data->senderId)
-            {
-                client.connectionInfo.ping = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - client.timeOfLastPing).count();
-                client.waitingForPing = false;
-                break;
-            }
+            using clock = std::chrono::steady_clock;
+            clientInfoLock.lock();
+
+            connectedClients[event->senderId].connectionInfo.ping = static_cast<float>(
+                    std::chrono::duration_cast<std::chrono::milliseconds>
+                            (clock::now() - connectedClients[event->senderId].timeOfLastPing).count());
+            connectedClients[event->senderId].waitingForPing = false;
+
+            delete event;
+            clientInfoLock.unlock();
+            break;
         }
-        delete data;
-        clientInfoLock.unlock();
+        case MessageType::REQUEST_NEW_LOBBY:
+        {
+            lobbyLock.lock();
+            lobbyLock.unlock();
+            CreateNewLobby(event);
+            break;
+        }
+        case MessageType::JOIN_LOBBY:
+        {
+            unsigned int lobbyId = *reinterpret_cast<unsigned int*>(event->data.data()+1);
+            AddPlayerToLobby(event->senderId, lobbyId);
+            delete event;
+            break;
+        }
+        case MessageType::REMOVE_FROM_LOBBY:
+        {
+
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
 }
 
-void ServerConnection::ProcessNewClient(ClientInfo info)
+void netlib::ServerConnection::CreateNewLobby(NetworkEvent* event)
+{
+    // Create the new lobby
+    lobbyLock.lock();
+    lobbies[lobbyUID].lobbyID = lobbyUID;
+
+    //std::copy(event->data.data() + 1 + sizeof(unsigned int), event->data.data() + 1 + (sizeof(unsigned int)*2), &nameLen);
+
+    //lobbies[lobbyUID].name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*2), nameLen);
+    lobbies[lobbyUID].name = "fuckthis";
+    lobbyLock.unlock();
+    unsigned int senderID = event->senderId;
+
+    // Signal to all clients there is a new lobby
+    std::copy(&lobbyUID, &lobbyUID + sizeof(unsigned int), event->data.data()+1);
+    event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
+    SendEventToAll(event);
+
+    // Connect the sending client to this new lobby
+    AddPlayerToLobby(senderID, lobbyUID);
+    lobbyUID++;
+}
+
+void netlib::ServerConnection::AddPlayerToLobby(unsigned int player, unsigned int lobby)
+{
+    auto event = new NetworkEvent();
+    event->senderId = player;
+    event->data.resize(MAX_PACKET_SIZE);
+    event->data[0] = (char)MessageType::SET_ACTIVE_LOBBY;
+    std::copy(&lobbyUID, &lobbyUID + sizeof(unsigned int), event->data.data()+1);
+    SendEvent(event);
+
+    // Tell all other clients a new client has joined a lobby
+    event = new NetworkEvent();
+    event->data.resize(MAX_PACKET_SIZE);
+    event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
+    std::copy(&lobby, &lobby + sizeof(unsigned int), event->data.data()+1);
+    std::copy(&player, &player + sizeof(unsigned int), event->data.data() + 1 + sizeof(unsigned int));
+    clientInfoLock.lock();
+    unsigned int nameLen = connectedClients[player].name.size() + 1;
+    std::copy(&nameLen, &nameLen + sizeof(unsigned int),event->data.data() + 1 + (sizeof(unsigned int) *2));
+    std::copy(connectedClients[player].name.data(),
+              connectedClients[player].name.data() +  nameLen,
+              event->data.data() + 1 + (sizeof(unsigned int) *3));
+    clientInfoLock.unlock();
+    SendEventToAll(event);
+}
+
+void netlib::ServerConnection::SendEventToAll(netlib::NetworkEvent* event)
 {
     clientInfoLock.lock();
-    newClients.push(info);
-    connectedClients.push_back(info);
+    for(auto& client : connectedClients)
+    {
+        auto copy = new netlib::NetworkEvent();
+        *copy = *event;
+        copy->senderId = client.first;
+        SendEvent(copy);
+    }
+    clientInfoLock.unlock();
+    delete event;
+}
+
+void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
+{
+    clientInfoLock.lock();
+    connectedClients[info.uid] = info;
     clientInfoLock.unlock();
 
-    auto packet = new DataPacket();
-    packet->dataLength = 1+ sizeof(unsigned int);
-    packet->data = new char[packet->dataLength];
+    messageLock.lock();
+    ClearQueue();
+    messages.emplace();
+    messages.front().senderId = info.uid;
+    messages.front().eventType = NetworkEvent::EventType::ONCONNECT;
+    messageLock.unlock();
+
+    auto packet = new NetworkEvent();
+    packet->data.resize(MAX_PACKET_SIZE);
     packet->data[0] = (char)MessageType::SET_CLIENT_UID;
     packet->senderId = info.uid;
     auto uidAsChar = reinterpret_cast<const char*>(&info.uid);
-    std::copy(uidAsChar, uidAsChar + sizeof(unsigned int), packet->data+1);
+    std::copy(uidAsChar, uidAsChar + sizeof(unsigned int), packet->data.data()+1);
 
     outQueueLock.lock();
     outQueue.push(packet);
     outQueueLock.unlock();
 }
 
-void ServerConnection::ProcessDisconnectedClient(unsigned int clientUid)
-{
+void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID) {
     clientInfoLock.lock();
-
-    for(auto it = connectedClients.begin(); it != connectedClients.end(); ++it) {
-        if(it->uid == clientUid)
-        {
-            disconnectedClients.push(*it);
-            connectedClients.erase(it);
-            break;
-        }
-    }
+    connectedClients.erase(clientUID);
     clientInfoLock.unlock();
+
+    messageLock.lock();
+    ClearQueue();
+    messages.emplace();
+    messages.front().senderId = clientUID;
+    messages.front().eventType = NetworkEvent::EventType::ONDISCONNECT;
+    messageLock.unlock();
+
+
 }
 
-void ServerConnection::UpdateNetworkStats()
+void netlib::ServerConnection::UpdateNetworkStats()
 {
     // Handle pings
     using clock = std::chrono::steady_clock;
     clientInfoLock.lock();
-    for(ClientInfo& client : connectedClients) {
-        if (!client.waitingForPing &&
-            std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - client.timeOfLastPing).count() >
-            PING_FREQUENCY) {
-            client.waitingForPing = true;
-            auto packet = new DataPacket();
-            packet->data = new char[1];
-            packet->dataLength = 1;
+    for(auto& client : connectedClients) {
+        if (!client.second.waitingForPing &&
+            std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - client.second.timeOfLastPing).count() >
+            PING_FREQUENCY)
+        {
+            client.second.waitingForPing = true;
+            auto packet = new NetworkEvent();
+            packet->data.resize(MAX_PACKET_SIZE);
             packet->data[0] = (char) MessageType::PING_REQUEST;
-            packet->senderId = client.uid;
+            packet->senderId = client.second.uid;
             outQueueLock.lock();
             outQueue.push(packet);
             outQueueLock.unlock();
-            client.timeOfLastPing = clock::now();
+            client.second.timeOfLastPing = clock::now();
         }
     }
     clientInfoLock.unlock();
 }
 
-// Returns true if there are newly connected clients (get with GetNextNewClient)
-bool ServerConnection::AreNewClients()
+netlib::ClientInfo netlib::ServerConnection::GetClientInfo(unsigned int clientUID)
 {
-    clientInfoLock.lock();
-    bool reBool = !newClients.empty();
-    clientInfoLock.unlock();
-    return reBool;
+    std::lock_guard<std::mutex> guard(clientInfoLock);
+    if(connectedClients.count(clientUID) > 0)
+        return connectedClients[clientUID];
+    else
+    {
+        ClientInfo info;
+        return info;
+    }
 }
 
-// Returns the oldest newly connected client (check with AreNewClients before calling this)
-ClientInfo ServerConnection::GetNextNewClient()
+std::vector<netlib::ClientInfo> netlib::ServerConnection::GetAllClients()
 {
     clientInfoLock.lock();
-    auto returnClient = newClients.front();
-    newClients.pop();
+    std::vector<ClientInfo> returnVec;
+    for(auto pair : connectedClients)
+    {
+        returnVec.emplace_back(pair.second);
+    }
     clientInfoLock.unlock();
-    return returnClient;
+    return returnVec;
 }
 
-// Returns true if there are newly disconnected clients
-bool ServerConnection::AreDisconnectedClients()
+void netlib::ServerConnection::DisconnectClient(unsigned int clientUID)
 {
-    clientInfoLock.lock();
-    bool reBool = !disconnectedClients.empty();
-    clientInfoLock.unlock();
-    return reBool;
+    outQueueLock.lock();
+    disconnectQueue.push(clientUID);
+    outQueueLock.unlock();
 }
 
-// Returns the oldest newly disconnected client (check with AreDisconnectedClients before calling this()
-ClientInfo ServerConnection::GetNextDisconnectedClient()
+// Gets called after the message queue has been processed
+void netlib::ServerConnection::TerminateConnection(unsigned int clientUID)
 {
-    clientInfoLock.lock();
-    auto returnClient = disconnectedClients.front();
-    disconnectedClients.pop();
-    clientInfoLock.unlock();
-    return returnClient;
+    server.DisconnectClient(clientUID);
 }
+

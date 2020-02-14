@@ -6,25 +6,25 @@
 
 #pragma comment (lib, "Ws2_32.lib")
 
-Client::~Client()
+netlib::Client::~Client()
 {
     Stop();
-    deleteSafeguard.lock();
-    deleteSafeguard.unlock();
+    deleteGuard.lock();
+    deleteGuard.unlock();
 }
 
-void Client::Stop()
+void netlib::Client::Stop()
 {
     running = false;
-    deleteSafeguard.lock();
-    deleteSafeguard.unlock();
+    deleteGuard.lock();
+    deleteGuard.unlock();
     closesocket(sock);
     WSACleanup();
 }
 
-int Client::Start(const std::string& ipv4, int port)
+int netlib::Client::Start(const std::string& ipv4, int port)
 {
-    std::cout << "Initializing Client..." << std::endl;
+    //std::cout << "Initializing Client..." << std::endl;
 
     // Initilise winsock
     WSAData data;
@@ -34,7 +34,7 @@ int Client::Start(const std::string& ipv4, int port)
     if (wsResult != 0)
     {
         std::cerr << "Failed to initialize winsock error code: " << wsResult;
-        return -1;
+        return false;
     }
 
     // Create socket
@@ -44,7 +44,7 @@ int Client::Start(const std::string& ipv4, int port)
     {
         std::cerr << "Failed to create socket error code: " << WSAGetLastError() << std::endl;
         WSACleanup();
-        return -2;
+        return false;
     }
 
     // Fill in hint struct
@@ -70,7 +70,7 @@ int Client::Start(const std::string& ipv4, int port)
         std::cerr << "Failed to get address info: " << WSAGetLastError() << std::endl;
         closesocket(sock);
         WSACleanup();
-        return -1;
+        return false;
     }
 
 
@@ -88,7 +88,7 @@ int Client::Start(const std::string& ipv4, int port)
         std::cerr << "Failed to connect to server error number: " << WSAGetLastError() << std::endl;
         closesocket(sock);
         WSACleanup();
-        return -1;
+        return false;
     }
 
     freeaddrinfo(info);
@@ -102,7 +102,7 @@ int Client::Start(const std::string& ipv4, int port)
     //    return -1;
     //}
 
-    std::cout << "Client successfully initialised!" << std::endl;
+    //std::cout << "Client successfully initialised!" << std::endl;
 
     // Create a copy to avoid threading issues when using the socket
     sockCopy = sock;
@@ -113,9 +113,9 @@ int Client::Start(const std::string& ipv4, int port)
 }
 
 
-void Client::ProcessNetworkEvents()
+void netlib::Client::ProcessNetworkEvents()
 {
-    deleteSafeguard.lock();
+    deleteGuard.lock();
     running = true;
     // Loop to send and receive data
     char buf[MAX_PACKET_SIZE];
@@ -128,18 +128,23 @@ void Client::ProcessNetworkEvents()
 
         if (bytesReceived > 0)
         {
-            auto packet = new DataPacket();
-            packet->data = new char[bytesReceived];
-            memcpy(packet->data,buf, bytesReceived);
-            packet->dataLength = bytesReceived;
+            auto packet = new NetworkEvent();
+            packet->data.resize(bytesReceived);
+            memcpy(packet->data.data(),buf, bytesReceived);
             processPacket(packet);
+        }
+        else
+        {
+            deleteGuard.unlock();
+            processDisconnect();
+            return;
         }
     }
 
-    deleteSafeguard.unlock();
+    deleteGuard.unlock();
 }
 
-void Client::SendMessageToServer(const char* data, unsigned int dataLength)
+void netlib::Client::SendMessageToServer(const char* data, int dataLength)
 {
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)
