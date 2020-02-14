@@ -34,6 +34,10 @@ namespace netlib {
 
         ClientInfo GetClientInfo(unsigned int clientUID); // Gets the connection information for a given client id
         std::vector<ClientInfo> GetAllClients();
+
+        std::vector<Lobby> GetAllLobbies();
+        Lobby GetLobby(unsigned int lobbyID);
+        void RemoveClientFromLobby(unsigned int clientID, unsigned int lobbyID);
     private:
         void SendPacket(NetworkEvent *event) override;
         void ProcessNewClient(ClientInfo info);
@@ -43,7 +47,7 @@ namespace netlib {
         void TerminateConnection(unsigned int clientUID) override;
 
         void CreateNewLobby(NetworkEvent* event);
-        void AddPlayerToLobby(unsigned int player, unsigned int lobby);
+        void AddClientToLobby(unsigned int client, unsigned int lobby);
         void SendEventToAll(NetworkEvent* event);
 
         Server server;
@@ -53,7 +57,7 @@ namespace netlib {
 
         // Lobby
         unsigned int lobbyUID = 0;
-        std::recursive_mutex lobbyLock;
+        std::mutex lobbyLock;
         std::map<unsigned int, Lobby> lobbies;
     };
 }

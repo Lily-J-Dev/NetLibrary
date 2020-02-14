@@ -120,14 +120,18 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
         }
         case MessageType::JOIN_LOBBY:
         {
-            unsigned int lobbyId = *reinterpret_cast<unsigned int*>(event->data.data()+1);
-            AddPlayerToLobby(event->senderId, lobbyId);
+            auto lobbyId = event->ReadData<unsigned int>(1);
+            if(lobbies.count(lobbyId) == 0 || lobbies[lobbyId].clientsInRoom == lobbies[lobbyId].maxClientsInRoom)
+                return;
+            AddClientToLobby(event->senderId, lobbyId);
             delete event;
             break;
         }
         case MessageType::REMOVE_FROM_LOBBY:
         {
-
+            auto clientID = event->ReadData<unsigned int>(1);
+            auto lobbyID = event->ReadData<unsigned int>(1+sizeof(unsigned int));
+            RemoveClientFromLobby(clientID, lobbyID);
             break;
         }
         default:
@@ -143,31 +147,31 @@ void netlib::ServerConnection::CreateNewLobby(NetworkEvent* event)
     lobbyLock.lock();
     lobbies[lobbyUID].lobbyID = lobbyUID;
 
-    unsigned int nameLen = *reinterpret_cast<unsigned int*>(&event->data[1+ sizeof(unsigned int)]);
-    lobbies[lobbyUID].name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*2), nameLen);
+    lobbies[lobbyUID].maxClientsInRoom = event->ReadData<int>(1 + sizeof(int));
+    auto nameLen = event->ReadData<unsigned int>(1+ (sizeof(unsigned int)*2));
+    lobbies[lobbyUID].name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*3), nameLen);
 
 
     lobbyLock.unlock();
     unsigned int senderID = event->senderId;
 
     // Signal to all clients there is a new lobby
-    auto idAsChar = reinterpret_cast<char*>(&lobbyUID);
-    std::copy(idAsChar, idAsChar + sizeof(unsigned int), event->data.data()+1);
+    event->WriteData<unsigned int>(lobbyUID, 1);
     event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
     SendEventToAll(event);
 
     // Connect the sending client to this new lobby
-    AddPlayerToLobby(senderID, lobbyUID);
+    AddClientToLobby(senderID, lobbyUID);
     lobbyUID++;
 }
 
-void netlib::ServerConnection::AddPlayerToLobby(unsigned int player, unsigned int lobby)
+void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned int lobby)
 {
     auto event = new NetworkEvent();
-    event->senderId = player;
+    event->senderId = client;
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::SET_ACTIVE_LOBBY;
-    event->WriteData<unsigned int>(lobbyUID, 1);
+    event->WriteData<unsigned int>(lobby, 1);
     SendEvent(event);
 
     // Tell all other clients a new client has joined a lobby
@@ -175,24 +179,75 @@ void netlib::ServerConnection::AddPlayerToLobby(unsigned int player, unsigned in
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
     event->WriteData<unsigned int>(lobby, 1);
-    event->WriteData<unsigned int>(player, 1 + sizeof(unsigned int));
+    event->WriteData<unsigned int>(client, 1 + sizeof(unsigned int));
 
     clientInfoLock.lock();
-    // Add the player into the lobby onto the server
+    // Add the client into the lobby onto the server
     lobbyLock.lock();
     lobbies[lobby].clientsInRoom++;
     lobbies[lobby].memberInfo.emplace_back();
-    lobbies[lobby].memberInfo.back().name = connectedClients[player].name;
-    lobbies[lobby].memberInfo.back().uid = player;
+    lobbies[lobby].memberInfo.back().name = connectedClients[client].name;
+    lobbies[lobby].memberInfo.back().uid = client;
+    lobbyLock.unlock();
 
-    unsigned int nameLen = connectedClients[player].name.size() + 1;
+    unsigned int nameLen = connectedClients[client].name.size() + 1;
     event->WriteData<unsigned int>(nameLen, 1 + (sizeof(unsigned int) *2));
 
-    std::copy(connectedClients[player].name.data(),
-              connectedClients[player].name.data() +  nameLen,
+    std::copy(connectedClients[client].name.data(),
+              connectedClients[client].name.data() +  nameLen,
               event->data.data() + 1 + (sizeof(unsigned int) *3));
     clientInfoLock.unlock();
     SendEventToAll(event);
+}
+
+std::vector<netlib::Lobby> netlib::ServerConnection::GetAllLobbies()
+{
+    std::vector<Lobby> returnVec;
+    lobbyLock.lock();
+    for(auto& Lobby : lobbies)
+    {
+        returnVec.push_back(Lobby.second);
+    }
+    lobbyLock.unlock();
+    return returnVec;
+}
+
+netlib::Lobby netlib::ServerConnection::GetLobby(unsigned int lobbyID)
+{
+    std::lock_guard<std::mutex> guard(lobbyLock);
+    return lobbies[lobbyID];
+}
+
+void netlib::ServerConnection::RemoveClientFromLobby(unsigned int clientID, unsigned int lobbyID)
+{
+    lobbyLock.lock();
+    if(lobbies.count(lobbyID) == 0)
+        return;
+    for(auto it = lobbies[lobbyID].memberInfo.begin(); it != lobbies[lobbyID].memberInfo.end(); ++it)
+    {
+        if(it->uid == clientID)
+        {
+            lobbies[lobbyID].memberInfo.erase(it);
+            lobbies[lobbyID].clientsInRoom--;
+            auto event = new NetworkEvent();
+            event->data.resize(MAX_PACKET_SIZE);
+            event->data[0] = (char)MessageType::LOBBY_CLIENT_LEFT;
+            event->WriteData(lobbyID, 1);
+            event->WriteData(clientID, 1 + sizeof(unsigned int));
+            SendEventToAll(event);
+            break;
+        }
+    }
+    if(lobbies[lobbyID].clientsInRoom == 0)
+    {
+        lobbies.erase(lobbyID);
+        auto event = new NetworkEvent();
+        event->data.resize(MAX_PACKET_SIZE);
+        event->data[0] = (char)MessageType::REMOVE_LOBBY;
+        event->WriteData(lobbyID, 1);
+        SendEventToAll(event);
+    }
+    lobbyLock.unlock();
 }
 
 void netlib::ServerConnection::SendEventToAll(netlib::NetworkEvent* event)
@@ -238,19 +293,40 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
         event->data.resize(MAX_PACKET_SIZE);
 
         event->WriteData<unsigned int>(lobby.first, 1);
-        event->WriteData<unsigned int>(lobby.second.name.size() + 1, 1 + sizeof(unsigned int));
+        event->WriteData<unsigned int>(lobby.second.maxClientsInRoom, 1 + sizeof(unsigned int));
+        event->WriteData<unsigned int>(lobby.second.name.size() + 1, 1 + (sizeof(unsigned int)*2));
 
-        std::copy(lobby.second.name.data(), lobby.second.name.data() + lobby.second.name.size(), event->data.data() + 1 + (sizeof(unsigned int)*2));
+        std::copy(lobby.second.name.data(), lobby.second.name.data() + lobby.second.name.size(), event->data.data() + 1 + (sizeof(unsigned int)*3));
         event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
         event->senderId = info.uid;
         SendEvent(event);
+
+        clientInfoLock.lock();
+        for(auto& member : lobby.second.memberInfo)
+        {
+            event = new NetworkEvent();
+            event->data.resize(MAX_PACKET_SIZE);
+            event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
+            event->WriteData<unsigned int>(lobby.first, 1);
+            event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
+
+            unsigned int nameLen = connectedClients[member.uid].name.size();
+            event->WriteData<unsigned int>(nameLen, 1 + (sizeof(unsigned int) *2));
+
+            std::copy(connectedClients[member.uid].name.data(),
+                      connectedClients[member.uid].name.data() +  nameLen,
+                      event->data.data() + 1 + (sizeof(unsigned int) *3));
+            clientInfoLock.unlock();
+            event->senderId = info.uid;
+            SendEvent(event);
+        }
+        clientInfoLock.unlock();
     }
     lobbyLock.unlock();
-
-
 }
 
-void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID) {
+void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
+{
     clientInfoLock.lock();
     connectedClients.erase(clientUID);
     clientInfoLock.unlock();
@@ -261,8 +337,6 @@ void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
     messages.front().senderId = clientUID;
     messages.front().eventType = NetworkEvent::EventType::ONDISCONNECT;
     messageLock.unlock();
-
-
 }
 
 void netlib::ServerConnection::UpdateNetworkStats()
