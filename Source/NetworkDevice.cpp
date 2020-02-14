@@ -158,9 +158,10 @@ void netlib::NetworkDevice::ProcessPacket(NetworkEvent* event)
         messageLock.lock();
         ClearQueue();
         messages.emplace();
-        messages.front().data.resize(event->data[1]);
-        messages.front().senderId = event->senderId;
-        std::copy(event->data.data() + offsets[1], event->data.data() + offsets[1] + event->data[1], messages.front().data.data());
+        messages.back().data.resize(event->data[1]);
+        messages.back().senderId = event->senderId;
+        //auto& test = messages.back();
+        std::copy(event->data.data() + offsets[1], event->data.data() + offsets[1] + event->data[1], messages.back().data.data());
         delete event;
 
         messageLock.unlock();
@@ -222,15 +223,15 @@ void netlib::NetworkDevice::ProcessMultiPacket(unsigned int senderId, unsigned i
     messageLock.lock();
     ClearQueue();
     messages.emplace();
-    messages.front().senderId = container->packets[0]->senderId;
-    messages.front().data.resize(dataLen);
+    messages.back().senderId = container->packets[0]->senderId;
+    messages.back().data.resize(dataLen);
     unsigned int index = 0;
 
     for(size_t i = 0; i < container->packets.size(); i++)
     {
         std::copy(container->packets[i]->data.data(),
                 container->packets[i]->data.data() + container->packets[i]->data.size(),
-                  messages.front().data.data() + index);
+                  messages.back().data.data() + index);
         index += container->packets[i]->data.size();
     }
 
