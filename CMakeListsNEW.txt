@@ -22,10 +22,12 @@ set( PROJECT_HEADERS
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientInfo.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ConnectionInfo.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/Constants.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/DataPacket.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/MultiPacketContainer.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkDevice.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/ServerConnection.h")
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/ServerConnection.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/Lobby.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/LobbyMember.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkEvent.h")
 
 
 set( PROJECT_SOURCES
