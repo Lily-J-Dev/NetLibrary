@@ -3,29 +3,81 @@
 
 TestClient::TestClient()
 {
+
     client.ConnectToIP("127.0.0.1", 24000);
     std::thread tr(&TestClient::GetInput, this);
     tr.detach();
+
 }
 
 int TestClient::Update()
 {
-    while(client.MessagesPending())
+    auto events = client.GetNetworkEvents();
+    while(!events.empty())
     {
-        auto packet = client.GetNextMessage();
-        std::cout << packet->senderId  << ": " << std::string(packet->data, packet->dataLength) << std::endl;
+        switch (events.front().eventType)
+        {
+            case netlib::NetworkEvent::EventType::MESSAGE:
+            {
+                auto test = events.front();
+                std::cout << events.front().data.data() << std::endl;
+                break;
+            }
+            case netlib::NetworkEvent::EventType::ONDISCONNECT:
+            {
+                std::cout << "Remotely disconnected from server." << std::endl;
+                break;
+            }
+            case netlib::NetworkEvent::EventType::ONLOBBYJOIN:
+            {
+                std::cout << "Joined new Lobby: " << client.GetCurrentLobbyInfo().name << std::endl;
+                break;
+            }
+
+            default:
+            {
+                break;
+            }
+        }
+        events.pop();
     }
     return 0;
+
 }
 
 void TestClient::GetInput()
 {
+
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     inputRunning = true;
     while(inputRunning)
     {
         std::string input = "";
         std::getline(std::cin, input);
+        if(input == "#getlobbies")
+        {
+            std::cout << "Current open lobbies:" << std::endl;
+            auto lobbies = client.GetAllLobbyInfo();
+            for(auto& lobby : lobbies)
+            {
+                std::cout << "Name: " << lobby.name << " ID: " << lobby.lobbyID << std::endl;
+            }
+            std::cout << std::endl;
+        }
+        else if(input == "#cl")
+        {
+            std::cout << "Enter New Lobby Name: ";
+            std::getline(std::cin, input);
+            client.CreateLobby(input);
+        }
+        else if(input == "#joinlobby")
+        {
+            std::cout << "Enter New Lobby Number to Join: ";
+            std::getline(std::cin, input);
+            client.JoinLobby(std::atoi(input.data()));
+        }
+        input = std::to_string(client.GetUID()) + ": " + input;
         client.SendMessageToServer(input.c_str(), input.size()+1);
     }
+
 }

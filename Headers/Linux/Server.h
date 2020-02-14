@@ -8,7 +8,7 @@
 #include <forward_list>
 
 #include "Constants.h"
-#include "DataPacket.h"
+#include "NetworkEvent.h"
 #include "ClientInfo.h"
 
 class Server
@@ -22,9 +22,10 @@ public:
     bool Start(int port);
     void Stop();
 
-    void SendMessageToClient(const char* data, unsigned int dataLength, unsigned int client);
+    void SendMessageToClient(const char* data, int dataLength, unsigned int client);
+    void DisconnectClient(unsigned int client);
 
-    std::function<void(DataPacket*)> processPacket;
+    std::function<void(NetworkEvent*)> processPacket;
     std::function<void(ClientInfo)> processNewClient;
     std::function<void(unsigned int)> processDisconnectedClient;
 

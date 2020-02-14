@@ -1,13 +1,11 @@
 #ifndef CTP_DATAPACKET_H
 #define CTP_DATAPACKET_H
+#include <vector>
 
-struct DataPacket
-{
-    ~DataPacket(){delete[] data;};
-
-    char* data;
-    unsigned int dataLength;
-    unsigned int senderId;
-};
-
+namespace netlib {
+    struct DataPacket {
+        std::vector<char> data;
+        unsigned int senderId;
+    };
+}
 #endif //CTP_DATAPACKET_H

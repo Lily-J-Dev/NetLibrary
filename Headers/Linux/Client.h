@@ -3,7 +3,7 @@
 #include <mutex>
 #include <queue>
 #include <functional>
-#include "DataPacket.h"
+#include "NetworkEvent.h"
 
 class Client
 {
@@ -14,9 +14,10 @@ public:
     bool Start(const std::string& ipv4, int port);
     void Stop();
 
-    void SendMessageToServer(const char* data, unsigned int dataLength);
+    void SendMessageToServer(const char* data, int dataLength);
 
-    std::function<void(DataPacket*)> processPacket;
+    std::function<void(NetworkEvent*)> processPacket;
+    std::function<void()> processDisconnect;
 private:
     void ProcessNetworkEvents();
 

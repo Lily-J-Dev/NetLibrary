@@ -28,7 +28,7 @@ void Client::Stop()
 bool Client::Start(const std::string &ipv4, int port)
 {
     deleteSafeguard = new std::mutex();
-    std::cout << "Initializing Client..." << std::endl;
+    //std::cout << "Initializing Client..." << std::endl;
     // Create a socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock == -1)
@@ -51,7 +51,7 @@ bool Client::Start(const std::string &ipv4, int port)
         return false;
     }
 
-    std::cout << "Client successfully initilized!" << std::endl;
+    //std::cout << "Client successfully initilized!" << std::endl;
 
     sockCopy = sock;
     std::thread tr(&Client::ProcessNetworkEvents, this);
@@ -60,7 +60,7 @@ bool Client::Start(const std::string &ipv4, int port)
     return true;
 }
 
-void Client::SendMessageToServer(const char *data, unsigned int dataLength)
+void Client::SendMessageToServer(const char *data, int dataLength)
 {
     // If there is no data dont send it
     if(dataLength > 0)
@@ -88,13 +88,16 @@ void Client::ProcessNetworkEvents()
 
         if (bytesReceived > 0)
         {
-            auto packet = new DataPacket();
-            packet->data = new char[bytesReceived];
-            memcpy(packet->data,buf, bytesReceived);
-            packet->dataLength = bytesReceived;
+            auto packet = new NetworkEvent();
+            packet->data.resize(bytesReceived);
+            memcpy(packet->data.data(),buf, bytesReceived);
             processPacket(packet);
             // Echo response to console
             //std::cout << std::string(buf, 0, bytesReceived) << std::endl;
+        }
+        else
+        {
+            processDisconnect();
         }
     }
 

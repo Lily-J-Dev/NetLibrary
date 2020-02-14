@@ -4,27 +4,31 @@
 #include <mutex>
 #include <queue>
 #include <functional>
-#include "DataPacket.h"
+#include "NetworkEvent.h"
 
-class Client
-{
-public:
-    Client() = default;
-    ~Client();
+namespace netlib {
 
-    int Start(const std::string& ipv4, int port);
-    void Stop();
+    class Client {
+    public:
+        Client() = default;
 
-    void SendMessageToServer(const char* data, unsigned int dataLength);
+        ~Client();
 
-    std::function<void(DataPacket*)> processPacket;
-private:
-    void ProcessNetworkEvents();
+        int Start(const std::string &ipv4, int port);
 
-    SOCKET sock = INVALID_SOCKET;
-    SOCKET sockCopy = INVALID_SOCKET;
+        void Stop();
 
-    std::atomic_bool running;
-    std::mutex deleteSafeguard;
-};
+        void SendMessageToServer(const char *data, int dataLength);
 
+        std::function<void(NetworkEvent*)> processPacket;
+        std::function<void()> processDisconnect;
+    private:
+        void ProcessNetworkEvents();
+
+        SOCKET sock = INVALID_SOCKET;
+        SOCKET sockCopy = INVALID_SOCKET;
+
+        std::atomic_bool running;
+        std::mutex deleteGuard;
+    };
+}

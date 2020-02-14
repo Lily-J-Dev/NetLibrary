@@ -1,17 +1,17 @@
 #include <iostream>
 #include <thread>
-#include "Server.h"
+#include "../Headers/Windows/Server.h"
 
 #pragma comment (lib, "ws2_32.lib")
 
-Server::~Server()
+netlib::Server::~Server()
 {
     Stop();
     deleteLock.lock();
     deleteLock.unlock();
 }
 
-void Server::Stop()
+void netlib::Server::Stop()
 {
     running = false;
     deleteLock.lock();
@@ -23,9 +23,9 @@ void Server::Stop()
     WSACleanup();
 }
 
-bool Server::Start(int port)
+bool netlib::Server::Start(int port)
 {
-    std::cout << "Initializing Server..." << std::endl;
+    //std::cout << "Initializing Server..." << std::endl;
 
     // Initialize winsock
     WSADATA wsData;
@@ -64,11 +64,11 @@ bool Server::Start(int port)
     std::thread tr(&Server::ProcessNetworkEvents, this);
     tr.detach();
 
-    std::cout << "Server Initialized!" << std::endl;
+    //std::cout << "Server Initialized!" << std::endl;
     return true;
 }
 
-void Server::ProcessNetworkEvents()
+void netlib::Server::ProcessNetworkEvents()
 {
     deleteLock.lock();
     running = true;
@@ -97,7 +97,7 @@ void Server::ProcessNetworkEvents()
     deleteLock.unlock();
 }
 
-void Server::HandleConnectionEvent()
+void netlib::Server::HandleConnectionEvent()
 {
     // Accept a new connection
     SOCKET client = accept(listening, nullptr, nullptr);
@@ -117,7 +117,6 @@ void Server::HandleConnectionEvent()
     fdLock.unlock();
 
     char host[NI_MAXHOST]; // Client's remote name
-    char ip[NI_MAXHOST]; // Client ip address
     char service[NI_MAXSERV]; // Port the client is connected on
 
     ZeroMemory(host, NI_MAXHOST);
@@ -132,11 +131,11 @@ void Server::HandleConnectionEvent()
 
     newClient.ipv4 = inet_ntoa(hint.sin_addr);
 
-    std::cout << "New client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
+    //std::cout << "New client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
     processNewClient(newClient);
 }
 
-void Server::HandleMessageEvent(const SOCKET& sock)
+void netlib::Server::HandleMessageEvent(const SOCKET& sock)
 {
     // Accept a new message
     ZeroMemory(cBuf, MAX_PACKET_SIZE);
@@ -147,7 +146,7 @@ void Server::HandleMessageEvent(const SOCKET& sock)
         fdLock.lock();
         closesocket(sock);
         FD_CLR(sock, &master);
-        std::cout << "Client " << uidLookup[sock] << " has disconnected." << std::endl;
+        //std::cout << "Client " << uidLookup[sock] << " has disconnected." << std::endl;
         // Re-make the lookup table as the indices have changed
         indexLookup.clear();
         processDisconnectedClient(uidLookup[sock]);
@@ -160,18 +159,16 @@ void Server::HandleMessageEvent(const SOCKET& sock)
     }
     else
     {
-        auto packet = new DataPacket();
-        packet->data = new char[bytesReceived];
-        memcpy(packet->data,cBuf, bytesReceived);
-        packet->dataLength = bytesReceived;
+        auto packet = new NetworkEvent();
+        packet->data.resize(bytesReceived);
+        memcpy(packet->data.data(),cBuf, bytesReceived);
         packet->senderId = uidLookup[sock];
         processPacket(packet);
     }
 }
 
-void Server::SendMessageToClient(const char* data, unsigned int dataLength, unsigned int client)
+void netlib::Server::SendMessageToClient(const char* data, int dataLength, unsigned int client)
 {
-    // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)
         return;
     fdLock.lock();
@@ -180,6 +177,22 @@ void Server::SendMessageToClient(const char* data, unsigned int dataLength, unsi
     if (wsResult == SOCKET_ERROR)
     {
         std::cerr << "Failed to send message error code: " << WSAGetLastError() << std::endl;
+    }
+    fdLock.unlock();
+}
+void netlib::Server::DisconnectClient(unsigned int client)
+{
+    SOCKET sock = master.fd_array[indexLookup[client]];
+    fdLock.lock();
+    closesocket(sock);
+    FD_CLR(sock, &master);
+
+    indexLookup.clear();
+    processDisconnectedClient(uidLookup[sock]);
+    uidLookup.erase(sock);
+    for(size_t i = 0; i < master.fd_count; i++)
+    {
+        indexLookup[uidLookup[master.fd_array[i]]] = i;
     }
     fdLock.unlock();
 }

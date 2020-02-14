@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="netlib_test"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="netlib">
+				<Option output="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug/netlib.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 netlib"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="netlib/fast">
+				<Option output="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug/netlib.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows"/>
+					<Add directory="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.24.28314\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 netlib/fast"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\NEWPC_BACKUP\Modules\CTP\NetLibrary\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientConnection.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ClientInfo.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ConnectionInfo.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Constants.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/DataPacket.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/MultiPacketContainer.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/NetworkDevice.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/ServerConnection.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/TestClient.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/TestServer.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Client.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Server.h">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ClientConnection.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/NetworkDevice.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ServerConnection.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/TestClient.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/TestServer.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows/Client.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/Windows/Server.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/main.cpp">
+			<Option target="netlib"/>
+		</Unit>
+		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

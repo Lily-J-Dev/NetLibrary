@@ -38,7 +38,7 @@ bool Server::Start(int port)
     if(bind(listening, (sockaddr*)&hint, sizeof(hint)) == -1)
     {
         std::cerr << "Failed to bind socket to IP or Port" << std::endl;
-        std::cout << gai_strerror(errno) << std::endl;
+        std::cerr << gai_strerror(errno) << std::endl;
         return false;
     }
 
@@ -56,7 +56,7 @@ bool Server::Start(int port)
 
     tr.detach();
 
-    std::cout << "Server Initialized!"  << std::endl;
+    //std::cout << "Server Initialized!"  << std::endl;
     return true;
 }
 
@@ -131,7 +131,7 @@ void Server::HandleConnectionEvent()
     // Assign the connection a uid
     ClientInfo newClient;
     // Since unix sockets are represented as an int, we can just use those directly for the uid
-    newClient.uid = clientSocket;
+    newClient.uid = clientSocket + 1;
 
     memset(host, 0, NI_MAXHOST);
     memset(svc, 0, NI_MAXSERV);
@@ -152,14 +152,14 @@ void Server::HandleConnectionEvent()
     }
     else
     {
-        std::cout << gai_strerror(result) << std::endl;
+        std::cerr << gai_strerror(result) << std::endl;
         inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
 
         newClient.name = host;
         newClient.ipv4 = ntohs(client.sin_port);
     }
 
-    std::cout << "New Client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
+    //std::cout << "New Client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
     processNewClient(newClient);
 }
 
@@ -172,24 +172,31 @@ void Server::HandleMessageEvent(int sock) {
         close(sock);
         FD_CLR(sock, &master);
         sockets.remove(sock);
-        std::cout << "Client disconnected" << std::endl;
-        processDisconnectedClient(sock);
+        //std::cout << "Client disconnected" << std::endl;
+        processDisconnectedClient(sock+1);
     }
     else
     {
-        auto packet = new DataPacket();
-        packet->data = new char[bytesReceived];
-        memcpy(packet->data, cBuf, bytesReceived);
-        packet->dataLength = bytesReceived;
-        packet->senderId = sock;
+        auto packet = new NetworkEvent();
+        packet->data.resize(bytesReceived);
+        memcpy(packet->data.data(), cBuf, bytesReceived);
+        packet->senderId = sock+1;
         processPacket(packet);
     }
 }
 
-void Server::SendMessageToClient(const char *data, unsigned int dataLength, unsigned int client)
+void Server::SendMessageToClient(const char *data, int dataLength, unsigned int client)
 {
     if(dataLength > 0)
     {
-        send(client, data, dataLength, 0);
+        send(client-1, data, dataLength, 0);
     }
+}
+
+void netlib::Server::DisconnectClient(unsigned int client)
+{
+    close(client-1);
+    FD_CLR(client-1, &master);
+    sockets.remove(client-1);
+    processDisconnectedClient(sock+1);
 }

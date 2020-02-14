@@ -7,45 +7,53 @@
 
 #include "MultiPacketContainer.h"
 
-class NetworkDevice {
-public:
-    NetworkDevice();
+namespace netlib {
+    class NetworkDevice {
+    public:
+        NetworkDevice();
 
-    bool MessagesPending();
-    DataPacket* GetNextMessage();
+        ~NetworkDevice() = default;
 
-protected:
-    void Start();
-    void Stop();
+        bool MessagesPending();
 
-    void ProcessAndSendData(DataPacket* packet);
-    void ProcessPacket(DataPacket* data);
-    void ProcessMultiPacket(unsigned int senderId, unsigned int id);
+        std::queue<NetworkEvent> GetNetworkEvents();
 
-    virtual void SendPacket(DataPacket* data) = 0;
-    virtual void ProcessDeviceSpecificEvent(DataPacket* data) = 0;
+    protected:
+        void Start();
+        void Stop();
 
-    virtual void UpdateNetworkStats() = 0;
+        void ProcessAndSendData(NetworkEvent *packet);
+        void ProcessPacket(NetworkEvent *event);
+        void ProcessMultiPacket(unsigned int senderId, unsigned int id);
+        virtual void SendPacket(NetworkEvent *data) = 0;
+        virtual void TerminateConnection(unsigned int clientUID) {};
+        virtual void ProcessDeviceSpecificEvent(NetworkEvent *data) = 0;
+        virtual void UpdateNetworkStats() = 0;
 
-    std::queue<DataPacket*> outQueue;
-    std::mutex outQueueLock;
-private:
-    void Run();
+        void SendEvent(NetworkEvent* event);
 
-    std::map<std::pair<unsigned int, unsigned int>, MultiPacketContainer> recMultiPackets;
-    unsigned int packetID = 0;
-    std::queue<DataPacket*> messages;
+        void ClearQueue();
 
-    std::mutex messageLock;
-    unsigned int offsets[4];
+        std::queue<NetworkEvent*> outQueue;
+        std::mutex outQueueLock;
 
-    unsigned int maxPacketDataLen = 0;
-    unsigned int maxMultiPacketDataLen = 0;
+        std::mutex messageLock;
+        std::queue<NetworkEvent> messages;
+        std::queue<unsigned int> disconnectQueue;
+    private:
+        void Run();
 
+        std::map<std::pair<unsigned int, unsigned int>, MultiPacketContainer> recMultiPackets;
+        unsigned int packetID = 0;
+        bool shouldClearQueue = false;
 
-    std::mutex deleteLock;
-    std::atomic_bool running;
-};
+        unsigned int offsets[5];
+        unsigned int maxPacketDataLen = 0;
+        unsigned int maxMultiPacketDataLen = 0;
 
+        std::mutex deleteLock;
+        std::atomic_bool running;
+    };
+}
 
 #endif //CTP_NETWORKDEVICE_H
