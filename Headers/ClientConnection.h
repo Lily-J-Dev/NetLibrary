@@ -3,7 +3,7 @@
 
 #include <queue>
 #include <map>
-#include "Windows/Client.h"
+#include "Client.h"
 #include "NetworkDevice.h"
 #include "ConnectionInfo.h"
 #include "Lobby.h"

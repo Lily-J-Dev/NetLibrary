@@ -4,7 +4,8 @@
 #include <queue>
 #include <functional>
 #include "NetworkEvent.h"
-
+namespace netlib
+{
 class Client
 {
 public:
@@ -16,16 +17,15 @@ public:
 
     void SendMessageToServer(const char* data, int dataLength);
 
-    std::function<void(NetworkEvent*)> processPacket;
+    std::function<void(netlib::NetworkEvent*)> processPacket;
     std::function<void()> processDisconnect;
 private:
     void ProcessNetworkEvents();
 
     int sock = -1;
     int sockCopy = -1;
-    std::queue<DataPacket> outData;
 
     std::atomic_bool running;
     std::mutex* deleteSafeguard;
 };
-
+}

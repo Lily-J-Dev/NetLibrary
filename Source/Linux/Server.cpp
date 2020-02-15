@@ -8,7 +8,7 @@
 #include <thread>
 #include "Server.h"
 
-Server::~Server()
+netlib::Server::~Server()
 {
     Stop();
     deleteLock->lock();
@@ -17,7 +17,7 @@ Server::~Server()
     delete fdLock;
 }
 
-bool Server::Start(int port)
+bool netlib::Server::Start(int port)
 {
     deleteLock = new std::mutex();
     fdLock = new std::mutex();
@@ -60,7 +60,7 @@ bool Server::Start(int port)
     return true;
 }
 
-void Server::Stop()
+void netlib::Server::Stop()
 {
     running = false;
     deleteLock->lock();
@@ -73,7 +73,7 @@ void Server::Stop()
     sockets.clear();
 }
 
-void Server::ProcessNetworkEvents()
+void netlib::Server::ProcessNetworkEvents()
 {
     deleteLock->lock();
     running = true;
@@ -91,7 +91,7 @@ void Server::ProcessNetworkEvents()
         }
         else
         {
-            fdLock.lock();
+            fdLock->lock();
             for (auto const &socket : sockets)
             {
                 if (FD_ISSET(socket, &mCopy))
@@ -101,13 +101,13 @@ void Server::ProcessNetworkEvents()
                 }
             }
         }
-        fdLock.unlock();
+        fdLock->unlock();
     }
 
     deleteLock->unlock();
 }
 
-void Server::HandleConnectionEvent()
+void netlib::Server::HandleConnectionEvent()
 {
     sockaddr_in client;
     client.sin_family = AF_INET;
@@ -131,7 +131,7 @@ void Server::HandleConnectionEvent()
     // Assign the connection a uid
     ClientInfo newClient;
     // Since unix sockets are represented as an int, we can just use those directly for the uid
-    newClient.uid = clientSocket + 1;
+    newClient.uid = clientSocket; // But also add 1, as 0 needs to be server
 
     memset(host, 0, NI_MAXHOST);
     memset(svc, 0, NI_MAXSERV);
@@ -144,11 +144,12 @@ void Server::HandleConnectionEvent()
                              NI_MAXSERV,
                              0);
 
+
+    newClient.ipv4 = inet_ntoa(hint.sin_addr);
+
     if(result == 0)
     {
-        newClient.name = svc;
-        newClient.ipv4 = host;
-
+        newClient.name = host;
     }
     else
     {
@@ -163,7 +164,7 @@ void Server::HandleConnectionEvent()
     processNewClient(newClient);
 }
 
-void Server::HandleMessageEvent(int sock) {
+void netlib::Server::HandleMessageEvent(int sock) {
     memset(cBuf, 0, MAX_PACKET_SIZE);
 
     int bytesReceived = recv(sock, cBuf, MAX_PACKET_SIZE, 0);
@@ -173,30 +174,30 @@ void Server::HandleMessageEvent(int sock) {
         FD_CLR(sock, &master);
         sockets.remove(sock);
         //std::cout << "Client disconnected" << std::endl;
-        processDisconnectedClient(sock+1);
+        processDisconnectedClient(sock);
     }
     else
     {
         auto packet = new NetworkEvent();
         packet->data.resize(bytesReceived);
         memcpy(packet->data.data(), cBuf, bytesReceived);
-        packet->senderId = sock+1;
+        packet->senderId = sock;
         processPacket(packet);
     }
 }
 
-void Server::SendMessageToClient(const char *data, int dataLength, unsigned int client)
+void netlib::Server::SendMessageToClient(const char *data, int dataLength, unsigned int client)
 {
     if(dataLength > 0)
     {
-        send(client-1, data, dataLength, 0);
+        send(client, data, dataLength, 0);
     }
 }
 
 void netlib::Server::DisconnectClient(unsigned int client)
 {
-    close(client-1);
-    FD_CLR(client-1, &master);
-    sockets.remove(client-1);
-    processDisconnectedClient(sock+1);
+    close(client);
+    FD_CLR(client, &master);
+    sockets.remove(client);
+    processDisconnectedClient(client);
 }
