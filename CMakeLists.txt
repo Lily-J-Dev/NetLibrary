@@ -13,13 +13,8 @@ set(netlib_VERSION_FULL "${netlib_VERSION}.${netlib_VERSION_PATCH}${netlib_VERSI
 # Let's give the debug library a postfix
 set(CMAKE_DEBUG_POSTFIX d)
 
-# Setup the libs that the game engine are reliant on
-#list(APPEND LINK_LIBS "")
-#add_subdirectory(Libs)
 
 set( PROJECT_HEADERS
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Client.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Server.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientConnection.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientInfo.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ConnectionInfo.h"
@@ -33,11 +28,27 @@ set( PROJECT_HEADERS
 
 
 set( PROJECT_SOURCES
-        "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
-        "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Source/ClientConnection.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Source/NetworkDevice.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Source/ServerConnection.cpp")
+
+if(UNIX)
+    set( PROJECT_SOURCES ${PROJECT_SOURCES}
+            "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Client.cpp"
+            "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Server.cpp")
+    set( PROJECT_HEADERS ${PROJECT_HEADERS}
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/Linux/Client.h"
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/Linux/Server.h")
+else()
+    set( PROJECT_SOURCES ${PROJECT_SOURCES}
+            "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
+            "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp")
+    set( PROJECT_HEADERS ${PROJECT_HEADERS}
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Client.h"
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Server.h")
+endif()
+
+message("Headers: ${PROJECT_HEADERS}")
 
 set ( PROJECT_CONFIG
         CMakeLists.txt
@@ -49,16 +60,12 @@ source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
 source_group("Configs" FILES ${PROJECT_CONFIG})
 
-#add_definitions(
-#        -DGLFW_INCLUDE_NONE
-#        -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
-
 if(STATIC_NETLIB)
     add_library(
-            NetLib STATIC Source/Windows/Server.cpp)
+            NetLib STATIC)
 else()
    add_library(
-           NetLib SHARED Source/Windows/Server.cpp )
+           NetLib SHARED)
 endif()
 
 target_sources(NetLib
@@ -69,40 +76,43 @@ target_sources(NetLib
         ${PROJECT_SOURCES} )
 
 # Define headers for this library. PUBLIC headers are used for
-# compiling the library and added to build paths. 
-target_include_directories(NetLib
-        PUBLIC
-        $<INSTALL_INTERFACE:include>
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
-        #"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Libs/PhysFS++/include>"
-        #"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Libs/PhysFS/src>"
-        PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/Source"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows"
-        SYSTEM
-        #"${CMAKE_CURRENT_SOURCE_DIR}/Libs/GLEW/2.1.0/include"
-        #"${CMAKE_CURRENT_SOURCE_DIR}/Libs/GLFW/include"
-        #"${CMAKE_CURRENT_SOURCE_DIR}/Libs/GLM"
-        #"${CMAKE_CURRENT_SOURCE_DIR}/Libs/Freetype2/include"
-        #"${CMAKE_CURRENT_SOURCE_DIR}/Libs/STB"
-        )
+# compiling the library and added to build paths.
+if(WIN32)
+    target_include_directories(NetLib
+            PUBLIC
+            $<INSTALL_INTERFACE:include>
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/Windows>"
+            PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+            "${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows"
+            SYSTEM
+            )
+else()
+    target_include_directories(NetLib
+            PUBLIC
+            $<INSTALL_INTERFACE:include>
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/Linux>"
+            PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+            "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux"
+            SYSTEM
+            )
+endif()
 
 # Compiler requirements for this library,
 target_compile_features(NetLib PUBLIC cxx_std_14)
 
-# Preprocessor requirements
-#if(PHYSFS_SHARED_LIB)
-#    target_compile_definitions(GameEngine PRIVATE GLM_FORCE_CTOR_INIT=1 PHYSFS_EXPORT_LIB)
-#else()
-#    target_compile_definitions(GameEngine PRIVATE GLM_FORCE_CTOR_INIT=1 PHYSFS_CPP_STATIC)
-#endif()
-
 # Dependencies on other libraries
-target_link_libraries(NetLib PUBLIC ws2_32 wsock32)
-#target_link_libraries(NetLib PUBLIC ${LINK_LIBS})
+if(WIN32)
+    target_link_libraries(NetLib PUBLIC ws2_32 wsock32)
+else()
+    SET(CMAKE_CXX_FLAGS -pthread)
+endif()
+
 
 # This makes the project importable from the build directory
-# export(TARGETS GameEngine glfw freetype glew_s physfs++ physfs-static FILE GameEngineConfig.cmake)
 
 set_target_properties(
         ${PROJECT_NAME} PROPERTIES
@@ -113,11 +123,8 @@ set_target_properties(
         CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 )
 
-#add_dependencies(GameEngine Freetype2)
-#add_dependencies(GameEngine PhysFS++)
-
-include_directories(Headers/Windows)
-include_directories(Source/Windows)
+include_directories(Headers/Linux)
+include_directories(Source/Linux)
 add_executable(netlib_test
         main.cpp
         Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})

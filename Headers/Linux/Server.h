@@ -11,6 +11,8 @@
 #include "NetworkEvent.h"
 #include "ClientInfo.h"
 
+namespace netlib
+{
 class Server
 {
 public:
@@ -25,8 +27,8 @@ public:
     void SendMessageToClient(const char* data, int dataLength, unsigned int client);
     void DisconnectClient(unsigned int client);
 
-    std::function<void(NetworkEvent*)> processPacket;
-    std::function<void(ClientInfo)> processNewClient;
+    std::function<void(netlib::NetworkEvent*)> processPacket;
+    std::function<void(netlib::ClientInfo)> processNewClient;
     std::function<void(unsigned int)> processDisconnectedClient;
 
 private:
@@ -37,10 +39,11 @@ private:
     fd_set master;
     unsigned int listening = 0;
     sockaddr_in hint;
-    char cBuf[MAX_PACKET_SIZE];
+    char cBuf[netlib::MAX_PACKET_SIZE];
 
     std::atomic_bool running;
     std::mutex* deleteLock;
     std::mutex* fdLock;
     std::forward_list<int> sockets;
 };
+}

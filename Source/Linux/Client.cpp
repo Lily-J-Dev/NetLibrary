@@ -10,14 +10,14 @@
 #include "Client.h"
 #include "Constants.h"
 
-Client::~Client()
+netlib::Client::~Client()
 {
     Stop();
     deleteSafeguard->lock();
     deleteSafeguard->unlock();
 }
 
-void Client::Stop()
+void netlib::Client::Stop()
 {
     running = false;
     deleteSafeguard->lock();
@@ -25,7 +25,7 @@ void Client::Stop()
     close(sock);
 }
 
-bool Client::Start(const std::string &ipv4, int port)
+bool netlib::Client::Start(const std::string &ipv4, int port)
 {
     deleteSafeguard = new std::mutex();
     //std::cout << "Initializing Client..." << std::endl;
@@ -60,7 +60,7 @@ bool Client::Start(const std::string &ipv4, int port)
     return true;
 }
 
-void Client::SendMessageToServer(const char *data, int dataLength)
+void netlib::Client::SendMessageToServer(const char *data, int dataLength)
 {
     // If there is no data dont send it
     if(dataLength > 0)
@@ -73,12 +73,12 @@ void Client::SendMessageToServer(const char *data, int dataLength)
     }
 }
 
-void Client::ProcessNetworkEvents()
+void netlib::Client::ProcessNetworkEvents()
 {
     deleteSafeguard->lock();
     running = true;
     // Loop to send and receive data
-    char buf[MAX_PACKET_SIZE];
+    char buf[netlib::MAX_PACKET_SIZE];
 
     while(running)
     {
