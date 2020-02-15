@@ -107,14 +107,25 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
                             (clock::now() - connectedClients[event->senderId].timeOfLastPing).count());
             connectedClients[event->senderId].waitingForPing = false;
 
+            lobbyLock.lock();
+            if(connectedClients[event->senderId].lobbyID != 0)
+            {
+                for (auto &member : lobbies[connectedClients[event->senderId].lobbyID].memberInfo)
+                {
+                    if (member.uid == event->senderId)
+                    {
+                        member.ping = connectedClients[event->senderId].connectionInfo.ping;
+                    }
+                }
+            }
+            lobbyLock.unlock();
+
             delete event;
             clientInfoLock.unlock();
             break;
         }
         case MessageType::REQUEST_NEW_LOBBY:
         {
-            lobbyLock.lock();
-            lobbyLock.unlock();
             CreateNewLobby(event);
             break;
         }
@@ -132,6 +143,24 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             auto clientID = event->ReadData<unsigned int>(1);
             auto lobbyID = event->ReadData<unsigned int>(1+sizeof(unsigned int));
             RemoveClientFromLobby(clientID, lobbyID);
+            break;
+        }
+        case MessageType::SET_CLIENT_READY:
+        {
+            auto lobbyID = event->ReadData<unsigned int>(1);
+            auto clientID = event->ReadData<unsigned int>(1+ sizeof(unsigned int));
+            auto ready = event->ReadData<bool>(1 + (sizeof(unsigned int) *2));
+            lobbyLock.lock();
+            for(auto& member : lobbies[lobbyID].memberInfo)
+            {
+                if(member.uid == clientID)
+                {
+                    member.ready = ready;
+                    break;
+                }
+            }
+            lobbyLock.unlock();
+            SendEventToAll(event);
             break;
         }
         default:
@@ -182,6 +211,7 @@ void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned in
     event->WriteData<unsigned int>(client, 1 + sizeof(unsigned int));
 
     clientInfoLock.lock();
+    connectedClients[client].lobbyID = lobby;
     // Add the client into the lobby onto the server
     lobbyLock.lock();
     lobbies[lobby].clientsInRoom++;
@@ -215,14 +245,27 @@ std::vector<netlib::Lobby> netlib::ServerConnection::GetAllLobbies()
 netlib::Lobby netlib::ServerConnection::GetLobby(unsigned int lobbyID)
 {
     std::lock_guard<std::mutex> guard(lobbyLock);
-    return lobbies[lobbyID];
+    if(lobbies.count(lobbyID) > 0)
+        return lobbies[lobbyID];
+    else
+    {
+        std::cerr << "WARNING: TRYING TO GET LOBBY THAT DOES NOT EXIST! RETURNING AN EMPTY LOBBY STRUCT." << std::endl;
+        return Lobby();
+    }
 }
 
 void netlib::ServerConnection::RemoveClientFromLobby(unsigned int clientID, unsigned int lobbyID)
 {
+    clientInfoLock.lock();
+    connectedClients[clientID].lobbyID = 0;
+    clientInfoLock.unlock();
     lobbyLock.lock();
     if(lobbies.count(lobbyID) == 0)
+    {
+        lobbyLock.unlock();
         return;
+    }
+
     for(auto it = lobbies[lobbyID].memberInfo.begin(); it != lobbies[lobbyID].memberInfo.end(); ++it)
     {
         if(it->uid == clientID)
@@ -240,7 +283,9 @@ void netlib::ServerConnection::RemoveClientFromLobby(unsigned int clientID, unsi
     }
     if(lobbies[lobbyID].clientsInRoom == 0)
     {
+        int size = lobbies.size();
         lobbies.erase(lobbyID);
+        size = lobbies.size();
         auto event = new NetworkEvent();
         event->data.resize(MAX_PACKET_SIZE);
         event->data[0] = (char)MessageType::REMOVE_LOBBY;
@@ -316,7 +361,16 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
             std::copy(connectedClients[member.uid].name.data(),
                       connectedClients[member.uid].name.data() +  nameLen,
                       event->data.data() + 1 + (sizeof(unsigned int) *3));
-            clientInfoLock.unlock();
+
+            event->senderId = info.uid;
+            SendEvent(event);
+
+            event = new NetworkEvent();
+            event->data.resize(MAX_PACKET_SIZE);
+            event->data[0] = (char)MessageType::SET_CLIENT_READY;
+            event->WriteData<unsigned int>(lobby.first, 1);
+            event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
+            event->WriteData<bool>(member.ready, 1 + (sizeof(unsigned int)*2));
             event->senderId = info.uid;
             SendEvent(event);
         }
@@ -327,6 +381,13 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
 
 void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
 {
+    clientInfoLock.lock();
+    unsigned int lobby = connectedClients[clientUID].lobbyID;
+    clientInfoLock.unlock();
+    if(lobby > 0)
+    {
+        RemoveClientFromLobby(clientUID, lobby);
+    }
     clientInfoLock.lock();
     connectedClients.erase(clientUID);
     clientInfoLock.unlock();
@@ -358,6 +419,29 @@ void netlib::ServerConnection::UpdateNetworkStats()
             outQueue.push(packet);
             outQueueLock.unlock();
             client.second.timeOfLastPing = clock::now();
+            // If this client is the top member of a lobby, use this time to refresh all the ping values for the lobby
+            lobbyLock.lock();
+            if(lobbies.count(client.second.lobbyID) > 0 && lobbies[client.second.lobbyID].memberInfo[0].uid == client.first)
+            {
+                auto event = new NetworkEvent();
+                event->data.resize(MAX_PACKET_SIZE);
+                event->data[0] = (char)MessageType::UPDATE_PEER_CONNECTION_INFO;
+                int offset = 1;
+                event->WriteData<unsigned int>(client.second.lobbyID, offset);
+                offset += sizeof(int);
+                event->WriteData<int>(lobbies[client.second.lobbyID].clientsInRoom, offset);
+                offset += sizeof(int);
+
+                for(auto& member : lobbies[client.second.lobbyID].memberInfo)
+                {
+                    event->WriteData<float>(member.ping, offset);
+                    offset += sizeof(float);
+                }
+                clientInfoLock.unlock();
+                SendEventToAll(event);
+                clientInfoLock.lock();
+            }
+            lobbyLock.unlock();
         }
     }
     clientInfoLock.unlock();

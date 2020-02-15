@@ -22,8 +22,8 @@ namespace netlib {
         SET_ACTIVE_LOBBY, // Tells the client to set its active lobby - uint(lobbyUID)
         NEW_LOBBY_CLIENT, // Tells the client that a new client has joined a lobby - uint(lobby uid) -> uint(new client uid) -> uint(size of name) ->  char...(client name)
         LOBBY_CLIENT_LEFT, // Tells the client that another client has left a lobby - uint(lobby uid) -> uint(left client uid)
-        UPDATE_PEER_CONNECTION_INFO, // Tells the client to update its current lobby peerInfo connection values - int(infoCount) -> float(ping) -- repeat per infoCount
-        SET_CLIENT_READY, // Tells the client that a client has set been set to active/inactive - uint(client uid) -> bool(isReady)
+        UPDATE_PEER_CONNECTION_INFO, // Tells the client to update its current lobby peerInfo connection values uint(lobby uid) -> int(infoCount) -> float(ping) -- repeat per infoCount
+        SET_CLIENT_READY, // Tells the client that a client has set been set to active/inactive uint(lobby uid) -> uint(client uid) -> bool(isReady)
         ADD_NEW_LOBBY, // Tells the client there is a new lobby open - uint(lobby uid) -> int(roomSize) -> uint(size of name) ->  char...(lobby name)
         REMOVE_LOBBY, // Tells the client to close a lobby - uint(lobby uid)
 
