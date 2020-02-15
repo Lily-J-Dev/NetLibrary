@@ -116,10 +116,10 @@ set_target_properties(
 #add_dependencies(GameEngine Freetype2)
 #add_dependencies(GameEngine PhysFS++)
 
-#include_directories(Headers/Windows)
-#include_directories(Source/Windows)
-#add_executable(netlib_test
- #       main.cpp
-  #      Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
+include_directories(Headers/Windows)
+include_directories(Source/Windows)
+add_executable(netlib_test
+        main.cpp
+        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
 
-##target_link_libraries(netlib_test NetLib)
+target_link_libraries(netlib_test NetLib)

@@ -32,6 +32,8 @@ namespace netlib {
         std::vector<Lobby> GetAllLobbyInfo();
         Lobby GetCurrentLobbyInfo();
 
+        void SetReady(bool isReady);
+
     private:
         void ProcessDeviceSpecificEvent(NetworkEvent *event) override;
         void SendPacket(NetworkEvent *event) override;
@@ -50,7 +52,7 @@ namespace netlib {
 
         std::mutex lobbyLock;
         std::vector<Lobby> allLobbies;
-        unsigned int activeLobby;
+        unsigned int activeLobby = 0;
     };
 }
 #endif //CTP_CLIENTCONNECTION_H

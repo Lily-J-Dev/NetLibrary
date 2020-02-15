@@ -176,7 +176,7 @@ void netlib::Server::SendMessageToClient(const char* data, int dataLength, unsig
 
     if (wsResult == SOCKET_ERROR)
     {
-        std::cerr << "Failed to send message error code: " << WSAGetLastError() << std::endl;
+        //std::cerr << "Failed to send message error code: " << WSAGetLastError() << std::endl;
     }
     fdLock.unlock();
 }

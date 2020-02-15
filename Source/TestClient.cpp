@@ -63,7 +63,6 @@ void TestClient::GetInput()
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     inputRunning = true;
     std::string input = "";
-    std::getline(std::cin, input);
     while(inputRunning)
     {
         std::cout << "";
@@ -79,7 +78,7 @@ void TestClient::GetInput()
                 std::cout << "Clients: " << std::endl;
                 for(auto& member : lobby.memberInfo)
                 {
-                    std::cout << "\t Name: " << member.name << " ID: " << member.uid << std::endl;
+                    std::cout << "\t Name: " << member.name << " ID: " << member.uid << " (" << member.ping << " ms)" << (member.ready ? "(READY)" : "(NOT READY)") << std::endl;
                 }
             }
             std::cout << std::endl;
@@ -104,6 +103,14 @@ void TestClient::GetInput()
             std::cout << "Enter client id to remove: ";
             std::getline(std::cin, input);
             client.RemoveFromLobby(std::atoi(input.data()));
+        }
+        else if(input == "ready")
+        {
+            client.SetReady(true);
+        }
+        else if(input == "!ready")
+        {
+            client.SetReady(false);
         }
         else
         {
