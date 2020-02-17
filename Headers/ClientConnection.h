@@ -22,6 +22,8 @@ namespace netlib {
         bool ConnectToIP(const std::string &ipv4, int port);
         void Disconnect();
 
+        bool IsRunning(){return client.IsRunning();};
+
         ConnectionInfo GetConnectionInfo();
         unsigned int GetUID();
 
