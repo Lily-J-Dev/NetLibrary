@@ -4,12 +4,12 @@
 
 netlib::ClientConnection::ClientConnection()
 {
-    clientInfoLock = new std::mutex();
+
 }
 
 netlib::ClientConnection::~ClientConnection()
 {
-    delete clientInfoLock;
+
 }
 
 void netlib::ClientConnection::Disconnect()
@@ -93,11 +93,11 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
         case MessageType::PING_RESPONSE:
         {
             using clock = std::chrono::steady_clock;
-            clientInfoLock->lock();
+            clientInfoLock.lock();
             connectionInfo.ping = static_cast<float>(
                     std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count());
             waitingForPing = false;
-            clientInfoLock->unlock();
+            clientInfoLock.unlock();
             delete event;
             break;
         }
@@ -261,7 +261,7 @@ void netlib::ClientConnection::UpdateNetworkStats()
 {
     // Handle pings
     using clock = std::chrono::steady_clock;
-    clientInfoLock->lock();
+    clientInfoLock.lock();
     if(!waitingForPing && std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count() > PING_FREQUENCY)
     {
         waitingForPing = true;
@@ -273,24 +273,24 @@ void netlib::ClientConnection::UpdateNetworkStats()
         outQueueLock.unlock();
         timeOfLastPing = clock::now();
     }
-    clientInfoLock->unlock();
+    clientInfoLock.unlock();
 }
 
 // Returns a ConnectionInfo struct with information about the current network conditions.
 netlib::ConnectionInfo netlib::ClientConnection::GetConnectionInfo()
 {
-    clientInfoLock->lock();
+    clientInfoLock.lock();
     ConnectionInfo returnInfo = connectionInfo;
-    clientInfoLock->unlock();
+    clientInfoLock.unlock();
     return returnInfo;
 }
 
 // Returns this clients unique id in the network, returns 0 if the uid has not been set yet
 unsigned int netlib::ClientConnection::GetUID()
 {
-    clientInfoLock->lock();
+    clientInfoLock.lock();
     unsigned int returnInfo = uid;
-    clientInfoLock->unlock();
+    clientInfoLock.unlock();
     return returnInfo;
 }
 
