@@ -47,7 +47,7 @@ namespace netlib {
         unsigned int uid = 0;
         ConnectionInfo connectionInfo;
 
-        std::mutex *clientInfoLock = nullptr;
+        std::mutex clientInfoLock;
 
         std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
         bool waitingForPing = false;
