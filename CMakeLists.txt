@@ -123,8 +123,13 @@ set_target_properties(
         CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 )
 
-include_directories(Headers/Linux)
-include_directories(Source/Linux)
+if(WIN32)
+    include_directories(Headers/Windows)
+    include_directories(Source/Windows)
+ELSE()
+    include_directories(Headers/Linux)
+    include_directories(Source/Linux)
+endif()
 add_executable(netlib_test
         main.cpp
         Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
