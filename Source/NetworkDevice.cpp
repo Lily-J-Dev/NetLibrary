@@ -6,6 +6,11 @@
 #include <thread>
 #include <cmath>
 
+netlib::NetworkDevice::~NetworkDevice()
+{
+    Stop();
+}
+
 netlib::NetworkDevice::NetworkDevice()
 {
     // Save the various index offsets so they only have to be calculated once

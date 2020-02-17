@@ -12,7 +12,7 @@ namespace netlib {
     public:
         NetworkDevice();
 
-        ~NetworkDevice() = default;
+        ~NetworkDevice();
 
         bool MessagesPending();
 
