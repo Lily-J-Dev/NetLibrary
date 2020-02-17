@@ -9,7 +9,7 @@ TestClient::TestClient()
     std::getline(std::cin, input);
     if(input == "localhost" || input == "")
         input = "127.0.0.1";
-    client.ConnectToIP(input, 24001);
+    client.ConnectToIP(input, 24000);
 }
 
 int TestClient::Update()
