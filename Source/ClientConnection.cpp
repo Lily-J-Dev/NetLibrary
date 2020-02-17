@@ -14,13 +14,18 @@ netlib::ClientConnection::~ClientConnection()
 
 void netlib::ClientConnection::Disconnect()
 {
-    Stop();
-    client.Stop();
+    if(client.IsRunning())
+    {
+        Stop();
+        client.Stop();
+    }
 }
 
 
 bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, int port)
 {
+    if(client.IsRunning())
+        return false;
     client.processPacket = std::bind(&ClientConnection::ProcessPacket, this, std::placeholders::_1);
     client.processDisconnect = std::bind(&ClientConnection::ProcessDisconnect, this);
     if(client.Start(ipv4, port))

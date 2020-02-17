@@ -15,6 +15,8 @@ netlib::Client::~Client()
 
 void netlib::Client::Stop()
 {
+    if(!running)
+        return;
     running = false;
     deleteGuard.lock();
     deleteGuard.unlock();
