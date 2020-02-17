@@ -17,6 +17,8 @@ public:
 
     void SendMessageToServer(const char* data, int dataLength);
 
+    bool IsRunning(){return running;};
+
     std::function<void(netlib::NetworkEvent*)> processPacket;
     std::function<void()> processDisconnect;
 private:
@@ -25,7 +27,7 @@ private:
     int sock = -1;
     int sockCopy = -1;
 
-    std::atomic_bool running;
+    std::atomic_bool running{false};
     std::mutex* deleteSafeguard;
 };
 }

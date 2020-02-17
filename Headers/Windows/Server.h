@@ -21,6 +21,8 @@ namespace netlib {
         void SendMessageToClient(const char *data, int dataLength, unsigned int client);
         void DisconnectClient(unsigned int client);
 
+        bool IsRunning(){return running;};
+
         std::function<void(NetworkEvent*)> processPacket;
         std::function<void(ClientInfo)> processNewClient;
         std::function<void(unsigned int)> processDisconnectedClient;
@@ -40,7 +42,7 @@ namespace netlib {
         std::map<unsigned int, size_t> indexLookup; // Gets the index in the master fd_set of the socket of a given ID
         unsigned int nextUid = 1;
 
-        std::atomic_bool running;
+        std::atomic_bool running{false};
         std::mutex fdLock;
         std::mutex deleteLock;
 

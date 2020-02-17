@@ -31,6 +31,8 @@ public:
     std::function<void(netlib::ClientInfo)> processNewClient;
     std::function<void(unsigned int)> processDisconnectedClient;
 
+    bool IsRunning(){return running;};
+
 private:
     void ProcessNetworkEvents();
     void HandleConnectionEvent();
@@ -41,7 +43,7 @@ private:
     sockaddr_in hint;
     char cBuf[netlib::MAX_PACKET_SIZE];
 
-    std::atomic_bool running;
+    std::atomic_bool running{false};
     std::mutex* deleteLock;
     std::mutex* fdLock;
     std::forward_list<int> sockets;

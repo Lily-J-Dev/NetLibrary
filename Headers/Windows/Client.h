@@ -20,6 +20,8 @@ namespace netlib {
 
         void SendMessageToServer(const char *data, int dataLength);
 
+        bool IsRunning(){return running;};
+
         std::function<void(NetworkEvent*)> processPacket;
         std::function<void()> processDisconnect;
     private:
@@ -28,7 +30,7 @@ namespace netlib {
         SOCKET sock = INVALID_SOCKET;
         SOCKET sockCopy = INVALID_SOCKET;
 
-        std::atomic_bool running;
+        std::atomic_bool running{false};
         std::mutex deleteGuard;
     };
 }

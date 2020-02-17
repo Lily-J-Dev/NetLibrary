@@ -14,6 +14,8 @@ netlib::ServerConnection::~ServerConnection()
 
 void netlib::ServerConnection::Start(int port)
 {
+    if(server.IsRunning())
+        return;
     server.processPacket = std::bind(&ServerConnection::ProcessPacket, this, std::placeholders::_1);
     server.processNewClient = std::bind(&ServerConnection::ProcessNewClient, this, std::placeholders::_1);
     server.processDisconnectedClient = std::bind(&ServerConnection::ProcessDisconnectedClient, this, std::placeholders::_1);
