@@ -32,6 +32,8 @@ void netlib::ServerConnection::SendPacket(NetworkEvent* event)
 // Sends a message to only the specified client
 void netlib::ServerConnection::SendMessageTo(const std::vector<char>& data, unsigned int clientUid)
 {
+    if(data.empty())
+        return;
     auto packet = new NetworkEvent();
     packet->data.resize(data.size());
     std::copy(data.data(), data.data() + data.size(), packet->data.data());
@@ -42,6 +44,8 @@ void netlib::ServerConnection::SendMessageTo(const std::vector<char>& data, unsi
 // Sends a message to only the specified client
 void netlib::ServerConnection::SendMessageTo(const char* data, int dataLen, unsigned int clientUID)
 {
+    if(dataLen == 0)
+        return;
     auto packet = new NetworkEvent();
     packet->data.resize(dataLen);
     std::copy(data, data + dataLen, packet->data.data());

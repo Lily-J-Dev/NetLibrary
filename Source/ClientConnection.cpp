@@ -57,6 +57,8 @@ void netlib::ClientConnection::SendPacket(NetworkEvent* event)
 
 void netlib::ClientConnection::SendMessageToServer(const std::vector<char>& data)
 {
+    if(data.empty())
+        return;
     auto packet = new NetworkEvent();
     packet->data.resize(data.size());
     std::copy(data.data(), data.data() + data.size(), packet->data.data());
@@ -65,6 +67,8 @@ void netlib::ClientConnection::SendMessageToServer(const std::vector<char>& data
 
 void netlib::ClientConnection::SendMessageToServer(const char* data, int dataLen)
 {
+    if(dataLen == 0)
+        return;
     auto packet = new NetworkEvent();
     packet->data.resize(dataLen);
     std::copy(data, data + dataLen, packet->data.data());
