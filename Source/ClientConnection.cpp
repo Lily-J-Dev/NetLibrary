@@ -26,9 +26,12 @@ bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, int port)
 {
     if(client.IsRunning())
         return false;
+    std::string ip = ipv4;
+    if(ip == "localhost")
+        ip = "127.0.0.1";
     client.processPacket = std::bind(&ClientConnection::ProcessPacket, this, std::placeholders::_1);
     client.processDisconnect = std::bind(&ClientConnection::ProcessDisconnect, this);
-    if(client.Start(ipv4, port))
+    if(client.Start(ip, port))
     {
         Start();
         return true;

@@ -78,7 +78,7 @@ int netlib::Client::Start(const std::string& ipv4, int port)
 
     // Connect to server
     int connResult = SOCKET_ERROR;
-    for(node = info; node != NULL; node->ai_next)
+    for(node = info; node != NULL; node = node->ai_next)
     {
         connResult = connect(sock, node->ai_addr, node->ai_addrlen);
         if(connResult != SOCKET_ERROR)
