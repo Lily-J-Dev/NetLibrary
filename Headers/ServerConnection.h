@@ -15,6 +15,8 @@ namespace netlib {
         void Start(int port);
         void DisconnectClient(unsigned int clientUID);
 
+        bool IsRunning(){return server.IsRunning();};
+
         void SendMessageTo(const std::vector<char>& data, unsigned int clientUID);
         void SendMessageTo(const char* data, int dataLen, unsigned int clientUID);
 
