@@ -12,7 +12,16 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="" />
+    <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/ClientConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ClientConnection.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/ServerConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ServerConnection.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/Windows/Client.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/Windows/Client.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/Windows/Server.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/Windows/Server.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/ClientConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ClientConnection.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/ServerConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ServerConnection.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Windows/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Windows/Server.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

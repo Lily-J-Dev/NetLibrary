@@ -12,7 +12,7 @@ netlib::ServerConnection::~ServerConnection()
 
 }
 
-void netlib::ServerConnection::Start(int port)
+void netlib::ServerConnection::Start(unsigned short port)
 {
     if(server.IsRunning())
         return;

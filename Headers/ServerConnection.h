@@ -12,7 +12,7 @@ namespace netlib {
 
         ~ServerConnection();
 
-        void Start(int port);
+        void Start(unsigned short port);
         void DisconnectClient(unsigned int clientUID);
 
         bool IsRunning(){return server.IsRunning();};

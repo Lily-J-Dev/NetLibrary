@@ -14,7 +14,7 @@ namespace netlib {
 
         ~Client();
 
-        int Start(const std::string &ipv4, int port);
+        int Start(const std::string &ipv4, unsigned short port);
 
         void Stop();
 
