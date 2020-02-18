@@ -41,6 +41,7 @@ namespace netlib {
         void SendPacket(NetworkEvent *event) override;
         void UpdateNetworkStats() override;
         void ProcessDisconnect();
+        void TerminateConnection(unsigned int clientUID) override {};
 
         Client client;
 
