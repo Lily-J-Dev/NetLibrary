@@ -49,7 +49,7 @@ bool netlib::Server::Start(int port)
 
     // Bind an ip and port to the socket
     hint.sin_family = AF_INET;
-    hint.sin_port = htons(port);
+    hint.sin_port = htons(static_cast<unsigned int>(port));
     hint.sin_addr.S_un.S_addr = INADDR_ANY;
 
     bind(listening, (sockaddr*)&hint, sizeof(hint));
