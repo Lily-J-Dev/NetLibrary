@@ -19,7 +19,7 @@ namespace netlib {
         void SendMessageToServer(const char* data, int dataLen);
 
         // Tries to connect to the given ip and port, returning true if successful.
-        bool ConnectToIP(const std::string &ipv4, int port);
+        bool ConnectToIP(const std::string &ipv4, unsigned short port);
         void Disconnect();
 
         bool IsRunning(){return client.IsRunning();};

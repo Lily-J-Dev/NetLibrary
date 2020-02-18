@@ -22,7 +22,7 @@ void netlib::ClientConnection::Disconnect()
 }
 
 
-bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, int port)
+bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, unsigned short port)
 {
     if(client.IsRunning())
         return false;

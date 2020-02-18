@@ -24,7 +24,7 @@ void netlib::Client::Stop()
     WSACleanup();
 }
 
-int netlib::Client::Start(const std::string& ipv4, int port)
+int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 {
     //std::cout << "Initializing Client..." << std::endl;
 

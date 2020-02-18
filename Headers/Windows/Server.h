@@ -14,7 +14,7 @@ namespace netlib {
 
         ~Server();
 
-        bool Start(int port);
+        bool Start(unsigned short port);
 
         void Stop();
 
