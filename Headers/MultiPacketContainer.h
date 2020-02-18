@@ -13,7 +13,7 @@ namespace netlib {
 
         bool IsComplete() { return packets.size() == packetCount; };
 
-        int packetCount = 0;
+        unsigned int packetCount = 0;
         std::vector<NetworkEvent *> packets;
     };
 }

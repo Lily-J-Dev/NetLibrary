@@ -26,7 +26,7 @@ namespace netlib {
         void ProcessPacket(NetworkEvent *event);
         void ProcessMultiPacket(unsigned int senderId, unsigned int id);
         virtual void SendPacket(NetworkEvent *data) = 0;
-        virtual void TerminateConnection(unsigned int clientUID) {};
+        virtual void TerminateConnection(unsigned int clientUID) = 0;
         virtual void ProcessDeviceSpecificEvent(NetworkEvent *data) = 0;
         virtual void UpdateNetworkStats() = 0;
 

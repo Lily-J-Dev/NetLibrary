@@ -45,7 +45,7 @@ namespace netlib {
         void SendEventToAll(NetworkEvent* event);
 
         Server server;
-        std::map<int, ClientInfo> connectedClients;
+        std::map<unsigned int, ClientInfo> connectedClients;
 
         std::mutex clientInfoLock;
 
