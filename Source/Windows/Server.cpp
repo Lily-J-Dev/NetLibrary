@@ -129,8 +129,9 @@ void netlib::Server::HandleConnectionEvent()
         newClient.name = host;
     }
 
-    newClient.ipv4 = inet_ntoa(hint.sin_addr);
-
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(hint.sin_family,(sockaddr*)&hint,ip, INET_ADDRSTRLEN ); //inet_ntoa(hint.sin_addr);
+    newClient.ipv4 = ip;
     //std::cout << "New client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
     processNewClient(newClient);
 }
