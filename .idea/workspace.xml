@@ -14,13 +14,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Windows/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Windows/Server.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLibd.pdb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/MultiPacketContainer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/MultiPacketContainer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/NetworkDevice.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/NetworkDevice.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/ServerConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ServerConnection.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,12 +52,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
-  </component>
   <component name="ProjectId" id="1Tq2JZb60dIcy9BOKQAoYX5AyPw" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -73,7 +63,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../play-and-games-redux-apocalypse" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -236,10 +226,11 @@
     </state>
     <state width="749" height="520" key="DebuggerActiveHint/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1581787078523" />
     <state width="473" height="466" key="DebuggerActiveHint/67.27.1213.933@67.27.1213.933" timestamp="1578242192479" />
-    <state x="-1180" y="286" key="FileChooserDialogImpl" timestamp="1578828442462">
-      <screen x="-1920" y="10" width="1920" height="1040" />
+    <state x="740" y="276" key="FileChooserDialogImpl" timestamp="1582038682211">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1180" y="286" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1578828442462" />
+    <state x="740" y="276" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582038682211" />
     <state width="1877" height="347" key="GridCell.Tab.0.bottom" timestamp="1582037861657">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -328,5 +319,10 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="this" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
