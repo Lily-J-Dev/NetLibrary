@@ -13,13 +13,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/ClientConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ClientConnection.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Windows/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Windows/Server.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" afterDir="false" />
     </list>
+    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +41,19 @@
     <select />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Source/Windows/Server.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="521">
+              <caret line="148" column="22" lean-forward="true" selection-start-line="148" selection-start-column="22" selection-end-line="148" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -53,7 +64,20 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Source/Windows/Server.cpp" />
+      </list>
+    </option>
+  </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1609" />
+    <option name="y" value="-20" />
+    <option name="width" value="1400" />
+    <option name="height" value="951" />
+  </component>
   <component name="ProjectId" id="1Tq2JZb60dIcy9BOKQAoYX5AyPw" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -65,7 +89,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../play-and-games-redux-apocalypse" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -88,6 +112,18 @@
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Headers\Windows" />
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Source\Windows" />
     </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
   </component>
   <component name="RunManager" selected="CMake Application.netlib_test">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetLib" TARGET_NAME="CTP" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="NetLib" RUN_TARGET_NAME="CTP">
@@ -157,6 +193,7 @@
       <workItem from="1581941184198" duration="935000" />
       <workItem from="1581942406537" duration="9715000" />
       <workItem from="1581961704079" duration="741000" />
+      <workItem from="1582115347670" duration="300000" />
     </task>
     <task id="LOCAL-00001" summary="Include static build option">
       <created>1581701496706</created>
@@ -168,6 +205,35 @@
     <option name="localTasksCounter" value="2" />
     <servers />
   </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="300000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Favorites" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.25" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Database Changes" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info active="true" anchor="bottom" id="Messages" visible="true" weight="0.32936078" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="CMake" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
@@ -177,6 +243,12 @@
         <entry key="MAIN">
           <value>
             <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
@@ -326,5 +398,14 @@
         <watch expression="this" />
       </configuration>
     </watches-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Source/Windows/Server.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="521">
+          <caret line="148" column="22" lean-forward="true" selection-start-line="148" selection-start-column="22" selection-end-line="148" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>
