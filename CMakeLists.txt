@@ -14,17 +14,19 @@ set(netlib_VERSION_FULL "${netlib_VERSION}.${netlib_VERSION_PATCH}${netlib_VERSI
 set(CMAKE_DEBUG_POSTFIX d)
 
 
-set( PROJECT_HEADERS
+set( PROJECT_HEADERS_PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientConnection.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientInfo.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ConnectionInfo.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/Constants.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/MultiPacketContainer.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkDevice.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/ServerConnection.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/Lobby.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/LobbyMember.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkEvent.h")
+
+set( PROJECT_HEADERS_PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/Constants.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/MultiPacketContainer.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkDevice.h")
 
 
 set( PROJECT_SOURCES
@@ -36,26 +38,24 @@ if(UNIX)
     set( PROJECT_SOURCES ${PROJECT_SOURCES}
             "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Server.cpp")
-    set( PROJECT_HEADERS ${PROJECT_HEADERS}
+    set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
             "${CMAKE_CURRENT_LIST_DIR}/Headers/Linux/Client.h"
             "${CMAKE_CURRENT_LIST_DIR}/Headers/Linux/Server.h")
 else()
     set( PROJECT_SOURCES ${PROJECT_SOURCES}
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp")
-    set( PROJECT_HEADERS ${PROJECT_HEADERS}
+    set( PROJECT_HEADERS ${PROJECT_HEADERS_PRIVATE}
             "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Client.h"
             "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Server.h")
 endif()
-
-message("Headers: ${PROJECT_HEADERS}")
 
 set ( PROJECT_CONFIG
         CMakeLists.txt
         Readme.md
         .gitattributes .gitignore .gitmodules )
 
-source_group("Headers" FILES ${PROJECT_HEADERS})
+source_group("Headers" FILES ${PROJECT_HEADERS_PRIVATE} ${PROJECT_HEADERS_PUBLIC})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
 source_group("Configs" FILES ${PROJECT_CONFIG})
@@ -70,9 +70,10 @@ endif()
 
 target_sources(NetLib
         PUBLIC
-        ${PROJECT_HEADERS}
+        ${PROJECT_HEADERS_PUBLIC}
 
         PRIVATE
+        ${PROJECT_HEADERS_PRIVATE}
         ${PROJECT_SOURCES} )
 
 # Define headers for this library. PUBLIC headers are used for

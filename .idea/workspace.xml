@@ -13,10 +13,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Source/Windows/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Windows/Server.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,31 +44,6 @@
     <select />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
-  <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Source/Windows/Server.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="493">
-              <caret line="136" column="48" selection-start-line="136" selection-start-column="48" selection-end-line="136" selection-end-column="48" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Source/Windows/Client.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="58" column="25" selection-start-line="58" selection-start-column="21" selection-end-line="58" selection-end-column="25" />
-              <folding>
-                <element signature="e#0#27#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -75,52 +54,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/Source/Windows/Server.cpp" />
-      </list>
-    </option>
-  </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1609" />
-    <option name="y" value="-20" />
-    <option name="width" value="1400" />
-    <option name="height" value="951" />
-  </component>
   <component name="ProjectId" id="1Tq2JZb60dIcy9BOKQAoYX5AyPw" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="NetLib" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NetLibrary" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="NetLib" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NetLibrary" type="462c0819:PsiDirectoryNode" />
-              <item name="Source" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="NetLib" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NetLibrary" type="462c0819:PsiDirectoryNode" />
-              <item name="Source" type="462c0819:PsiDirectoryNode" />
-              <item name="Windows" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
-  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -153,18 +89,6 @@
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Headers\Windows" />
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Source\Windows" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="CMake Application.netlib_test">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetLib" TARGET_NAME="CTP" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="NetLib" RUN_TARGET_NAME="CTP">
@@ -246,35 +170,6 @@
     <option name="localTasksCounter" value="2" />
     <servers />
   </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2331000" />
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Messages" weight="0.32936078" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="CMake" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.3997833" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Database" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
@@ -284,12 +179,6 @@
         <entry key="MAIN">
           <value>
             <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
@@ -346,59 +235,59 @@
     </state>
     <state x="-1180" y="286" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1578828442462" />
     <state x="740" y="276" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582038682211" />
-    <state width="1877" height="347" key="GridCell.Tab.0.bottom" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.0.bottom" timestamp="1582136031792">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879708" />
+    <state width="1877" height="347" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031792" />
     <state width="1877" height="347" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.0.bottom/67.27.1213.933@67.27.1213.933" timestamp="1581793714113" />
     <state width="609" height="117" key="GridCell.Tab.0.bottom/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.0.center" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.0.center" timestamp="1582136031791">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879708" />
+    <state width="1877" height="347" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031791" />
     <state width="1877" height="347" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.0.center/67.27.1213.933@67.27.1213.933" timestamp="1581793714113" />
     <state width="609" height="117" key="GridCell.Tab.0.center/67.27.733.573@67.27.733.573" timestamp="1577997139736" />
-    <state width="1877" height="347" key="GridCell.Tab.0.left" timestamp="1582042299027">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.0.left" timestamp="1582136031791">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879708" />
+    <state width="1877" height="347" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031791" />
     <state width="1877" height="347" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299027" />
     <state width="1167" height="294" key="GridCell.Tab.0.left/67.27.1213.933@67.27.1213.933" timestamp="1581793714112" />
     <state width="609" height="117" key="GridCell.Tab.0.left/67.27.733.573@67.27.733.573" timestamp="1577997139736" />
-    <state width="1877" height="347" key="GridCell.Tab.0.right" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.0.right" timestamp="1582136031792">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879708" />
+    <state width="1877" height="347" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031792" />
     <state width="1877" height="347" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.0.right/67.27.1213.933@67.27.1213.933" timestamp="1581793714113" />
     <state width="609" height="117" key="GridCell.Tab.0.right/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.bottom" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.1.bottom" timestamp="1582136018572">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879709" />
+    <state width="1877" height="347" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
     <state width="1877" height="347" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.bottom/67.27.1213.933@67.27.1213.933" timestamp="1581793713880" />
     <state width="609" height="117" key="GridCell.Tab.1.bottom/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.center" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.1.center" timestamp="1582136018572">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879709" />
+    <state width="1877" height="347" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
     <state width="1877" height="347" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.center/67.27.1213.933@67.27.1213.933" timestamp="1581793713877" />
     <state width="609" height="117" key="GridCell.Tab.1.center/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.left" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.1.left" timestamp="1582136018572">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879709" />
+    <state width="1877" height="347" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
     <state width="1877" height="347" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.left/67.27.1213.933@67.27.1213.933" timestamp="1581793713876" />
     <state width="609" height="117" key="GridCell.Tab.1.left/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.right" timestamp="1582042299028">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="347" key="GridCell.Tab.1.right" timestamp="1582136018572">
+      <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="346" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581641879709" />
+    <state width="1877" height="347" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
     <state width="1877" height="347" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.right/67.27.1213.933@67.27.1213.933" timestamp="1581793713877" />
     <state width="609" height="117" key="GridCell.Tab.1.right/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
@@ -439,24 +328,5 @@
         <watch expression="this" />
       </configuration>
     </watches-manager>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Source/Windows/Server.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="136" column="48" selection-start-line="136" selection-start-column="48" selection-end-line="136" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Source/Windows/Client.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="58" column="25" selection-start-line="58" selection-start-column="21" selection-end-line="58" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
