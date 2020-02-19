@@ -145,7 +145,7 @@ void netlib::Server::HandleConnectionEvent()
                              0);
 
 
-    newClient.ipv4 = inet_ntoa(hint.sin_addr);
+    newClient.ipv4 = inet_ntoa(client.sin_addr);
 
     if(result == 0)
     {
