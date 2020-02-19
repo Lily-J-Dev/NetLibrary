@@ -45,7 +45,7 @@ else()
     set( PROJECT_SOURCES ${PROJECT_SOURCES}
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp")
-    set( PROJECT_HEADERS ${PROJECT_HEADERS_PRIVATE}
+    set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
             "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Client.h"
             "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Server.h")
 endif()
