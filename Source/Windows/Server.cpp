@@ -100,7 +100,9 @@ void netlib::Server::ProcessNetworkEvents()
 void netlib::Server::HandleConnectionEvent()
 {
     // Accept a new connection
-    SOCKET client = accept(listening, nullptr, nullptr);
+    struct sockaddr_in inaddr;
+    socklen_t socklen = sizeof(sockaddr);
+    SOCKET client = accept(listening, (struct sockaddr *)&inaddr, &socklen);
 
     // Add the new connection to the master file set
     fdLock.lock();
@@ -123,7 +125,7 @@ void netlib::Server::HandleConnectionEvent()
     ZeroMemory(service, NI_MAXSERV);
 
     // Try to get the host name
-    if (getnameinfo((sockaddr*)&hint, sizeof(hint), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
+    if (getnameinfo((sockaddr*)&inaddr, sizeof(inaddr), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
     {
         //std::cout << host << " Connected on port " << service << std::endl;
         newClient.name = host;
@@ -132,7 +134,7 @@ void netlib::Server::HandleConnectionEvent()
     //char ip[INET_ADDRSTRLEN];
     //inet_ntop(hint.sin_family,(sockaddr*)&hint,ip, INET_ADDRSTRLEN );
     //newClient.ipv4 = ip;
-    newClient.ipv4 = inet_ntoa(hint.sin_addr);
+    newClient.ipv4 = inet_ntoa(inaddr.sin_addr);
 
     //std::cout << "New client: " << newClient.name << " Connected with ip " << newClient.ipv4 << std::endl;
     processNewClient(newClient);
