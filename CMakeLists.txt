@@ -124,15 +124,16 @@ set_target_properties(
         CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 )
 
-if(WIN32)
-    include_directories(Headers/Windows)
-    include_directories(Source/Windows)
-ELSE()
-    include_directories(Headers/Linux)
-    include_directories(Source/Linux)
-endif()
-add_executable(netlib_test
-        main.cpp
-        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
+#if(WIN32)
+#    include_directories(Headers/Windows)
+#    include_directories(Source/Windows)
+#ELSE()
+#    include_directories(Headers/Linux)
+#    include_directories(Source/Linux)
+#endif()
 
-target_link_libraries(netlib_test NetLib)
+#add_executable(netlib_test
+#        main.cpp
+#        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
+#
+#target_link_libraries(netlib_test NetLib)
