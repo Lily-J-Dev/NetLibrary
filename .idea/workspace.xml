@@ -2,7 +2,6 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="NetLib" targetName="netlib_test" />
       <config projectName="NetLib" targetName="NetLib" />
     </generated>
   </component>
@@ -38,7 +37,6 @@
     <expand />
     <select />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -85,7 +83,7 @@
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Source\Windows" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.netlib_test">
+  <component name="RunManager" selected="CMake Application.Build All">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetLib" TARGET_NAME="CTP" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="NetLib" RUN_TARGET_NAME="CTP">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -96,15 +94,9 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="netlib_test" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetLib" TARGET_NAME="netlib_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="NetLib" RUN_TARGET_NAME="netlib_test">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="CMake Application.Build All" />
       <item itemvalue="CMake Application.NetLib" />
-      <item itemvalue="CMake Application.netlib_test" />
     </list>
   </component>
   <component name="ServiceViewManager">
