@@ -13,7 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Headers/ClientInfo.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ClientInfo.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

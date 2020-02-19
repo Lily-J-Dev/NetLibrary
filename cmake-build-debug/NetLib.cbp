@@ -160,7 +160,6 @@
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Constants.h">
 			<Option target="NetLib"/>
-			<Option target="netlib_test"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Lobby.h">
 			<Option target="NetLib"/>
@@ -172,11 +171,9 @@
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/MultiPacketContainer.h">
 			<Option target="NetLib"/>
-			<Option target="netlib_test"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/NetworkDevice.h">
 			<Option target="NetLib"/>
-			<Option target="netlib_test"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/NetworkEvent.h">
 			<Option target="NetLib"/>
@@ -193,10 +190,10 @@
 			<Option target="netlib_test"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Client.h">
-			<Option target="netlib_test"/>
+			<Option target="NetLib"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Headers/Windows/Server.h">
-			<Option target="netlib_test"/>
+			<Option target="NetLib"/>
 		</Unit>
 		<Unit filename="E:/NEWPC_BACKUP/Modules/CTP/NetLibrary/Source/ClientConnection.cpp">
 			<Option target="NetLib"/>
