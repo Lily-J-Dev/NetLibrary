@@ -27,6 +27,5 @@ namespace netlib {
         std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
     };
 
-
-#endif //CTP_CLIENTINFO_H
 }
+#endif //CTP_CLIENTINFO_H
