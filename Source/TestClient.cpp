@@ -78,7 +78,7 @@ void TestClient::GetInput()
                 std::cout << "Clients: " << std::endl;
                 for(auto& member : lobby.memberInfo)
                 {
-                    std::cout << "\t Name: " << member.name << " ID: " << member.uid << " (" << member.ping << " ms)" << (member.ready ? "(READY)" : "(NOT READY)") << std::endl;
+                    std::cout << "[" << member.lobbySlot << "] " << "\t Name: " << member.name << " ID: " << member.uid << " (" << member.ping << " ms)" << (member.ready ? "(READY)" : "(NOT READY)") << std::endl;
                 }
             }
             std::cout << std::endl;
@@ -111,6 +111,14 @@ void TestClient::GetInput()
         else if(input == "!ready")
         {
             client.SetReady(false);
+        }
+        else if(input == "#closelobby")
+        {
+            client.SetLobbyOpen(false);
+        }
+        else if(input == "#openlobby")
+        {
+            client.SetLobbyOpen(true);
         }
         else
         {

@@ -8,6 +8,7 @@
 namespace netlib {
     class ServerConnection : public NetworkDevice {
     public:
+
         ServerConnection();
 
         ~ServerConnection();
@@ -19,20 +20,20 @@ namespace netlib {
         /// Returns true if the server is running
         bool IsRunning(){return server.IsRunning();};
 
-        /// Sends the given data to the target client (clientUID)
+        /// Sends the given data to the target client (clientUID).
         void SendMessageTo(const std::vector<char>& data, unsigned int clientUID);
-        /// Sends the given data of length (dataLen) to the target client (clientUID)
+        /// Sends the given data of length (dataLen) to the target client (clientUID).
         void SendMessageTo(const char* data, int dataLen, unsigned int clientUID);
 
-        /// Sends the given data to all clients
-        void SendMessageToAll(const std::vector<char>& data);
-        /// Sends the given data of length (dataLen) to all clients
-        void SendMessageToAll(const char* data, int dataLen);
+        /// Sends the given data to all clients. Can specify to only send to a target lobby (lobbyFilter)
+        void SendMessageToAll(const std::vector<char>& data, unsigned int lobbyFilter = 0);
+        /// Sends the given data of length (dataLen) to all clients. Can specify to only send to a target lobby (lobbyFilter)
+        void SendMessageToAll(const char* data, int dataLen, unsigned int lobbyFilter = 0);
 
-        /// Sends the given data to all clients excluding the target client (clientUID)
-        void SendMessageToAllExcluding(const std::vector<char>& data, unsigned int clientUID);
-        /// Sends the given data of length (dataLen) to all clients excluding the target client (clientUID)
-        void SendMessageToAllExcluding(const char* data, int dataLen, unsigned int clientUID);
+        /// Sends the given data to all clients excluding the target client (clientUID). Can specify to only send to a target lobby (lobbyFilter)
+        void SendMessageToAllExcluding(const std::vector<char>& data, unsigned int clientUID, unsigned int lobbyFilter = 0);
+        /// Sends the given data of length (dataLen) to all clients excluding the target client (clientUID). Can specify to only send to a target lobby (lobbyFilter)
+        void SendMessageToAllExcluding(const char* data, int dataLen, unsigned int clientUID, unsigned int lobbyFilter = 0);
 
         /// Returns a copy of the connection information for a given client
         ClientInfo GetClientInfo(unsigned int clientUID);
@@ -54,7 +55,8 @@ namespace netlib {
         void TerminateConnection(unsigned int clientUID) override;
 
         void CreateNewLobby(NetworkEvent* event);
-        void AddClientToLobby(unsigned int client, unsigned int lobby);
+        void AddClientToLobby(unsigned int client, unsigned int lobby, bool forceSlot = false, unsigned int slot = 0);
+        void AddOpenLobby(unsigned int lobbyID, unsigned int playerUID, bool sendToAll = false);
         void SendEventToAll(NetworkEvent* event);
 
         Server server;
@@ -66,6 +68,7 @@ namespace netlib {
         unsigned int lobbyUID = 1;
         std::mutex lobbyLock;
         std::map<unsigned int, Lobby> lobbies;
+        std::map<unsigned int, std::vector<std::pair<unsigned int,std::string>>> disconnectedMembers;
     };
 }
 

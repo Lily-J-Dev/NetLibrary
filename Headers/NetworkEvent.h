@@ -20,9 +20,7 @@ namespace netlib {
             ONLOBBYJOIN,
             // On the client this event occurs when the client has been removed from its lobby
             REMOVEDFROMLOBBY,
-            // On the client this event occurs when the client re-connects to the server and automatically re-joins its
-            // previous lobby. Note this will only happen if the lobby is closed.
-            ONLOBBYREJOIN,
+
 
         };
 

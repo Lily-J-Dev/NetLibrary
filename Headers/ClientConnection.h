@@ -43,11 +43,17 @@ namespace netlib {
         std::vector<Lobby> GetAllLobbyInfo();
         /// Returns true if the client is currently in a lobby
         bool IsInLobby();
-        /// Returns a copy of the current state of the lobby this client is currently in
+        /// Returns a copy of the current state of the lobby this client is in (client must be in a lobby for this to work!)
         Lobby GetCurrentLobbyInfo();
+
+        /// Returns a copy of the current member data for this client (client must be in a lobby for this to work!)
+        LobbyMember GetMemberInfo();
 
         /// Requests that the server set the state of this client to ready in the currently active lobby
         void SetReady(bool isReady);
+        /// Requests that the server sets the lobby open state to isOpen. Closed lobbies do not appear in GetAllLobbyInfo
+        /// and can't be joined by new clients.
+        void SetLobbyOpen(bool isOpen);
 
     private:
         void ProcessDeviceSpecificEvent(NetworkEvent *event) override;
@@ -67,7 +73,7 @@ namespace netlib {
         bool waitingForPing = false;
 
         std::mutex lobbyLock;
-        std::vector<Lobby> allLobbies;
+        std::map<unsigned int, Lobby> allLobbies;
         unsigned int activeLobby = 0;
     };
 }
