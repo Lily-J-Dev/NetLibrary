@@ -61,6 +61,7 @@ bool netlib::Server::Start(unsigned short port)
 
     FD_SET(listening, &master);
 
+    running = true;
     std::thread tr(&Server::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -71,7 +72,6 @@ bool netlib::Server::Start(unsigned short port)
 void netlib::Server::ProcessNetworkEvents()
 {
     deleteLock.lock();
-    running = true;
 
     while (running)
     {

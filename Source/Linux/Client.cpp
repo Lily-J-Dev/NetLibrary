@@ -54,6 +54,7 @@ bool netlib::Client::Start(const std::string &ipv4, int port)
     //std::cout << "Client successfully initilized!" << std::endl;
 
     sockCopy = sock;
+    running = true;
     std::thread tr(&Client::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -76,7 +77,6 @@ void netlib::Client::SendMessageToServer(const char *data, int dataLength)
 void netlib::Client::ProcessNetworkEvents()
 {
     deleteSafeguard->lock();
-    running = true;
     // Loop to send and receive data
     char buf[netlib::MAX_PACKET_SIZE];
 

@@ -108,6 +108,7 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 
     // Create a copy to avoid threading issues when using the socket
     sockCopy = sock;
+    running = true;
     std::thread tr(&Client::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -118,7 +119,6 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 void netlib::Client::ProcessNetworkEvents()
 {
     deleteGuard.lock();
-    running = true;
     // Loop to send and receive data
     char buf[MAX_PACKET_SIZE];
 
