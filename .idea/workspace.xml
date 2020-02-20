@@ -14,21 +14,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/ClientConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ClientConnection.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/Constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/Constants.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/Lobby.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/Lobby.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/LobbyMember.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/LobbyMember.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/NetworkEvent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/NetworkEvent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/ServerConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ServerConnection.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/ClientConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ClientConnection.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/ServerConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ServerConnection.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TestClient.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TestClient.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TestServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TestServer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,93 +39,6 @@
     <select />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
-  <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Headers/ClientInfo.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#51#78#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Source/TestClient.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-784">
-              <caret line="39" column="44" selection-start-line="39" selection-start-column="44" selection-end-line="39" selection-end-column="44" />
-              <folding>
-                <element signature="e#0#17#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Headers/NetworkEvent.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Headers/ServerConnection.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="404">
-              <caret line="57" column="116" selection-start-line="57" selection-start-column="116" selection-end-line="57" selection-end-column="116" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Source/ServerConnection.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
-              <caret line="529" column="148" selection-start-line="529" selection-start-column="148" selection-end-line="529" selection-end-column="148" />
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Headers/Lobby.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Headers/LobbyMember.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="14" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Source/ClientConnection.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-987">
-              <caret line="170" column="60" selection-start-line="170" selection-start-column="60" selection-end-line="170" selection-end-column="60" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -146,73 +46,12 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>lobbyUID</find>
-      <find>NetworkEvent</find>
-      <find>allLob</find>
-      <find>std::sort</find>
-      <find>lobbySlot</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/Source/TestServer.cpp" />
-        <option value="$PROJECT_DIR$/Headers/ClientConnection.h" />
-        <option value="$PROJECT_DIR$/Headers/LobbyMember.h" />
-        <option value="$PROJECT_DIR$/Source/TestClient.cpp" />
-        <option value="$PROJECT_DIR$/Headers/Constants.h" />
-        <option value="$PROJECT_DIR$/Source/ClientConnection.cpp" />
-        <option value="$PROJECT_DIR$/Headers/ServerConnection.h" />
-        <option value="$PROJECT_DIR$/Headers/NetworkEvent.h" />
-        <option value="$PROJECT_DIR$/Headers/Lobby.h" />
-        <option value="$PROJECT_DIR$/Source/ServerConnection.cpp" />
-      </list>
-    </option>
-  </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1785" />
-    <option name="y" value="-12" />
-    <option name="width" value="1400" />
-    <option name="height" value="1000" />
-  </component>
   <component name="ProjectId" id="1Tq2JZb60dIcy9BOKQAoYX5AyPw" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="NetLib" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NetLibrary" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="NetLib" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NetLibrary" type="462c0819:PsiDirectoryNode" />
-              <item name="Headers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="NetLib" type="b2602c69:ProjectViewProjectNode" />
-              <item name="NetLibrary" type="462c0819:PsiDirectoryNode" />
-              <item name="Source" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -222,7 +61,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ChatRoom - Completed" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -245,18 +84,6 @@
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Headers\Windows" />
       <recent name="C:\Users\tobyj\Desktop\Modules\CTP\NetLibrary\Source\Windows" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="CMake Application.netlib_test">
     <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetLib" TARGET_NAME="CTP" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="NetLib" RUN_TARGET_NAME="CTP">
@@ -328,6 +155,7 @@
       <workItem from="1581961704079" duration="741000" />
       <workItem from="1582115347670" duration="2331000" />
       <workItem from="1582200082395" duration="24106000" />
+      <workItem from="1582236161666" duration="716000" />
     </task>
     <task id="LOCAL-00001" summary="Include static build option">
       <created>1581701496706</created>
@@ -339,35 +167,6 @@
     <option name="localTasksCounter" value="2" />
     <servers />
   </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24106000" />
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Messages" weight="0.32936078" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="CMake" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.3997833" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Database" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
@@ -377,12 +176,6 @@
         <entry key="MAIN">
           <value>
             <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
@@ -434,64 +227,64 @@
     </state>
     <state width="749" height="520" key="DebuggerActiveHint/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1581787078523" />
     <state width="473" height="466" key="DebuggerActiveHint/67.27.1213.933@67.27.1213.933" timestamp="1578242192479" />
-    <state x="740" y="276" key="FileChooserDialogImpl" timestamp="1582163400481">
+    <state x="740" y="276" key="FileChooserDialogImpl" timestamp="1582238039949">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="-1180" y="286" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1578828442462" />
-    <state x="740" y="276" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582163400481" />
-    <state width="1877" height="347" key="GridCell.Tab.0.bottom" timestamp="1582136031792">
+    <state x="740" y="276" key="FileChooserDialogImpl/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582238039949" />
+    <state width="1877" height="347" key="GridCell.Tab.0.bottom" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031792" />
+    <state width="1877" height="347" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.0.bottom/67.27.1213.933@67.27.1213.933" timestamp="1581793714113" />
     <state width="609" height="117" key="GridCell.Tab.0.bottom/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.0.center" timestamp="1582136031791">
+    <state width="1877" height="347" key="GridCell.Tab.0.center" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031791" />
+    <state width="1877" height="347" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.0.center/67.27.1213.933@67.27.1213.933" timestamp="1581793714113" />
     <state width="609" height="117" key="GridCell.Tab.0.center/67.27.733.573@67.27.733.573" timestamp="1577997139736" />
-    <state width="1877" height="347" key="GridCell.Tab.0.left" timestamp="1582136031791">
+    <state width="1877" height="347" key="GridCell.Tab.0.left" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031791" />
+    <state width="1877" height="347" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299027" />
     <state width="1167" height="294" key="GridCell.Tab.0.left/67.27.1213.933@67.27.1213.933" timestamp="1581793714112" />
     <state width="609" height="117" key="GridCell.Tab.0.left/67.27.733.573@67.27.733.573" timestamp="1577997139736" />
-    <state width="1877" height="347" key="GridCell.Tab.0.right" timestamp="1582136031792">
+    <state width="1877" height="347" key="GridCell.Tab.0.right" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136031792" />
+    <state width="1877" height="347" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.0.right/67.27.1213.933@67.27.1213.933" timestamp="1581793714113" />
     <state width="609" height="117" key="GridCell.Tab.0.right/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.bottom" timestamp="1582136018572">
+    <state width="1877" height="347" key="GridCell.Tab.1.bottom" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
+    <state width="1877" height="347" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.bottom/67.27.1213.933@67.27.1213.933" timestamp="1581793713880" />
     <state width="609" height="117" key="GridCell.Tab.1.bottom/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.center" timestamp="1582136018572">
+    <state width="1877" height="347" key="GridCell.Tab.1.center" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
+    <state width="1877" height="347" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.center/67.27.1213.933@67.27.1213.933" timestamp="1581793713877" />
     <state width="609" height="117" key="GridCell.Tab.1.center/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.left" timestamp="1582136018572">
+    <state width="1877" height="347" key="GridCell.Tab.1.left" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
+    <state width="1877" height="347" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.left/67.27.1213.933@67.27.1213.933" timestamp="1581793713876" />
     <state width="609" height="117" key="GridCell.Tab.1.left/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
-    <state width="1877" height="347" key="GridCell.Tab.1.right" timestamp="1582136018572">
+    <state width="1877" height="347" key="GridCell.Tab.1.right" timestamp="1582236139690">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
-    <state width="1877" height="347" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582136018572" />
+    <state width="1877" height="347" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1582236139690" />
     <state width="1877" height="347" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582042299028" />
     <state width="1167" height="294" key="GridCell.Tab.1.right/67.27.1213.933@67.27.1213.933" timestamp="1581793713877" />
     <state width="609" height="117" key="GridCell.Tab.1.right/67.27.733.573@67.27.733.573" timestamp="1577997139737" />
@@ -500,10 +293,11 @@
     </state>
     <state x="189" y="90" key="SettingsEditor/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1581522830549" />
     <state x="67" y="27" key="SettingsEditor/67.27.733.573@67.27.733.573" timestamp="1577989362962" />
-    <state x="-1862" y="217" key="com.intellij.ide.util.TipDialog" timestamp="1581419061275">
+    <state x="-1862" y="217" key="com.intellij.ide.util.TipDialog" timestamp="1582236162057">
       <screen x="-1920" y="10" width="1920" height="1040" />
     </state>
     <state x="-1862" y="217" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.10.1920.1040@-1920.10.1920.1040" timestamp="1581419061275" />
+    <state x="-1862" y="217" key="com.intellij.ide.util.TipDialog/0.0.1920.1040/-1920.10.1920.1040@0.0.1920.1040" timestamp="1582236162057" />
     <state x="89" y="141" key="com.intellij.ide.util.TipDialog/67.27.733.573@67.27.733.573" timestamp="1578066656055" />
     <state x="76" y="0" width="1761" height="1038" key="search.everywhere.popup" timestamp="1581610998229">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -518,127 +312,5 @@
         <watch expression="this" />
       </configuration>
     </watches-manager>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Headers/NetworkDevice.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-145" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/ConnectionInfo.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="458">
-          <caret line="136" column="145" selection-start-line="136" selection-start-column="145" selection-end-line="136" selection-end-column="145" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Source/NetworkDevice.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="85" selection-start-line="85" selection-end-line="85" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Source/TestServer.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="33" column="22" selection-start-line="33" selection-start-column="22" selection-end-line="33" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/ClientConnection.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
-          <caret line="77" column="6" selection-start-line="77" selection-start-column="6" selection-end-line="77" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/Constants.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="12" column="101" selection-start-line="12" selection-start-column="101" selection-end-line="12" selection-end-column="101" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/ServerConnection.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="404">
-          <caret line="57" column="116" selection-start-line="57" selection-start-column="116" selection-end-line="57" selection-end-column="116" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/ClientInfo.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#51#78#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/NetworkEvent.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="29" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/LobbyMember.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="14" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Headers/Lobby.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/MinGW/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ext/aligned_buffer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Source/ClientConnection.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-987">
-          <caret line="170" column="60" selection-start-line="170" selection-start-column="60" selection-end-line="170" selection-end-column="60" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Source/ServerConnection.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="529" column="148" selection-start-line="529" selection-start-column="148" selection-end-line="529" selection-end-column="148" />
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Source/TestClient.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-784">
-          <caret line="39" column="44" selection-start-line="39" selection-start-column="44" selection-end-line="39" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
