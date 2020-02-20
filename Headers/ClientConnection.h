@@ -12,28 +12,41 @@ namespace netlib {
     class ClientConnection : public NetworkDevice {
     public:
         ClientConnection();
-
         ~ClientConnection();
 
+        /// Sends the given data to the server
         void SendMessageToServer(const std::vector<char>& data);
+        /// Sends the given data of length (dataLen) to the server
         void SendMessageToServer(const char* data, int dataLen);
 
-        // Tries to connect to the given ip and port, returning true if successful.
+        /// Tries to connect to the given ip and port, returning true if successful.
         bool ConnectToIP(const std::string &ipv4, unsigned short port);
+        /// Disconnects this client from the server
         void Disconnect();
 
+        /// Returns true if connected to a server
         bool IsRunning(){return client.IsRunning();};
 
+        /// Returns a copy of the connection information for this client
         ConnectionInfo GetConnectionInfo();
+        /// Returns the unique ID for this client
         unsigned int GetUID();
 
+        /// Requests a new lobby be created on the server and automatically adds this client to it
         void CreateLobby(std::string lobbyName, int lobbySize);
+        /// Requests to join a given lobby
         void JoinLobby(unsigned int lobbyUID);
+        /// Requests that a given client is removed from the lobby this client is currently in
         void RemoveFromLobby(unsigned int playerUID);
 
+        /// Returns a copy of the current state of all open lobbies
         std::vector<Lobby> GetAllLobbyInfo();
+        /// Returns true if the client is currently in a lobby
+        bool IsInLobby();
+        /// Returns a copy of the current state of the lobby this client is currently in
         Lobby GetCurrentLobbyInfo();
 
+        /// Requests that the server set the state of this client to ready in the currently active lobby
         void SetReady(bool isReady);
 
     private:

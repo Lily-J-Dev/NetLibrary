@@ -365,3 +365,9 @@ void netlib::ClientConnection::SetReady(bool isReady)
     event->WriteData<bool>(isReady, 1 + (sizeof(unsigned int)*2));
     SendEvent(event);
 }
+
+bool netlib::ClientConnection::IsInLobby()
+{
+    std::lock_guard<std::mutex> guard(lobbyLock);
+    return activeLobby > 0;
+}
