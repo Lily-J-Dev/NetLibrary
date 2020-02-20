@@ -12,8 +12,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLib.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Linux/Client.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Linux/Client.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Linux/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Linux/Server.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Windows/Client.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Windows/Client.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Windows/Server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Windows/Server.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -302,11 +305,6 @@
           <url>file://$PROJECT_DIR$/Source/TestClient.cpp</url>
           <line>62</line>
           <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Headers/ServerConnection.h</url>
-          <line>3</line>
-          <option name="timeStamp" value="27" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

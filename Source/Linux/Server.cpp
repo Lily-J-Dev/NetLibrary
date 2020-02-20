@@ -52,6 +52,7 @@ bool netlib::Server::Start(int port)
 
     FD_SET(listening, &master);
 
+    running = true;
     std::thread tr(&Server::ProcessNetworkEvents, this);
 
     tr.detach();
@@ -76,7 +77,6 @@ void netlib::Server::Stop()
 void netlib::Server::ProcessNetworkEvents()
 {
     deleteLock->lock();
-    running = true;
 
     while(running) {
         fdLock->lock();
