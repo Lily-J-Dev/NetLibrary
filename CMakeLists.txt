@@ -132,8 +132,8 @@ set_target_properties(
 #    include_directories(Source/Linux)
 #endif()
 
-#add_executable(netlib_test
-#        main.cpp
-#        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS})
-#
-#target_link_libraries(netlib_test NetLib)
+add_executable(netlib_test
+        main.cpp
+        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS_PRIVATE} ${PROJECT_HEADERS_PUBLIC})
+
+target_link_libraries(netlib_test NetLib)

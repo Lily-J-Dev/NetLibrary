@@ -54,47 +54,51 @@ void netlib::ServerConnection::SendMessageTo(const char* data, int dataLen, unsi
 }
 
 // Sends a message to all connected clients
-void netlib::ServerConnection::SendMessageToAll(const std::vector<char>& data)
+void netlib::ServerConnection::SendMessageToAll(const std::vector<char>& data, unsigned int lobbyFilter)
 {
     clientInfoLock.lock();
     for(const auto &info : connectedClients)
     {
-        SendMessageTo(data, info.second.uid);
+        if(info.second.lobbyID == lobbyFilter)
+            SendMessageTo(data, info.second.uid);
     }
     clientInfoLock.unlock();
 }
 
-void netlib::ServerConnection::SendMessageToAll(const char* data, int dataLen)
+void netlib::ServerConnection::SendMessageToAll(const char* data, int dataLen, unsigned int lobbyFilter)
 {
     clientInfoLock.lock();
     for(const auto &info : connectedClients)
     {
-        SendMessageTo(data, dataLen, info.second.uid);
+        if(info.second.lobbyID == lobbyFilter)
+            SendMessageTo(data, dataLen, info.second.uid);
     }
     clientInfoLock.unlock();
 }
 
 // Sends a message to all connected clients excluding the specified client
-void netlib::ServerConnection::SendMessageToAllExcluding(const std::vector<char>& data, unsigned int clientUID)
+void netlib::ServerConnection::SendMessageToAllExcluding(const std::vector<char>& data, unsigned int clientUID, unsigned int lobbyFilter)
 {
     clientInfoLock.lock();
     for(const auto &info : connectedClients)
     {
         if(info.first == clientUID)
             continue;
-        SendMessageTo(data, info.first);
+        if(info.second.lobbyID == lobbyFilter)
+            SendMessageTo(data, info.first);
     }
     clientInfoLock.unlock();
 }
 
-void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int dataLen, unsigned int clientUID)
+void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int dataLen, unsigned int clientUID, unsigned int lobbyFilter)
 {
     clientInfoLock.lock();
     for(const auto &info : connectedClients)
     {
         if(info.first == clientUID)
             continue;
-        SendMessageTo(data, dataLen,  info.first);
+        if(info.second.lobbyID == lobbyFilter)
+            SendMessageTo(data, dataLen,  info.first);
     }
     clientInfoLock.unlock();
 }
@@ -169,6 +173,27 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             SendEventToAll(event);
             break;
         }
+        case MessageType::SET_LOBBY_OPEN:
+        {
+            auto lobbyID = event->ReadData<unsigned int>(1);
+            auto clientID = event->ReadData<unsigned int>(1+ sizeof(unsigned int));
+            auto open = event->ReadData<bool>(1 + (sizeof(unsigned int) *2));
+            lobbyLock.lock();
+            lobbies[lobbyID].open = open;
+            lobbyLock.unlock();
+            SendEventToAll(event);
+
+            if(open)
+            {
+                if(disconnectedMembers.count(lobbyID) > 0)
+                    disconnectedMembers.erase(lobbyID);
+                lobbyLock.lock();
+                AddOpenLobby(lobbyID, 0, true);
+                lobbyLock.unlock();
+            }
+
+            break;
+        }
         default:
         {
             break;
@@ -200,7 +225,7 @@ void netlib::ServerConnection::CreateNewLobby(NetworkEvent* event)
     lobbyUID++;
 }
 
-void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned int lobby)
+void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned int lobby, bool forceSlot, unsigned int slot)
 {
     auto event = new NetworkEvent();
     event->senderId = client;
@@ -233,6 +258,48 @@ void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned in
               connectedClients[client].name.data() +  nameLen,
               event->data.data() + 1 + (sizeof(unsigned int) *3));
     clientInfoLock.unlock();
+    SendEventToAll(event);
+
+    event = new NetworkEvent();
+    event->senderId = client;
+    event->data.resize(MAX_PACKET_SIZE);
+    event->data[0] = (char)MessageType::SET_LOBBY_SLOT;
+    lobbyLock.lock();
+    event->WriteData<unsigned int>(lobby, 1);
+    event->WriteData<unsigned int>(client, 1 + sizeof(unsigned int));
+    if(forceSlot)
+    {
+        event->WriteData<unsigned int>(slot, 1 + (sizeof(unsigned int) * 2));
+        lobbies[lobby].memberInfo.back().lobbySlot = slot;
+    }
+    else
+    {
+        unsigned int nextSlot = 0;
+        bool slotFound = false;
+        bool duplicate;
+        while(!slotFound)
+        {
+            duplicate = false;
+            for (LobbyMember &member : lobbies[lobby].memberInfo)
+            {
+                if (member.lobbySlot == nextSlot)
+                {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if(!duplicate)
+                slotFound = true;
+            else
+                nextSlot++;
+        }
+
+        event->WriteData<unsigned int>(nextSlot, 1 + (sizeof(unsigned int) * 2));
+        lobbies[lobby].memberInfo.back().lobbySlot = nextSlot;
+
+    }
+
+    lobbyLock.unlock();
     SendEventToAll(event);
 }
 
@@ -289,9 +356,9 @@ void netlib::ServerConnection::RemoveClientFromLobby(unsigned int clientID, unsi
     }
     if(lobbies[lobbyID].clientsInRoom == 0)
     {
-        int size = lobbies.size();
         lobbies.erase(lobbyID);
-        size = lobbies.size();
+        if(disconnectedMembers.count(lobbyID) > 0)
+            disconnectedMembers.erase(lobbyID);
         auto event = new NetworkEvent();
         event->data.resize(MAX_PACKET_SIZE);
         event->data[0] = (char)MessageType::REMOVE_LOBBY;
@@ -340,49 +407,109 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
     lobbyLock.lock();
     for(auto& lobby : lobbies)
     {
-        auto event = new NetworkEvent();
-        event->data.resize(MAX_PACKET_SIZE);
+        if(lobby.second.open)
+            AddOpenLobby(lobby.first, info.uid);
+    }
 
-        event->WriteData<unsigned int>(lobby.first, 1);
-        event->WriteData<unsigned int>(lobby.second.maxClientsInRoom, 1 + sizeof(unsigned int));
-        event->WriteData<unsigned int>(lobby.second.name.size() + 1, 1 + (sizeof(unsigned int)*2));
-
-        std::copy(lobby.second.name.data(), lobby.second.name.data() + lobby.second.name.size(), event->data.data() + 1 + (sizeof(unsigned int)*3));
-        event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
-        event->senderId = info.uid;
-        SendEvent(event);
-
-        clientInfoLock.lock();
-        for(auto& member : lobby.second.memberInfo)
+    // Check if this client should re-join a lobby it disconnected from
+    for(auto& lobby : disconnectedMembers)
+    {
+        for(auto it = lobby.second.begin(); it != lobby.second.end(); it++)
         {
-            event = new NetworkEvent();
-            event->data.resize(MAX_PACKET_SIZE);
-            event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
-            event->WriteData<unsigned int>(lobby.first, 1);
-            event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
-
-            unsigned int nameLen = connectedClients[member.uid].name.size();
-            event->WriteData<unsigned int>(nameLen, 1 + (sizeof(unsigned int) *2));
-
-            std::copy(connectedClients[member.uid].name.data(),
-                      connectedClients[member.uid].name.data() +  nameLen,
-                      event->data.data() + 1 + (sizeof(unsigned int) *3));
-
-            event->senderId = info.uid;
-            SendEvent(event);
-
-            event = new NetworkEvent();
-            event->data.resize(MAX_PACKET_SIZE);
-            event->data[0] = (char)MessageType::SET_CLIENT_READY;
-            event->WriteData<unsigned int>(lobby.first, 1);
-            event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
-            event->WriteData<bool>(member.ready, 1 + (sizeof(unsigned int)*2));
-            event->senderId = info.uid;
-            SendEvent(event);
+            if(it->second == info.ipv4)
+            {
+                if(lobbies.count(lobby.first) > 0)
+                {
+                    lobbyLock.unlock();
+                    AddOpenLobby(lobby.first, info.uid, false);
+                    AddClientToLobby(info.uid, lobby.first, true, it->first);
+                    lobbyLock.lock();
+                    lobby.second.erase(it);
+                    if (lobby.second.empty())
+                        disconnectedMembers.erase(lobby.first);
+                    lobbyLock.unlock();
+                    return;
+                }
+            }
         }
-        clientInfoLock.unlock();
     }
     lobbyLock.unlock();
+}
+
+
+void netlib::ServerConnection::AddOpenLobby(unsigned int lobbyID, unsigned int clientUID, bool sendToAll)
+{
+    Lobby& lobby = lobbies[lobbyID];
+    auto event = new NetworkEvent();
+    event->data.resize(MAX_PACKET_SIZE);
+
+    event->WriteData<unsigned int>(lobbyID, 1);
+    event->WriteData<unsigned int>(lobby.maxClientsInRoom, 1 + sizeof(unsigned int));
+    event->WriteData<unsigned int>(lobby.name.size() + 1, 1 + (sizeof(unsigned int)*2));
+
+    std::copy(lobby.name.data(), lobby.name.data() + lobby.name.size(), event->data.data() + 1 + (sizeof(unsigned int)*3));
+    event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
+    event->senderId = clientUID;
+    if(sendToAll)
+        SendEventToAll(event);
+    else
+         SendEvent(event);
+    for(auto& member : lobby.memberInfo)
+    {
+        clientInfoLock.lock();
+        event = new NetworkEvent();
+        event->data.resize(MAX_PACKET_SIZE);
+        event->data[0] = (char) MessageType::NEW_LOBBY_CLIENT;
+        event->WriteData<unsigned int>(lobbyID, 1);
+        event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
+
+        unsigned int nameLen = connectedClients[member.uid].name.size();
+        event->WriteData<unsigned int>(nameLen, 1 + (sizeof(unsigned int) * 2));
+
+        std::copy(connectedClients[member.uid].name.data(),
+                  connectedClients[member.uid].name.data() + nameLen,
+                  event->data.data() + 1 + (sizeof(unsigned int) * 3));
+
+        event->senderId = clientUID;
+        if(sendToAll)
+        {
+            clientInfoLock.unlock();
+            SendEventToAll(event);
+            clientInfoLock.lock();
+        }
+        else
+            SendEvent(event);
+
+        event = new NetworkEvent();
+        event->data.resize(MAX_PACKET_SIZE);
+        event->data[0] = (char) MessageType::SET_CLIENT_READY;
+        event->WriteData<unsigned int>(lobbyID, 1);
+        event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
+        event->WriteData<bool>(member.ready, 1 + (sizeof(unsigned int) * 2));
+        event->senderId = clientUID;
+        if(sendToAll)
+        {
+            clientInfoLock.unlock();
+            SendEventToAll(event);
+            clientInfoLock.lock();
+        }
+        else
+            SendEvent(event);
+        clientInfoLock.unlock();
+
+        event = new NetworkEvent();
+        event->senderId = clientUID;
+        event->data.resize(MAX_PACKET_SIZE);
+        event->data[0] = (char)MessageType::SET_LOBBY_SLOT;
+        event->WriteData<unsigned int>(lobby.lobbyID, 1);
+        event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
+        event->WriteData<unsigned int>(member.lobbySlot, 1 + (sizeof(unsigned int)*2));
+
+        if(sendToAll)
+            SendEventToAll(event);
+        else
+            SendEvent(event);
+    }
 }
 
 void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
@@ -392,7 +519,24 @@ void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
     clientInfoLock.unlock();
     if(lobby > 0)
     {
-        RemoveClientFromLobby(clientUID, lobby);
+        lobbyLock.lock();
+        if(lobbies.count(lobby) > 0)
+        {
+            for(auto& member : lobbies[lobby].memberInfo)
+            {
+                if(member.uid == clientUID)
+                {
+                    if(!lobbies[lobby].open && lobbies.count(lobby) > 0)
+                        disconnectedMembers[lobby].push_back(std::pair<unsigned int, std::string>(member.lobbySlot, GetClientInfo(clientUID).ipv4));
+                    lobbyLock.unlock();
+                    RemoveClientFromLobby(clientUID, lobby);
+                    lobbyLock.lock();
+
+                    break;
+                }
+            }
+        }
+        lobbyLock.unlock();
     }
     clientInfoLock.lock();
     connectedClients.erase(clientUID);
@@ -489,4 +633,5 @@ void netlib::ServerConnection::TerminateConnection(unsigned int clientUID)
 {
     server.DisconnectClient(clientUID);
 }
+
 

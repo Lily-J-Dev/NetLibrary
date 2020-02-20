@@ -10,6 +10,7 @@ namespace netlib {
         SINGLE_USER_MESSAGE, // A single packet message from the user - char... (data)
         MULTI_USER_MESSAGE, // A multi packet message from the user - uint(packetID) - uint(packetNum) -> uint(totalPackets) -> char...(data)
         SET_CLIENT_UID, // An internal message from the server to set the clients UID - uint(client uid)
+        SET_LOBBY_SLOT, // Sets the slot for a client in a lobby - uint(lobbyID) -> uint(playerID) -> uint(slot)
         PING_REQUEST, // A 1 byte type only packet that needs to respond with a PING_RESPONSE packet immediately
         PING_RESPONSE, // A 1 byte type only packet that signifies the response of a PING_REQUEST
 
@@ -24,6 +25,7 @@ namespace netlib {
         LOBBY_CLIENT_LEFT, // Tells the client that another client has left a lobby - uint(lobby uid) -> uint(left client uid)
         UPDATE_PEER_CONNECTION_INFO, // Tells the client to update its current lobby peerInfo connection values uint(lobby uid) -> int(infoCount) -> float(ping) -- repeat per infoCount
         SET_CLIENT_READY, // Tells the client that a client has set been set to active/inactive uint(lobby uid) -> uint(client uid) -> bool(isReady)
+        SET_LOBBY_OPEN, // Requests that the server sets this lobby open state - uint(lobby uid) -> bool(lobby open)
         ADD_NEW_LOBBY, // Tells the client there is a new lobby open - uint(lobby uid) -> int(roomSize) -> uint(size of name) ->  char...(lobby name)
         REMOVE_LOBBY, // Tells the client to close a lobby - uint(lobby uid)
 
