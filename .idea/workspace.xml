@@ -13,10 +13,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/ClientConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ClientConnection.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/Lobby.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/Lobby.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Headers/ServerConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ServerConnection.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/ClientConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ClientConnection.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
