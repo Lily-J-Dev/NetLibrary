@@ -12,25 +12,38 @@ namespace netlib {
 
         ~ServerConnection();
 
+        /// Starts the server up
         void Start(unsigned short port);
+        /// Removes a given client from the server
         void DisconnectClient(unsigned int clientUID);
-
+        /// Returns true if the server is running
         bool IsRunning(){return server.IsRunning();};
 
+        /// Sends the given data to the target client (clientUID)
         void SendMessageTo(const std::vector<char>& data, unsigned int clientUID);
+        /// Sends the given data of length (dataLen) to the target client (clientUID)
         void SendMessageTo(const char* data, int dataLen, unsigned int clientUID);
 
+        /// Sends the given data to all clients
         void SendMessageToAll(const std::vector<char>& data);
+        /// Sends the given data of length (dataLen) to all clients
         void SendMessageToAll(const char* data, int dataLen);
 
+        /// Sends the given data to all clients excluding the target client (clientUID)
         void SendMessageToAllExcluding(const std::vector<char>& data, unsigned int clientUID);
+        /// Sends the given data of length (dataLen) to all clients excluding the target client (clientUID)
         void SendMessageToAllExcluding(const char* data, int dataLen, unsigned int clientUID);
 
-        ClientInfo GetClientInfo(unsigned int clientUID); // Gets the connection information for a given client id
+        /// Returns a copy of the connection information for a given client
+        ClientInfo GetClientInfo(unsigned int clientUID);
+        /// Returns a copy of the connection information for all clients
         std::vector<ClientInfo> GetAllClients();
 
+        /// Returns a copy of the current state of all lobbies
         std::vector<Lobby> GetAllLobbies();
+        /// Returns a copy of the current state for a given lobby
         Lobby GetLobby(unsigned int lobbyID);
+        /// Removes a given client from a given lobby
         void RemoveClientFromLobby(unsigned int clientID, unsigned int lobbyID);
     private:
         void SendPacket(NetworkEvent *event) override;
