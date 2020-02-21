@@ -3,7 +3,6 @@
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
       <config projectName="NetLib" targetName="NetLib" />
-      <config projectName="NetLib" targetName="netlib_test" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -13,7 +12,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/ClientConnection.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/ClientConnection.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/Constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/Constants.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Headers/NetworkEvent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Headers/NetworkEvent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/ClientConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ClientConnection.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/ServerConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ServerConnection.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/TestClient.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TestClient.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +42,6 @@
     <expand />
     <select />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -149,7 +153,7 @@
       <workItem from="1582115347670" duration="2331000" />
       <workItem from="1582200082395" duration="24106000" />
       <workItem from="1582236161666" duration="716000" />
-      <workItem from="1582238490667" duration="7000" />
+      <workItem from="1582238490667" duration="4587000" />
     </task>
     <task id="LOCAL-00001" summary="Include static build option">
       <created>1581701496706</created>

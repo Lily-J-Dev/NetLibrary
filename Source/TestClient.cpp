@@ -83,7 +83,7 @@ void TestClient::GetInput()
             }
             std::cout << std::endl;
         }
-        else if(input == "#cl")
+        else if(input == "#createlobby")
         {
             std::cout << "Enter New Lobby Name: ";
             std::getline(std::cin, input);
@@ -104,11 +104,11 @@ void TestClient::GetInput()
             std::getline(std::cin, input);
             client.RemoveFromLobby(std::atoi(input.data()));
         }
-        else if(input == "ready")
+        else if(input == "#!ready")
         {
             client.SetReady(true);
         }
-        else if(input == "!ready")
+        else if(input == "#ready")
         {
             client.SetReady(false);
         }

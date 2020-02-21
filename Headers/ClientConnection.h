@@ -55,6 +55,8 @@ namespace netlib {
         /// and can't be joined by new clients.
         void SetLobbyOpen(bool isOpen);
 
+        /// Sets the name that will be displayed in lobbies
+        void SetLobbyName(std::string newName);
     private:
         void ProcessDeviceSpecificEvent(NetworkEvent *event) override;
         void SendPacket(NetworkEvent *event) override;

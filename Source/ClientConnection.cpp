@@ -45,7 +45,7 @@ void netlib::ClientConnection::ProcessDisconnect()
     messageLock.lock();
     ClearQueue();
     messages.emplace();
-    messages.back().eventType = NetworkEvent::EventType::ONDISCONNECT;
+    messages.back().eventType = NetworkEvent::EventType::ON_DISCONNECT;
     messageLock.unlock();
     Disconnect();
 }
@@ -86,7 +86,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             messageLock.lock();
             ClearQueue();
             messages.emplace();
-            messages.front().eventType = NetworkEvent::EventType::ONCONNECT;
+            messages.front().eventType = NetworkEvent::EventType::ON_CONNECT;
             messageLock.unlock();
             delete event;
             break;
@@ -159,8 +159,9 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             messageLock.lock();
             ClearQueue();
             messages.emplace();
-            messages.back().eventType = NetworkEvent::EventType::ONLOBBYJOIN;
+            messages.back().eventType = NetworkEvent::EventType::ON_LOBBY_JOIN;
             messageLock.unlock();
+            delete event;
             break;
         }
         case MessageType::SET_LOBBY_SLOT:
@@ -174,6 +175,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
                     member.lobbySlot = slot;
             }
             std::sort(allLobbies[lobbyID].memberInfo.begin(),allLobbies[lobbyID].memberInfo.end(), netlib::LobbyMember::Sort);
+            delete event;
             break;
         }
         case MessageType::SET_CLIENT_READY: {
@@ -235,6 +237,27 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
                 allLobbies[lobbyID].open = open;
             }
             lobbyLock.unlock();
+            delete event;
+            break;
+        }
+        case MessageType::SET_LOBBY_NAME:
+        {
+            auto lobbyID = event->ReadData<unsigned int>(1);
+            auto clientID = event->ReadData<unsigned int>(1+ sizeof(unsigned int));
+            auto nameLen = event->ReadData<unsigned int>(1+ (sizeof(unsigned int)*2));
+            lobbyLock.lock();
+            if(allLobbies.count(lobbyID))
+            {
+                for(LobbyMember& member : allLobbies[lobbyID].memberInfo)
+                {
+                    if(member.uid == uid)
+                    {
+                        member.name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*3), nameLen);
+                    }
+                }
+            }
+            lobbyLock.unlock();
+            delete event;
             break;
         }
         case MessageType::LOBBY_CLIENT_LEFT:
@@ -256,7 +279,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
                             messageLock.lock();
                             ClearQueue();
                             messages.emplace();
-                            messages.back().eventType = NetworkEvent::EventType::REMOVEDFROMLOBBY;
+                            messages.back().eventType = NetworkEvent::EventType::REMOVED_FROM_LOBBY;
                             messageLock.unlock();
                         }
                         break;
@@ -270,6 +293,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
         }
         default:
         {
+            delete event;
             break;
         }
     }
@@ -421,4 +445,16 @@ netlib::LobbyMember netlib::ClientConnection::GetMemberInfo()
     }
     std::cerr << "WARNING: Calling GetMemberInfo when the client is not connected to a lobby! Returning an empty LobbyMember struct." << std::endl;
     return LobbyMember();
+}
+
+void netlib::ClientConnection::SetLobbyName(std::string newName)
+{
+    auto event = new NetworkEvent();
+    event->data.resize(MAX_PACKET_SIZE);
+    event->data[0] = (char)MessageType::SET_LOBBY_NAME;
+    event->WriteData<unsigned int>(activeLobby, 1);
+    event->WriteData<unsigned int>(uid, 1 + sizeof(unsigned int));
+    event->WriteData<unsigned int>(newName.size()+1, 1 + (sizeof(unsigned int)*2));
+    std::copy(newName.data(), newName.data() + newName.size()+1, event->data.data()+ 1 + (sizeof(unsigned int)*3));
+    SendEvent(event);
 }

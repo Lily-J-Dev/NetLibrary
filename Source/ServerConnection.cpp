@@ -153,6 +153,7 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             auto clientID = event->ReadData<unsigned int>(1);
             auto lobbyID = event->ReadData<unsigned int>(1+sizeof(unsigned int));
             RemoveClientFromLobby(clientID, lobbyID);
+            delete event;
             break;
         }
         case MessageType::SET_CLIENT_READY:
@@ -191,11 +192,29 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
                 AddOpenLobby(lobbyID, 0, true);
                 lobbyLock.unlock();
             }
-
+            delete event;
             break;
+        }
+        case MessageType::SET_LOBBY_NAME:
+        {
+            auto lobbyID = event->ReadData<unsigned int>(1);
+            auto clientID = event->ReadData<unsigned int>(1+ sizeof(unsigned int));
+            auto nameLen = event->ReadData<unsigned int>(1+ (sizeof(unsigned int)*2));
+            clientInfoLock.lock();
+            connectedClients[clientID].name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*3), nameLen);
+            clientInfoLock.unlock();
+            if(lobbyID != 0)
+            {
+                SendEvent(event);
+            }
+            else
+            {
+                delete event;
+            }
         }
         default:
         {
+            delete event;
             break;
         }
     }
@@ -392,7 +411,7 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
     ClearQueue();
     messages.emplace();
     messages.front().senderId = info.uid;
-    messages.front().eventType = NetworkEvent::EventType::ONCONNECT;
+    messages.front().eventType = NetworkEvent::EventType::ON_CONNECT;
     messageLock.unlock();
 
     auto packet = new NetworkEvent();
@@ -546,7 +565,7 @@ void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
     ClearQueue();
     messages.emplace();
     messages.front().senderId = clientUID;
-    messages.front().eventType = NetworkEvent::EventType::ONDISCONNECT;
+    messages.front().eventType = NetworkEvent::EventType::ON_DISCONNECT;
     messageLock.unlock();
 }
 
