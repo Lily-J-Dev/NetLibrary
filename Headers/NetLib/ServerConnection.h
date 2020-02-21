@@ -1,7 +1,11 @@
 #ifndef CTP_SERVERCONNECTION_H
 #define CTP_SERVERCONNECTION_H
 
-#include "Server.h"
+#ifdef WIN32
+#include "NetLib/Windows/Server.h"
+#else
+#include "NetLib/Linux/Server.h"
+#endif
 #include "NetworkDevice.h"
 #include "Lobby.h"
 

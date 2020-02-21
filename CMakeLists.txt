@@ -12,7 +12,8 @@ set(netlib_VERSION_FULL "${netlib_VERSION}.${netlib_VERSION_PATCH}${netlib_VERSI
 
 # Let's give the debug library a postfix
 set(CMAKE_DEBUG_POSTFIX d)
-
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+include(platform)
 
 set( PROJECT_HEADERS_PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/ClientConnection.h"
@@ -76,31 +77,17 @@ target_sources(NetLib
         ${PROJECT_HEADERS_PRIVATE}
         ${PROJECT_SOURCES} )
 
-# Define headers for this library. PUBLIC headers are used for
-# compiling the library and added to build paths.
-if(WIN32)
-    target_include_directories(NetLib
-            PUBLIC
-            $<INSTALL_INTERFACE:include>
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
-            PRIVATE
-            "${CMAKE_CURRENT_SOURCE_DIR}/Source"
-            "${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows"
-            SYSTEM
-            )
-else()
-    target_include_directories(NetLib
-            PUBLIC
-            $<INSTALL_INTERFACE:include>
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
-            PRIVATE
-            "${CMAKE_CURRENT_SOURCE_DIR}/Source"
-            "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux"
-            SYSTEM
-            )
-endif()
+target_include_directories(NetLib
+        PUBLIC
+        SYSTEM
+        $<INSTALL_INTERFACE:include>
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
+        PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Netlib"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/${PLATFORM}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source/${PLATFORM}>" )
+
 
 # Compiler requirements for this library,
 target_compile_features(NetLib PUBLIC cxx_std_14)
@@ -124,16 +111,13 @@ set_target_properties(
         CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 )
 
-#if(WIN32)
-#    include_directories(Headers/Windows)
-#    include_directories(Source/Windows)
-#ELSE()
-#    include_directories(Headers/Linux)
-#    include_directories(Source/Linux)
-#endif()
+add_executable(netlib_test
+        main.cpp
+        Source/TestClient.cpp
+        Headers/NetLib/TestClient.h
+        Source/TestServer.cpp
+        Headers/NetLib/TestServer.h
+        ${PROJECT_HEADERS_PRIVATE}
+        ${PROJECT_HEADERS_PUBLIC})
 
-#add_executable(netlib_test
-#        main.cpp
-#        Source/TestClient.cpp Headers/NetLib/TestClient.h Source/TestServer.cpp Headers/NetLib/TestServer.h ${PROJECT_HEADERS_PRIVATE} ${PROJECT_HEADERS_PUBLIC})
-#
-#target_link_libraries(netlib_test NetLib)
+target_link_libraries(netlib_test NetLib)
