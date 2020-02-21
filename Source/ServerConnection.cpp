@@ -574,6 +574,7 @@ void netlib::ServerConnection::UpdateNetworkStats()
     // Handle pings
     using clock = std::chrono::steady_clock;
     clientInfoLock.lock();
+    lobbyLock.lock();
     for(auto& client : connectedClients) {
         if (!client.second.waitingForPing &&
             std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - client.second.timeOfLastPing).count() >
@@ -589,7 +590,6 @@ void netlib::ServerConnection::UpdateNetworkStats()
             outQueueLock.unlock();
             client.second.timeOfLastPing = clock::now();
             // If this client is the top member of a lobby, use this time to refresh all the ping values for the lobby
-            lobbyLock.lock();
             if(lobbies.count(client.second.lobbyID) > 0 && lobbies[client.second.lobbyID].memberInfo[0].uid == client.first)
             {
                 auto event = new NetworkEvent();
@@ -606,13 +606,20 @@ void netlib::ServerConnection::UpdateNetworkStats()
                     event->WriteData<float>(member.ping, offset);
                     offset += sizeof(float);
                 }
-                clientInfoLock.unlock();
-                SendEventToAll(event);
-                clientInfoLock.lock();
+                for(auto& client : connectedClients)
+                {
+                    auto copy = new netlib::NetworkEvent();
+                    *copy = *event;
+                    copy->senderId = client.first;
+                    SendEvent(copy);
+                }
+
+                delete event;
             }
-            lobbyLock.unlock();
+
         }
     }
+    lobbyLock.unlock();
     clientInfoLock.unlock();
 }
 

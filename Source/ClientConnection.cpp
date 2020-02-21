@@ -170,12 +170,18 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             unsigned int lobbyID = *reinterpret_cast<unsigned int*>(&event->data[1]);
             unsigned int playerID = *reinterpret_cast<unsigned int*>(&event->data[1 + sizeof(unsigned int)]);
             unsigned int slot = *reinterpret_cast<unsigned int*>(&event->data[1 + (sizeof(unsigned int)*2)]);
-            for(LobbyMember& member : allLobbies[lobbyID].memberInfo)
+            lobbyLock.lock();
+            if(allLobbies.count(lobbyID) > 0 )
             {
-                if(member.uid == playerID)
-                    member.lobbySlot = slot;
+                for (LobbyMember &member : allLobbies[lobbyID].memberInfo)
+                {
+                    if (member.uid == playerID)
+                        member.lobbySlot = slot;
+                }
+                std::sort(allLobbies[lobbyID].memberInfo.begin(), allLobbies[lobbyID].memberInfo.end(),
+                          netlib::LobbyMember::Sort);
             }
-            std::sort(allLobbies[lobbyID].memberInfo.begin(),allLobbies[lobbyID].memberInfo.end(), netlib::LobbyMember::Sort);
+            lobbyLock.unlock();
             delete event;
             break;
         }
@@ -212,15 +218,22 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             lobbyLock.lock();
             if(allLobbies.count(lobbyID) > 0)
             {
+                bool alreadyExists = false;
                 for(auto& member : allLobbies[lobbyID].memberInfo)
                 {
                     if(member.uid == clientID)
-                        break;
+                    {
+                        alreadyExists = true;
+                    }
                 }
-                allLobbies[lobbyID].clientsInRoom++;
-                allLobbies[lobbyID].memberInfo.emplace_back();
-                allLobbies[lobbyID].memberInfo.back().uid = clientID;
-                allLobbies[lobbyID].memberInfo.back().name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*3), nameLen);
+                if(!alreadyExists)
+                {
+                    allLobbies[lobbyID].clientsInRoom++;
+                    allLobbies[lobbyID].memberInfo.emplace_back();
+                    allLobbies[lobbyID].memberInfo.back().uid = clientID;
+                    allLobbies[lobbyID].memberInfo.back().name = std::string(
+                            event->data.data() + 1 + (sizeof(unsigned int) * 3), nameLen);
+                }
             }
             lobbyLock.unlock();
             delete event;
@@ -232,14 +245,17 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             auto open = event->ReadData<bool>(1 + (sizeof(unsigned int) *2));
             lobbyLock.lock();
 
-            // If this client is not in the lobby that has been closed, remove it from the list
-            if(!open && activeLobby != lobbyID)
+            if(allLobbies.count(lobbyID) > 0)
             {
-                allLobbies.erase(lobbyID);
-            }
-            if(activeLobby == lobbyID && allLobbies.count(lobbyID) > 0)
-            {
-                allLobbies[lobbyID].open = open;
+                // If this client is not in the lobby that has been closed, remove it from the list
+                if (!open && activeLobby != lobbyID)
+                {
+                    allLobbies.erase(lobbyID);
+                }
+                if (activeLobby == lobbyID && allLobbies.count(lobbyID) > 0)
+                {
+                    allLobbies[lobbyID].open = open;
+                }
             }
             lobbyLock.unlock();
             delete event;
