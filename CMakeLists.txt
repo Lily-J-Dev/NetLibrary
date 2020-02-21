@@ -82,8 +82,8 @@ if(WIN32)
     target_include_directories(NetLib
             PUBLIC
             $<INSTALL_INTERFACE:include>
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/Windows>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
             PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/Source"
             "${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows"
@@ -94,7 +94,7 @@ else()
             PUBLIC
             $<INSTALL_INTERFACE:include>
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/Linux>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
             PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/Source"
             "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux"
