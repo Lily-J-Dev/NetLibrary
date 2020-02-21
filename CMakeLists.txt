@@ -96,7 +96,7 @@ target_compile_features(NetLib PUBLIC cxx_std_14)
 if(WIN32)
     target_link_libraries(NetLib PUBLIC ws2_32 wsock32)
 else()
-    SET(CMAKE_CXX_FLAGS -pthread)
+    target_link_libraries(NetLib PUBLIC pthread)
 endif()
 
 
