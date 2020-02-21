@@ -13,16 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d549d11-8dff-4097-887d-f2cda125aa34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/ClientConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ClientConnection.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/ServerConnection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/ServerConnection.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TestClient.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TestClient.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/TestServer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/TestServer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/NetLibd.lib" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.ilk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/netlib_test.pdb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +155,7 @@
       <workItem from="1582115347670" duration="2331000" />
       <workItem from="1582200082395" duration="24106000" />
       <workItem from="1582236161666" duration="716000" />
-      <workItem from="1582238490667" duration="6936000" />
+      <workItem from="1582238490667" duration="7557000" />
     </task>
     <task id="LOCAL-00001" summary="Include static build option">
       <created>1581701496706</created>

@@ -192,7 +192,6 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
                 AddOpenLobby(lobbyID, 0, true);
                 lobbyLock.unlock();
             }
-            delete event;
             break;
         }
         case MessageType::SET_LOBBY_NAME:
