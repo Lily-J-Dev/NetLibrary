@@ -12,9 +12,12 @@
 
 netlib::Client::~Client()
 {
-    Stop();
-    deleteSafeguard->lock();
-    deleteSafeguard->unlock();
+    if(running)
+    {
+        Stop();
+        deleteSafeguard->lock();
+        deleteSafeguard->unlock();
+    }
 }
 
 void netlib::Client::Stop()
