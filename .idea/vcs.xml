@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ChatRoom/ChatRoom/cmake-build-debug/_deps/netlib-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/NetworkLibrary" vcs="Git" />
   </component>
 </project>

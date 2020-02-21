@@ -1,5 +1,5 @@
-#include "TestServer.h"
-#include "TestClient.h"
+#include "NetLib/TestServer.h"
+#include "NetLib/TestClient.h"
 #include <chrono>
 #include <thread>
 #include <mutex>

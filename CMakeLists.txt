@@ -15,18 +15,18 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 
 set( PROJECT_HEADERS_PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientConnection.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/ClientInfo.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/ConnectionInfo.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/ServerConnection.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/Lobby.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/LobbyMember.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkEvent.h")
+        "Headers/NetLib/ClientConnection.h"
+        "Headers/NetLib/ClientInfo.h"
+        "Headers/NetLib/ConnectionInfo.h"
+        "Headers/NetLib/ServerConnection.h"
+        "Headers/NetLib/Lobby.h"
+        "Headers/NetLib/LobbyMember.h"
+        "Headers/NetLib/NetworkEvent.h")
 
 set( PROJECT_HEADERS_PRIVATE
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/Constants.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/MultiPacketContainer.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetworkDevice.h")
+        "Headers/NetLib/Constants.h"
+        "Headers/NetLib/MultiPacketContainer.h"
+        "Headers/NetLib/NetworkDevice.h")
 
 
 set( PROJECT_SOURCES
@@ -39,15 +39,15 @@ if(UNIX)
             "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Server.cpp")
     set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/Linux/Client.h"
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/Linux/Server.h")
+            "Headers/NetLib/Linux/Client.h"
+            "Headers/NetLib/Linux/Server.h")
 else()
     set( PROJECT_SOURCES ${PROJECT_SOURCES}
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp")
     set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Client.h"
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/Windows/Server.h")
+            "Headers/NetLib/Windows/Client.h"
+            "Headers/NetLib/Windows/Server.h")
 endif()
 
 set ( PROJECT_CONFIG
@@ -82,8 +82,8 @@ if(WIN32)
     target_include_directories(NetLib
             PUBLIC
             $<INSTALL_INTERFACE:include>
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/Windows>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/Windows>"
             PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/Source"
             "${CMAKE_CURRENT_SOURCE_DIR}/Source/Windows"
@@ -93,8 +93,8 @@ else()
     target_include_directories(NetLib
             PUBLIC
             $<INSTALL_INTERFACE:include>
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/Linux>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/Linux>"
             PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/Source"
             "${CMAKE_CURRENT_SOURCE_DIR}/Source/Linux"
@@ -132,8 +132,8 @@ set_target_properties(
 #    include_directories(Source/Linux)
 #endif()
 
-#add_executable(netlib_test
-#        main.cpp
-#        Source/TestClient.cpp Headers/TestClient.h Source/TestServer.cpp Headers/TestServer.h ${PROJECT_HEADERS_PRIVATE} ${PROJECT_HEADERS_PUBLIC})
-#
-#target_link_libraries(netlib_test NetLib)
+add_executable(netlib_test
+        main.cpp
+        Source/TestClient.cpp Headers/NetLib/TestClient.h Source/TestServer.cpp Headers/NetLib/TestServer.h ${PROJECT_HEADERS_PRIVATE} ${PROJECT_HEADERS_PUBLIC})
+
+target_link_libraries(netlib_test NetLib)
