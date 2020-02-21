@@ -1,10 +1,15 @@
 #include "NetLib/TestServer.h"
+#include "NetLib/ClientConnection.h"
 #include <iostream>
 #include <string>
 
 TestServer::TestServer()
 {
     //server.Start(24000);
+    auto test = new netlib::ServerConnection();
+    delete test;
+    auto test2 = new netlib::ClientConnection();
+    delete test2;
 }
 
 int TestServer::Update()
