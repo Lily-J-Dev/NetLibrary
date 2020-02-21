@@ -128,12 +128,14 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
         case MessageType::ADD_NEW_LOBBY:
         {
             lobbyLock.lock();
-            unsigned int id = event->ReadData<unsigned int>(1);
-            allLobbies[id].lobbyID = id;
-            allLobbies[id].maxClientsInRoom = event->ReadData<int>(1 + sizeof(int));
-            auto nameLen = event->ReadData<unsigned int>(1 + (sizeof(unsigned int)) * 2);
-            allLobbies[id].name = std::string(event->data.data()+1+(sizeof(unsigned int) *3), nameLen);
-
+            auto id = event->ReadData<unsigned int>(1);
+            if(id != activeLobby)
+            {
+                allLobbies[id].lobbyID = id;
+                allLobbies[id].maxClientsInRoom = event->ReadData<int>(1 + sizeof(int));
+                auto nameLen = event->ReadData<unsigned int>(1 + (sizeof(unsigned int)) * 2);
+                allLobbies[id].name = std::string(event->data.data() + 1 + (sizeof(unsigned int) * 3), nameLen);
+            }
 
             lobbyLock.unlock();
             delete event;
@@ -210,7 +212,11 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             lobbyLock.lock();
             if(allLobbies.count(lobbyID) > 0)
             {
-
+                for(auto& member : allLobbies[lobbyID].memberInfo)
+                {
+                    if(member.uid == lobbyID)
+                        break;
+                }
                 allLobbies[lobbyID].clientsInRoom++;
                 allLobbies[lobbyID].memberInfo.emplace_back();
                 allLobbies[lobbyID].memberInfo.back().uid = clientID;
