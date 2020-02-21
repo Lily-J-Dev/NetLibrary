@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
-#include "Constants.h"
+#include "NetLib/Constants.h"
 
 #pragma comment (lib, "Ws2_32.lib")
 

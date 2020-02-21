@@ -8,7 +8,7 @@
 #include <thread>
 
 #include "Client.h"
-#include "Constants.h"
+#include "NetLib/Constants.h"
 
 netlib::Client::~Client()
 {

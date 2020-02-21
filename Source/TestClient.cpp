@@ -1,5 +1,5 @@
 #include <thread>
-#include "TestClient.h"
+#include "NetLib/TestClient.h"
 
 TestClient::TestClient()
 {

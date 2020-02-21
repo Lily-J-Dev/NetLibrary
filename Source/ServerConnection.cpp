@@ -1,4 +1,4 @@
-#include "../Headers/ServerConnection.h"
+#include "NetLib/ServerConnection.h"
 #include <iterator>
 #include <iostream>
 

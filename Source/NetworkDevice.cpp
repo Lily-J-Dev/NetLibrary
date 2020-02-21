@@ -1,5 +1,5 @@
-#include "NetworkDevice.h"
-#include "Constants.h"
+#include "NetLib/NetworkDevice.h"
+#include "NetLib/Constants.h"
 #include <cassert>
 #include <iostream>
 #include <chrono>

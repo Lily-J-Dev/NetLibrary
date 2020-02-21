@@ -1,7 +1,7 @@
 #include <iostream>
 #include <algorithm>
-#include "ClientConnection.h"
-#include "Constants.h"
+#include "NetLib/ClientConnection.h"
+#include "NetLib/Constants.h"
 
 netlib::ClientConnection::ClientConnection()
 {
