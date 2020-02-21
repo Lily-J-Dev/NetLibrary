@@ -3,7 +3,11 @@
 
 #include <queue>
 #include <map>
-#include "Client.h"
+#ifdef WIN32
+#include "NetLib/Windows/Client.h"
+#else
+#include "NetLib/Linux/Client.h"
+#endif
 #include "NetworkDevice.h"
 #include "ConnectionInfo.h"
 #include "Lobby.h"
