@@ -15,18 +15,18 @@ set(CMAKE_DEBUG_POSTFIX d)
 
 
 set( PROJECT_HEADERS_PUBLIC
-        "Headers/NetLib/ClientConnection.h"
-        "Headers/NetLib/ClientInfo.h"
-        "Headers/NetLib/ConnectionInfo.h"
-        "Headers/NetLib/ServerConnection.h"
-        "Headers/NetLib/Lobby.h"
-        "Headers/NetLib/LobbyMember.h"
-        "Headers/NetLib/NetworkEvent.h")
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/ClientConnection.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/ClientInfo.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/ConnectionInfo.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/ServerConnection.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Lobby.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/LobbyMember.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/NetworkEvent.h")
 
 set( PROJECT_HEADERS_PRIVATE
-        "Headers/NetLib/Constants.h"
-        "Headers/NetLib/MultiPacketContainer.h"
-        "Headers/NetLib/NetworkDevice.h")
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Constants.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/MultiPacketContainer.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/NetworkDevice.h")
 
 
 set( PROJECT_SOURCES
@@ -39,15 +39,15 @@ if(UNIX)
             "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Server.cpp")
     set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
-            "Headers/NetLib/Linux/Client.h"
-            "Headers/NetLib/Linux/Server.h")
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Linux/Client.h"
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Linux/Server.h")
 else()
     set( PROJECT_SOURCES ${PROJECT_SOURCES}
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp")
     set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
-            "Headers/NetLib/Windows/Client.h"
-            "Headers/NetLib/Windows/Server.h")
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Windows/Client.h"
+            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Windows/Server.h")
 endif()
 
 set ( PROJECT_CONFIG
