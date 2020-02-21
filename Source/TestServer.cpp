@@ -23,12 +23,12 @@ int TestServer::Update()
 
                 break;
             }
-            case NetworkEvent::EventType::ONCONNECT:
+            case NetworkEvent::EventType::ON_CONNECT:
             {
                 std::cout << "New Client " + server.GetClientInfo(event.senderId).name + " connected on IP: " << server.GetClientInfo(event.senderId).ipv4 << " ID: " << event.senderId << std::endl;
                 break;
             }
-            case NetworkEvent::EventType::ONDISCONNECT:
+            case NetworkEvent::EventType::ON_DISCONNECT:
             {
                 std::cout << "Client " + std::to_string(event.senderId) + " disconnected." << std::endl;
                 break;

@@ -161,7 +161,6 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             messages.emplace();
             messages.back().eventType = NetworkEvent::EventType::ON_LOBBY_JOIN;
             messageLock.unlock();
-            delete event;
             break;
         }
         case MessageType::SET_LOBBY_SLOT:
