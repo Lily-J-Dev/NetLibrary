@@ -7,9 +7,9 @@
 #include <netdb.h>
 #include <forward_list>
 
-#include "Constants.h"
-#include "NetworkEvent.h"
-#include "ClientInfo.h"
+#include "NetLib/Constants.h"
+#include "NetLib/NetworkEvent.h"
+#include "NetLib/ClientInfo.h"
 
 namespace netlib
 {

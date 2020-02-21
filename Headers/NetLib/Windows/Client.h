@@ -4,7 +4,7 @@
 #include <mutex>
 #include <queue>
 #include <functional>
-#include "NetworkEvent.h"
+#include "NetLib/NetworkEvent.h"
 
 namespace netlib {
 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <thread>
-#include "../Headers/Windows/Server.h"
+#include "Server.h"
 
 #pragma comment (lib, "ws2_32.lib")
 
