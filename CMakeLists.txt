@@ -12,7 +12,7 @@ set(netlib_VERSION_FULL "${netlib_VERSION}.${netlib_VERSION_PATCH}${netlib_VERSI
 
 # Let's give the debug library a postfix
 set(CMAKE_DEBUG_POSTFIX d)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(platform)
 
 set( PROJECT_HEADERS_PUBLIC
@@ -82,10 +82,10 @@ target_include_directories(NetLib
         SYSTEM
         $<INSTALL_INTERFACE:include>
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/${PLATFORM}>"
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Netlib"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Headers/NetLib/${PLATFORM}>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source/${PLATFORM}>" )
 
 
