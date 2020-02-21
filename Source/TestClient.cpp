@@ -19,7 +19,7 @@ int TestClient::Update()
     {
         switch (events.front().eventType)
         {
-            case netlib::NetworkEvent::EventType::ONCONNECT:
+            case netlib::NetworkEvent::EventType::ON_CONNECT:
             {
                 std::cout << "Connected to the server!" << std::endl;
                 std::thread tr(&TestClient::GetInput, this);
@@ -32,17 +32,17 @@ int TestClient::Update()
                 std::cout << events.front().data.data() << std::endl;
                 break;
             }
-            case netlib::NetworkEvent::EventType::ONDISCONNECT:
+            case netlib::NetworkEvent::EventType::ON_DISCONNECT:
             {
                 std::cout << "Remotely disconnected from server." << std::endl;
                 break;
             }
-            case netlib::NetworkEvent::EventType::ONLOBBYJOIN:
+            case netlib::NetworkEvent::EventType::ON_LOBBY_JOIN:
             {
                 std::cout << "Joined new Lobby: " << client.GetCurrentLobbyInfo().name << std::endl;
                 break;
             }
-            case netlib::NetworkEvent::EventType::REMOVEDFROMLOBBY:
+            case netlib::NetworkEvent::EventType::REMOVED_FROM_LOBBY:
             {
                 std::cout << "Removed from lobby." << std::endl;
                 break;
