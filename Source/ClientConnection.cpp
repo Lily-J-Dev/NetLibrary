@@ -214,7 +214,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             {
                 for(auto& member : allLobbies[lobbyID].memberInfo)
                 {
-                    if(member.uid == lobbyID)
+                    if(member.uid == clientID)
                         break;
                 }
                 allLobbies[lobbyID].clientsInRoom++;
