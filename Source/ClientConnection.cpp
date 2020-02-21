@@ -249,7 +249,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             {
                 for(LobbyMember& member : allLobbies[lobbyID].memberInfo)
                 {
-                    if(member.uid == uid)
+                    if(member.uid == clientID)
                     {
                         member.name = std::string(event->data.data() + 1 + (sizeof(unsigned int)*3), nameLen);
                     }
@@ -374,8 +374,8 @@ void netlib::ClientConnection::CreateLobby(std::string lobbyName, int lobbySize)
     event->data.resize(MAX_PACKET_SIZE);
     event->data[0] = (char)MessageType::REQUEST_NEW_LOBBY;
     event->WriteData<int>(lobbySize, 1 + sizeof(int));
-    event->WriteData<unsigned int>(lobbyName.size()+1, 1 + (sizeof(unsigned int)*2));
-    std::copy(lobbyName.data(), lobbyName.data() + lobbyName.size()+1, event->data.data()+ 1 + (sizeof(unsigned int)*3));
+    event->WriteData<unsigned int>(lobbyName.size(), 1 + (sizeof(unsigned int)*2));
+    std::copy(lobbyName.data(), lobbyName.data() + lobbyName.size(), event->data.data()+ 1 + (sizeof(unsigned int)*3));
     SendEvent(event);
 }
 
@@ -453,7 +453,7 @@ void netlib::ClientConnection::SetLobbyName(std::string newName)
     event->data[0] = (char)MessageType::SET_LOBBY_NAME;
     event->WriteData<unsigned int>(activeLobby, 1);
     event->WriteData<unsigned int>(uid, 1 + sizeof(unsigned int));
-    event->WriteData<unsigned int>(newName.size()+1, 1 + (sizeof(unsigned int)*2));
-    std::copy(newName.data(), newName.data() + newName.size()+1, event->data.data()+ 1 + (sizeof(unsigned int)*3));
+    event->WriteData<unsigned int>(newName.size(), 1 + (sizeof(unsigned int)*2));
+    std::copy(newName.data(), newName.data() + newName.size(), event->data.data()+ 1 + (sizeof(unsigned int)*3));
     SendEvent(event);
 }

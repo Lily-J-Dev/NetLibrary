@@ -20,7 +20,6 @@ int TestServer::Update()
             {
                 ClientInfo info = server.GetClientInfo(event.senderId);
                 server.SendMessageToAllExcluding(event.data, event.senderId, info.lobbyID);
-
                 break;
             }
             case NetworkEvent::EventType::ON_CONNECT:

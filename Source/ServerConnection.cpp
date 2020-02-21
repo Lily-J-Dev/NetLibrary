@@ -205,12 +205,13 @@ void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             clientInfoLock.unlock();
             if(lobbyID != 0)
             {
-                SendEvent(event);
+                SendEventToAll(event);
             }
             else
             {
                 delete event;
             }
+            break;
         }
         default:
         {
@@ -270,7 +271,7 @@ void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned in
     lobbies[lobby].memberInfo.back().uid = client;
     lobbyLock.unlock();
 
-    unsigned int nameLen = connectedClients[client].name.size() + 1;
+    unsigned int nameLen = connectedClients[client].name.size();
     event->WriteData<unsigned int>(nameLen, 1 + (sizeof(unsigned int) *2));
 
     std::copy(connectedClients[client].name.data(),
@@ -464,7 +465,7 @@ void netlib::ServerConnection::AddOpenLobby(unsigned int lobbyID, unsigned int c
 
     event->WriteData<unsigned int>(lobbyID, 1);
     event->WriteData<unsigned int>(lobby.maxClientsInRoom, 1 + sizeof(unsigned int));
-    event->WriteData<unsigned int>(lobby.name.size() + 1, 1 + (sizeof(unsigned int)*2));
+    event->WriteData<unsigned int>(lobby.name.size(), 1 + (sizeof(unsigned int)*2));
 
     std::copy(lobby.name.data(), lobby.name.data() + lobby.name.size(), event->data.data() + 1 + (sizeof(unsigned int)*3));
     event->data[0] = (char)MessageType::ADD_NEW_LOBBY;
