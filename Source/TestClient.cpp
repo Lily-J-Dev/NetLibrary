@@ -120,6 +120,12 @@ void TestClient::GetInput()
         {
             client.SetLobbyOpen(true);
         }
+        else if(input == "#setname")
+        {
+            std::cout << "Enter new name: ";
+            std::getline(std::cin, input);
+            client.SetLobbyName(input);
+        }
         else
         {
             input = std::to_string(client.GetUID()) + ": " + input;
