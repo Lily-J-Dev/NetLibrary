@@ -12,14 +12,14 @@ namespace netlib {
              MESSAGE,
             // On the client this event occurs after ConnectToIP is called and once fully connected to a server.
             // On the server this event occurs when a new client has connected, the client can be found in data.senderID.
-             ONCONNECT,
+             ON_CONNECT,
             // On the client this event occurs after the client has disconnected from the server.
             // On the server this event occurs when a client has disconnected, the client can be found in data.senderID.
-            ONDISCONNECT,
+            ON_DISCONNECT,
             // On the client this event occurs when the client successfully joins a lobby
-            ONLOBBYJOIN,
+            ON_LOBBY_JOIN,
             // On the client this event occurs when the client has been removed from its lobby
-            REMOVEDFROMLOBBY,
+            REMOVED_FROM_LOBBY,
 
 
         };

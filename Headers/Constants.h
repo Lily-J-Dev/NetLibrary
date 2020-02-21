@@ -18,6 +18,7 @@ namespace netlib {
         REQUEST_NEW_LOBBY, // Signals for the server to create a new lobby and add this client to it - uint(blank) -> int(roomSize) -> uint(size of name) -> char...(lobby name)
         REMOVE_FROM_LOBBY, // Tells the server to remove the given client from its current lobby - uint(clientUID)
         JOIN_LOBBY, // Tells the server to add this client to the chosen lobby - uint(lobby uid)
+        SET_LOBBY_NAME, // Tells the server to update this players name - uint(lobbyID) -> uint(playerID) -> uint(size of name) -> char...(name)
 
         // Events the server can send to clients
         SET_ACTIVE_LOBBY, // Tells the client to set its active lobby - uint(lobbyUID)
