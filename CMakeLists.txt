@@ -27,29 +27,28 @@ set( PROJECT_HEADERS_PUBLIC
 set( PROJECT_HEADERS_PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Constants.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/MultiPacketContainer.h"
-        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/NetworkDevice.h")
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/NetworkDevice.h"
 
+        ## PLATFORM HEADERS
+        ## $<$<PLATFORM_ID:Darwin:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/OSX/Client.h>
+        ## $<$<PLATFORM_ID:Darwin:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/OSX/Server.h>
+        $<$<PLATFORM_ID:Linux>:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Linux/Client.h>
+        $<$<PLATFORM_ID:Linux>:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Linux/Server.h>
+        $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Windows/Client.h>
+        $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Windows/Server.h>)
 
 set( PROJECT_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/Source/ClientConnection.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Source/NetworkDevice.cpp"
-        "${CMAKE_CURRENT_LIST_DIR}/Source/ServerConnection.cpp")
+        "${CMAKE_CURRENT_LIST_DIR}/Source/ServerConnection.cpp"
 
-if(UNIX)
-    set( PROJECT_SOURCES ${PROJECT_SOURCES}
-            "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Client.cpp"
-            "${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Server.cpp")
-    set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Linux/Client.h"
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Linux/Server.h")
-else()
-    set( PROJECT_SOURCES ${PROJECT_SOURCES}
-            "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp"
-            "${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp")
-    set( PROJECT_HEADERS_PRIVATE ${PROJECT_HEADERS_PRIVATE}
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Windows/Client.h"
-            "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Windows/Server.h")
-endif()
+        ## PLATFORM SOURCES
+        ## $<$<PLATFORM_ID:Darwin:${CMAKE_CURRENT_LIST_DIR}/Source/OSX/Client.cpp>
+        ## $<$<PLATFORM_ID:Darwin>:${CMAKE_CURRENT_LIST_DIR}/Source/OSX/Server.cpp>
+        $<$<PLATFORM_ID:Linux>:${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Client.cpp>
+        $<$<PLATFORM_ID:Linux>:${CMAKE_CURRENT_LIST_DIR}/Source/Linux/Server.cpp>
+        $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Client.cpp>
+        $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/Source/Windows/Server.cpp>)
 
 set ( PROJECT_CONFIG
         CMakeLists.txt
@@ -61,13 +60,8 @@ source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
 source_group("Configs" FILES ${PROJECT_CONFIG})
 
-if(STATIC_NETLIB)
-    add_library(
-            NetLib STATIC)
-else()
-   add_library(
-           NetLib SHARED)
-endif()
+## this should auto-detect depending on the build options?
+add_library(NetLib)
 
 target_sources(NetLib
         PUBLIC
@@ -88,20 +82,15 @@ target_include_directories(NetLib
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Netlib"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source/${PLATFORM}>" )
 
-
 # Compiler requirements for this library,
 target_compile_features(NetLib PUBLIC cxx_std_14)
+target_compile_definitions(NetLib PRIVATE $<$<PLATFORM_ID:Windows>:WIN32 _WINSOCK_DEPRECATED_NO_WARNINGS>)
 
 # Dependencies on other libraries
-if(WIN32)
-    target_link_libraries(NetLib PUBLIC ws2_32 wsock32)
-else()
-    target_link_libraries(NetLib PUBLIC pthread)
-endif()
-
+target_link_libraries(NetLib PUBLIC $<$<PLATFORM_ID:Linux>:pthread>)
+target_link_libraries(NetLib PUBLIC $<$<PLATFORM_ID:Windows>:ws2_32 wsock32>)
 
 # This makes the project importable from the build directory
-
 set_target_properties(
         ${PROJECT_NAME} PROPERTIES
         VERSION ${netlib_VERSION_FULL}
