@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.9.0)
 
 OPTION(STATIC_NETLIB "Builds the library as static" ON)
+option(BUILD_NETLIB_TEST "Builds the netlib test chatroom" false)
 
 project(NetLib)
 set(netlib_VERSION_MAJOR "0")
@@ -111,13 +112,14 @@ set_target_properties(
         CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 )
 
-add_executable(netlib_test
-        main.cpp
-        Source/TestClient.cpp
-        Headers/NetLib/TestClient.h
-        Source/TestServer.cpp
-        Headers/NetLib/TestServer.h
-        ${PROJECT_HEADERS_PRIVATE}
-        ${PROJECT_HEADERS_PUBLIC})
-
-target_link_libraries(netlib_test NetLib)
+if(BUILD_NETLIB_TEST)
+    add_executable(netlib_test
+            main.cpp
+            Source/TestClient.cpp
+            Headers/NetLib/TestClient.h
+            Source/TestServer.cpp
+            Headers/NetLib/TestServer.h
+            ${PROJECT_HEADERS_PRIVATE}
+            ${PROJECT_HEADERS_PUBLIC})
+    target_link_libraries(netlib_test NetLib)
+endif()
