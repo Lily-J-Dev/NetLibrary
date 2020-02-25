@@ -15,8 +15,8 @@
 namespace netlib {
     class ClientConnection : public NetworkDevice {
     public:
-        ClientConnection();
         ~ClientConnection();
+        ClientConnection() = default;
 
         /// Sends the given data to the server
         void SendMessageToServer(const std::vector<char>& data);

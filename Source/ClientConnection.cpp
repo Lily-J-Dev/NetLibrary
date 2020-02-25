@@ -3,14 +3,9 @@
 #include "NetLib/ClientConnection.h"
 #include "NetLib/Constants.h"
 
-netlib::ClientConnection::ClientConnection()
-{
-
-}
-
 netlib::ClientConnection::~ClientConnection()
 {
-
+    Disconnect();
 }
 
 void netlib::ClientConnection::Disconnect()

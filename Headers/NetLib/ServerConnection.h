@@ -13,9 +13,9 @@ namespace netlib {
     class ServerConnection : public NetworkDevice {
     public:
 
-        ServerConnection();
+        ServerConnection() = default;
 
-        ~ServerConnection();
+        ~ServerConnection() = default;
 
         /// Starts the server up
         void Start(unsigned short port);

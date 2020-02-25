@@ -13,14 +13,16 @@ netlib::Server::~Server()
 
 void netlib::Server::Stop()
 {
-    running = false;
-    deleteLock.lock();
-    deleteLock.unlock();
-    for(unsigned int i = 0; i<master.fd_count; i++)
+    if(running)
     {
-        closesocket(master.fd_array[i]);
+        running = false;
+        deleteLock.lock();
+        deleteLock.unlock();
+        for (unsigned int i = 0; i < master.fd_count; i++) {
+            closesocket(master.fd_array[i]);
+        }
+        WSACleanup();
     }
-    WSACleanup();
 }
 
 bool netlib::Server::Start(unsigned short port)

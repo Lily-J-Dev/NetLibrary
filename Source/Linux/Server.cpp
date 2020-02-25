@@ -10,11 +10,14 @@
 
 netlib::Server::~Server()
 {
-    Stop();
-    deleteLock->lock();
-    deleteLock->unlock();
-    delete deleteLock;
-    delete fdLock;
+    if(running)
+    {
+        Stop();
+        deleteLock->lock();
+        deleteLock->unlock();
+        delete deleteLock;
+        delete fdLock;
+    }
 }
 
 bool netlib::Server::Start(int port)
@@ -63,15 +66,18 @@ bool netlib::Server::Start(int port)
 
 void netlib::Server::Stop()
 {
-    running = false;
-    deleteLock->lock();
-    deleteLock->unlock();
-    close(listening);
-    for(auto const& socket : sockets)
+    if(running)
     {
-        close(socket);
+        running = false;
+        deleteLock->lock();
+        deleteLock->unlock();
+        close(listening);
+        for (auto const &socket : sockets)
+        {
+            close(socket);
+        }
+        sockets.clear();
     }
-    sockets.clear();
 }
 
 void netlib::Server::ProcessNetworkEvents()
