@@ -30,7 +30,6 @@ void netlib::Client::Stop()
 
 bool netlib::Client::Start(const std::string &ipv4, int port)
 {
-    deleteSafeguard = new std::mutex();
     //std::cout << "Initializing Client..." << std::endl;
     // Create a socket
     sock = socket(AF_INET, SOCK_STREAM, 0);

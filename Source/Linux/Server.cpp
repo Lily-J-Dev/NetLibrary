@@ -19,7 +19,6 @@ netlib::Server::~Server()
 
 bool netlib::Server::Start(int port)
 {
-    deleteLock = new std::mutex();
     fdLock = new std::mutex();
     // Create a socket
     listening = socket(AF_INET, SOCK_STREAM, 0);
