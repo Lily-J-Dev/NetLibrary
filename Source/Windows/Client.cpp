@@ -15,13 +15,14 @@ netlib::Client::~Client()
 
 void netlib::Client::Stop()
 {
-    if(!running)
-        return;
-    running = false;
-    deleteGuard.lock();
-    deleteGuard.unlock();
-    closesocket(sock);
-    WSACleanup();
+    if(running)
+    {
+        running = false;
+        deleteGuard.lock();
+        deleteGuard.unlock();
+        closesocket(sock);
+        WSACleanup();
+    }
 }
 
 int netlib::Client::Start(const std::string& ipv4, unsigned short port)

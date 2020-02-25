@@ -19,10 +19,13 @@ netlib::Client::~Client()
 
 void netlib::Client::Stop()
 {
-    running = false;
-    deleteSafeguard->lock();
-    deleteSafeguard->unlock();
-    close(sock);
+    if(running)
+    {
+        running = false;
+        deleteSafeguard->lock();
+        deleteSafeguard->unlock();
+        close(sock);
+    }
 }
 
 bool netlib::Client::Start(const std::string &ipv4, int port)

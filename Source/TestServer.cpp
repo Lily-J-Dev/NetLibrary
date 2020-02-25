@@ -4,11 +4,12 @@
 
 TestServer::TestServer()
 {
-    server.Start(24000);
+    //server.Start(24000);
 }
 
 int TestServer::Update()
 {
+    return 0;
     using namespace netlib;
     auto events = server.GetNetworkEvents();
     while(!events.empty())
