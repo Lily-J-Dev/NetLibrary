@@ -42,14 +42,13 @@ void netlib::NetworkDevice::Start()
 void netlib::NetworkDevice::Stop()
 {
     running = false;
-    deleteLock.lock();
-    deleteLock.unlock();
+    std::lock_guard<std::mutex> lockGuard(deleteLock);
     recMultiPackets.clear();
 }
 
 void netlib::NetworkDevice::Run()
 {
-    deleteLock.lock();
+    std::lock_guard<std::mutex> lockGuard(deleteLock);
     while (running)
     {
         // Send all messages in queue
@@ -82,18 +81,15 @@ void netlib::NetworkDevice::Run()
         }
 
         outQueueLock.unlock();
-
         UpdateNetworkStats();
-
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    deleteLock.unlock();
 }
 
 std::queue<netlib::NetworkEvent> netlib::NetworkDevice::GetNetworkEvents()
 {
-    ClearQueue();
     std::lock_guard<std::mutex> guard(messageLock);
+    ClearQueue();
     shouldClearQueue = true;
     return messages;
 }
