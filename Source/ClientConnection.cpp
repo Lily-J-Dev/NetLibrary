@@ -5,7 +5,7 @@
 
 netlib::ClientConnection::~ClientConnection()
 {
-    Disconnect();
+    Stop();
 }
 
 void netlib::ClientConnection::Disconnect()
