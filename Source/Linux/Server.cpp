@@ -82,7 +82,7 @@ void netlib::Server::ProcessNetworkEvents()
         fd_set mCopy = master;
         fdLock->unlock();
 
-        TIMEVAL tv;
+        timeval tv;
         tv.tv_sec = 0;
         tv.tv_usec = 100000;
         unsigned int socketCount = select(SOMAXCONN + 1, &mCopy, nullptr, nullptr, &tv);
