@@ -15,7 +15,7 @@
 namespace netlib {
     class ClientConnection : public NetworkDevice {
     public:
-        ~ClientConnection();
+        ~ClientConnection() override;
         ClientConnection() = default;
 
         /// Sends the given data to the server
