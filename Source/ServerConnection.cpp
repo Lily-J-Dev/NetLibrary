@@ -2,11 +2,6 @@
 #include <iterator>
 #include <iostream>
 
-netlib::ServerConnection::~ServerConnection()
-{
-    while(!safeToExit);
-}
-
 void netlib::ServerConnection::Start(unsigned short port)
 {
     if(server.IsRunning())
