@@ -40,6 +40,8 @@ namespace netlib {
         std::mutex messageLock;
         std::queue<NetworkEvent> messages;
         std::queue<unsigned int> disconnectQueue;
+
+        std::atomic_bool safeToExit{true};
     private:
         void Run();
 
@@ -51,7 +53,6 @@ namespace netlib {
         unsigned int maxPacketDataLen = 0;
         unsigned int maxMultiPacketDataLen = 0;
 
-        std::mutex deleteLock;
         std::atomic_bool running;
     };
 }

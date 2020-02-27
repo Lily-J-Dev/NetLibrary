@@ -9,8 +9,6 @@
 netlib::Client::~Client()
 {
     Stop();
-    deleteGuard.lock();
-    deleteGuard.unlock();
 }
 
 void netlib::Client::Stop()
@@ -18,8 +16,7 @@ void netlib::Client::Stop()
     if(running)
     {
         running = false;
-        deleteGuard.lock();
-        deleteGuard.unlock();
+        while(!safeToExit);
         closesocket(sock);
         WSACleanup();
     }
@@ -110,6 +107,7 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
     // Create a copy to avoid threading issues when using the socket
     sockCopy = sock;
     running = true;
+    safeToExit = false;
     std::thread tr(&Client::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -119,7 +117,6 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 
 void netlib::Client::ProcessNetworkEvents()
 {
-    deleteGuard.lock();
     // Loop to send and receive data
     char buf[MAX_PACKET_SIZE];
 
@@ -138,13 +135,11 @@ void netlib::Client::ProcessNetworkEvents()
         }
         else
         {
-            deleteGuard.unlock();
             processDisconnect();
             return;
         }
     }
-
-    deleteGuard.unlock();
+    safeToExit = true;
 }
 
 void netlib::Client::SendMessageToServer(const char* data, int dataLength)

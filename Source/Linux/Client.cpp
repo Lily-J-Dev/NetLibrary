@@ -15,8 +15,6 @@ netlib::Client::~Client()
     if(running)
     {
         Stop();
-        deleteSafeguard->lock();
-        deleteSafeguard->unlock();
     }
 }
 
@@ -25,8 +23,7 @@ void netlib::Client::Stop()
     if(running)
     {
         running = false;
-        deleteSafeguard->lock();
-        deleteSafeguard->unlock();
+        while(!safeToExit);
         close(sock);
     }
 }
@@ -61,6 +58,7 @@ bool netlib::Client::Start(const std::string &ipv4, int port)
 
     sockCopy = sock;
     running = true;
+    safeToExit = false;
     std::thread tr(&Client::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -82,7 +80,6 @@ void netlib::Client::SendMessageToServer(const char *data, int dataLength)
 
 void netlib::Client::ProcessNetworkEvents()
 {
-    deleteSafeguard->lock();
     // Loop to send and receive data
     char buf[netlib::MAX_PACKET_SIZE];
 
@@ -106,6 +103,5 @@ void netlib::Client::ProcessNetworkEvents()
             processDisconnect();
         }
     }
-
-    deleteSafeguard->unlock();
+    safeToExit = true;
 }

@@ -30,7 +30,7 @@ namespace netlib {
         SOCKET sock = INVALID_SOCKET;
         SOCKET sockCopy = INVALID_SOCKET;
 
+        std::atomic_bool safeToExit{true};
         std::atomic_bool running{false};
-        std::mutex deleteGuard;
     };
 }

@@ -6,6 +6,7 @@
 netlib::ClientConnection::~ClientConnection()
 {
     Disconnect();
+    while(!safeToExit);
 }
 
 void netlib::ClientConnection::Disconnect()

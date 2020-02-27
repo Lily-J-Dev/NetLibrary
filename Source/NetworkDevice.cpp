@@ -35,6 +35,7 @@ void netlib::NetworkDevice::Start()
         outQueue.pop();
     }
 
+    safeToExit = false;
     std::thread tr(&NetworkDevice::Run, this);
     tr.detach();
 }
@@ -42,14 +43,12 @@ void netlib::NetworkDevice::Start()
 void netlib::NetworkDevice::Stop()
 {
     running = false;
-    deleteLock.lock();
-    deleteLock.unlock();
     recMultiPackets.clear();
+    while(!safeToExit);
 }
 
 void netlib::NetworkDevice::Run()
 {
-    deleteLock.lock();
     while (running)
     {
         // Send all messages in queue
@@ -87,7 +86,7 @@ void netlib::NetworkDevice::Run()
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    deleteLock.unlock();
+    safeToExit = true;
 }
 
 std::queue<netlib::NetworkEvent> netlib::NetworkDevice::GetNetworkEvents()

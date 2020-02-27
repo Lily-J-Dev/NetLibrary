@@ -13,9 +13,6 @@ netlib::Server::~Server()
     if(running)
     {
         Stop();
-        deleteLock->lock();
-        deleteLock->unlock();
-        delete deleteLock;
         delete fdLock;
     }
 }
@@ -28,7 +25,7 @@ bool netlib::Server::Start(int port)
     listening = socket(AF_INET, SOCK_STREAM, 0);
     if(listening == -1)
     {
-        std::cerr << "Failed to create socket" << std::endl;;
+        std::cerr << "Failed to create socket" << std::endl;
         return false;
     }
 
@@ -56,8 +53,8 @@ bool netlib::Server::Start(int port)
     FD_SET(listening, &master);
 
     running = true;
+    safeToExit = false;
     std::thread tr(&Server::ProcessNetworkEvents, this);
-
     tr.detach();
 
     //std::cout << "Server Initialized!"  << std::endl;
@@ -69,8 +66,7 @@ void netlib::Server::Stop()
     if(running)
     {
         running = false;
-        deleteLock->lock();
-        deleteLock->unlock();
+        while(!safeToExit);
         close(listening);
         for (auto const &socket : sockets)
         {
@@ -82,8 +78,6 @@ void netlib::Server::Stop()
 
 void netlib::Server::ProcessNetworkEvents()
 {
-    deleteLock->lock();
-
     while(running) {
         fdLock->lock();
         fd_set mCopy = master;
@@ -109,8 +103,7 @@ void netlib::Server::ProcessNetworkEvents()
         }
         fdLock->unlock();
     }
-
-    deleteLock->unlock();
+    safeToExit = true;
 }
 
 void netlib::Server::HandleConnectionEvent()
