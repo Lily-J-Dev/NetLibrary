@@ -76,7 +76,11 @@ void netlib::Server::ProcessNetworkEvents()
         fdLock.lock();
         fd_set mCopy = master;
         fdLock.unlock();
-        unsigned int socketCount = select(0, &mCopy, nullptr, nullptr, nullptr);
+
+        TIMEVAL tv;
+        tv.tv_sec = 0;
+        tv.tv_usec = 100000;
+        unsigned int socketCount = select(0, &mCopy, nullptr, nullptr, &tv);
 
         for (unsigned int i = 0; i < socketCount; i++)
         {

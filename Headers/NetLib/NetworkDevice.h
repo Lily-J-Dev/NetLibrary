@@ -53,7 +53,7 @@ namespace netlib {
         unsigned int maxPacketDataLen = 0;
         unsigned int maxMultiPacketDataLen = 0;
 
-        std::atomic_bool running;
+        std::atomic_bool running{false};
     };
 }
 

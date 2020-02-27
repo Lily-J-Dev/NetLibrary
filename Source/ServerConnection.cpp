@@ -4,7 +4,8 @@
 
 netlib::ServerConnection::~ServerConnection()
 {
-    while(!safeToExit);
+     NetworkDevice::Stop();
+     while(!safeToExit);
 }
 
 void netlib::ServerConnection::Start(unsigned short port)
