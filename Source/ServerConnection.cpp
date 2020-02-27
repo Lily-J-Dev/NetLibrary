@@ -650,4 +650,7 @@ void netlib::ServerConnection::TerminateConnection(unsigned int clientUID)
     server.DisconnectClient(clientUID);
 }
 
-
+netlib::ServerConnection::~ServerConnection()
+{
+    NetworkDevice::Stop();
+}
