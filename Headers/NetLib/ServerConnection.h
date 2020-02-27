@@ -14,8 +14,7 @@ namespace netlib {
     public:
 
         ServerConnection() = default;
-
-        ~ServerConnection() = default;
+        ~ServerConnection();
 
         /// Starts the server up
         void Start(unsigned short port);

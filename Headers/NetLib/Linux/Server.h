@@ -44,7 +44,7 @@ private:
     char cBuf[netlib::MAX_PACKET_SIZE];
 
     std::atomic_bool running{false};
-    std::mutex* deleteLock;
+    std::atomic_bool safeToExit{true};
     std::mutex* fdLock;
     std::forward_list<int> sockets;
 };

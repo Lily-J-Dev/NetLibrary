@@ -28,6 +28,6 @@ private:
     int sockCopy = -1;
 
     std::atomic_bool running{false};
-    std::mutex* deleteSafeguard;
+    std::atomic_bool safeToExit{true};
 };
 }

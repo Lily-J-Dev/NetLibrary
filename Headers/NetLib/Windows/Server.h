@@ -43,9 +43,7 @@ namespace netlib {
         unsigned int nextUid = 1;
 
         std::atomic_bool running{false};
+        std::atomic_bool safeToExit{true};
         std::mutex fdLock;
-        std::mutex deleteLock;
-
-
     };
 }

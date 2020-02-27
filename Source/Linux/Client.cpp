@@ -15,8 +15,11 @@ netlib::Client::~Client()
     if(running)
     {
         Stop();
+<<<<<<< HEAD
         deleteSafeguard->lock();
         deleteSafeguard->unlock();
+=======
+>>>>>>> upstream/master
     }
 }
 
@@ -25,15 +28,18 @@ void netlib::Client::Stop()
     if(running)
     {
         running = false;
+<<<<<<< HEAD
         deleteSafeguard->lock();
         deleteSafeguard->unlock();
+=======
+        while(!safeToExit);
+>>>>>>> upstream/master
         close(sock);
     }
 }
 
 bool netlib::Client::Start(const std::string &ipv4, int port)
 {
-    deleteSafeguard = new std::mutex();
     //std::cout << "Initializing Client..." << std::endl;
     // Create a socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -61,6 +67,7 @@ bool netlib::Client::Start(const std::string &ipv4, int port)
 
     sockCopy = sock;
     running = true;
+    safeToExit = false;
     std::thread tr(&Client::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -82,7 +89,6 @@ void netlib::Client::SendMessageToServer(const char *data, int dataLength)
 
 void netlib::Client::ProcessNetworkEvents()
 {
-    deleteSafeguard->lock();
     // Loop to send and receive data
     char buf[netlib::MAX_PACKET_SIZE];
 
@@ -106,6 +112,5 @@ void netlib::Client::ProcessNetworkEvents()
             processDisconnect();
         }
     }
-
-    deleteSafeguard->unlock();
+    safeToExit = true;
 }

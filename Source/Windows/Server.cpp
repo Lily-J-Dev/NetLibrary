@@ -14,7 +14,8 @@ void netlib::Server::Stop()
     if(running)
     {
         running = false;
-        std::lock_guard<std::mutex> lockGuard(deleteLock);
+
+        while(!safeToExit);
         for (unsigned int i = 0; i < master.fd_count; i++) {
             closesocket(master.fd_array[i]);
         }
@@ -61,6 +62,7 @@ bool netlib::Server::Start(unsigned short port)
     FD_SET(listening, &master);
 
     running = true;
+    safeToExit = false;
     std::thread tr(&Server::ProcessNetworkEvents, this);
     tr.detach();
 
@@ -70,8 +72,6 @@ bool netlib::Server::Start(unsigned short port)
 
 void netlib::Server::ProcessNetworkEvents()
 {
-    std::lock_guard<std::mutex> lockGuard(deleteLock);
-
     while (running)
     {
         fdLock.lock();
@@ -97,6 +97,8 @@ void netlib::Server::ProcessNetworkEvents()
             }
         }
     }
+
+    safeToExit = true;
 }
 
 void netlib::Server::HandleConnectionEvent()
