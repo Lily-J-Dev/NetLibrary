@@ -81,9 +81,7 @@ void netlib::NetworkDevice::Run()
         }
 
         outQueueLock.unlock();
-
         UpdateNetworkStats();
-
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     safeToExit = true;
@@ -91,8 +89,8 @@ void netlib::NetworkDevice::Run()
 
 std::queue<netlib::NetworkEvent> netlib::NetworkDevice::GetNetworkEvents()
 {
-    ClearQueue();
     std::lock_guard<std::mutex> guard(messageLock);
+    ClearQueue();
     shouldClearQueue = true;
     return messages;
 }

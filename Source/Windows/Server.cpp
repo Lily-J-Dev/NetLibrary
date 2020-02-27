@@ -14,6 +14,7 @@ void netlib::Server::Stop()
     if(running)
     {
         running = false;
+
         while(!safeToExit);
         for (unsigned int i = 0; i < master.fd_count; i++) {
             closesocket(master.fd_array[i]);
@@ -96,6 +97,7 @@ void netlib::Server::ProcessNetworkEvents()
             }
         }
     }
+
     safeToExit = true;
 }
 

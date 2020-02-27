@@ -65,7 +65,8 @@ void netlib::Server::Stop()
     if(running)
     {
         running = false;
-        while(!safeToExit);
+        while(!safeToExit){};
+
         close(listening);
         for (auto const &socket : sockets)
         {

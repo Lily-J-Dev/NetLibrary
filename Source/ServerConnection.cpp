@@ -2,12 +2,6 @@
 #include <iterator>
 #include <iostream>
 
-netlib::ServerConnection::~ServerConnection()
-{
-     NetworkDevice::Stop();
-     while(!safeToExit);
-}
-
 void netlib::ServerConnection::Start(unsigned short port)
 {
     if(server.IsRunning())
@@ -656,4 +650,7 @@ void netlib::ServerConnection::TerminateConnection(unsigned int clientUID)
     server.DisconnectClient(clientUID);
 }
 
-
+netlib::ServerConnection::~ServerConnection()
+{
+    NetworkDevice::Stop();
+}

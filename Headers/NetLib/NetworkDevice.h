@@ -11,8 +11,7 @@ namespace netlib {
     class NetworkDevice {
     public:
         NetworkDevice();
-
-        ~NetworkDevice();
+        virtual ~NetworkDevice();
 
         bool MessagesPending();
 

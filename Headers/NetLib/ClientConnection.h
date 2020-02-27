@@ -3,7 +3,7 @@
 
 #include <queue>
 #include <map>
-#ifdef WIN32
+#if defined WIN32 || defined _WIN32
 #include "NetLib/Windows/Client.h"
 #else
 #include "NetLib/Linux/Client.h"
@@ -15,7 +15,7 @@
 namespace netlib {
     class ClientConnection : public NetworkDevice {
     public:
-        ~ClientConnection();
+        ~ClientConnection() override;
         ClientConnection() = default;
 
         /// Sends the given data to the server
