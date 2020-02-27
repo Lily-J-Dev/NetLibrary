@@ -8,7 +8,8 @@
 
 netlib::Client::~Client()
 {
-    Stop();
+    if(running)
+        Stop();
 }
 
 void netlib::Client::Stop()
@@ -135,8 +136,8 @@ void netlib::Client::ProcessNetworkEvents()
         }
         else
         {
+            running = false;
             processDisconnect();
-            return;
         }
     }
     safeToExit = true;

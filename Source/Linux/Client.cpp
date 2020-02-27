@@ -99,6 +99,7 @@ void netlib::Client::ProcessNetworkEvents()
         }
         else
         {
+            running = false;
             processDisconnect();
         }
     }
