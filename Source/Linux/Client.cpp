@@ -15,11 +15,6 @@ netlib::Client::~Client()
     if(running)
     {
         Stop();
-<<<<<<< HEAD
-        deleteSafeguard->lock();
-        deleteSafeguard->unlock();
-=======
->>>>>>> upstream/master
     }
 }
 
@@ -28,12 +23,7 @@ void netlib::Client::Stop()
     if(running)
     {
         running = false;
-<<<<<<< HEAD
-        deleteSafeguard->lock();
-        deleteSafeguard->unlock();
-=======
         while(!safeToExit);
->>>>>>> upstream/master
         close(sock);
     }
 }
