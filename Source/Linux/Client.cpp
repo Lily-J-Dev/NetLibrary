@@ -24,6 +24,7 @@ void netlib::Client::Stop()
     {
         running = false;
         while(!safeToExit);
+        shutdown(sock, SHUT_RDWR);
         close(sock);
     }
 }

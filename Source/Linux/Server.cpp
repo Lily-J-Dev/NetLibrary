@@ -67,9 +67,11 @@ void netlib::Server::Stop()
         running = false;
         while(!safeToExit){};
 
+        shutdown(listening, SHUT_RDWR);
         close(listening);
         for (auto const &socket : sockets)
         {
+            shutdown(socket, SHUT_RDWR);
             close(socket);
         }
         sockets.clear();
