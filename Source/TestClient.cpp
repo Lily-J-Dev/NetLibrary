@@ -54,7 +54,7 @@ int TestClient::Update()
         }
         events.pop();
     }
-    return 0;
+    return inputRunning ? 0 : -1;
 
 }
 
@@ -82,6 +82,11 @@ void TestClient::GetInput()
                 }
             }
             std::cout << std::endl;
+        }
+        else if(input == "#x")
+        {
+            inputRunning = false;
+            return;
         }
         else if(input == "#createlobby")
         {

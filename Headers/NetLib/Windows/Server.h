@@ -4,6 +4,7 @@
 #include <mutex>
 #include <functional>
 #include <map>
+#include <vector>
 #include "NetLib/NetworkEvent.h"
 #include "NetLib/ClientInfo.h"
 #include "NetLib/Constants.h"
@@ -18,7 +19,7 @@ namespace netlib {
 
         void Stop();
 
-        void SendMessageToClient(const char *data, int dataLength, unsigned int client);
+        void SendMessageToClient(const char *data, char dataLength, unsigned int client);
         void DisconnectClient(unsigned int client);
 
         bool IsRunning(){return running;};
@@ -38,6 +39,8 @@ namespace netlib {
         SOCKET listening = INVALID_SOCKET;
         sockaddr_in hint;
         char cBuf[MAX_PACKET_SIZE];
+        std::vector<char> packetOverflow;
+        char overflowPacketSize = 0;
         std::map<SOCKET, unsigned int> uidLookup; // Get the UID of the given socket
         std::map<unsigned int, size_t> indexLookup; // Gets the index in the master fd_set of the socket of a given ID
         unsigned int nextUid = 1;

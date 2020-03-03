@@ -15,15 +15,16 @@ netlib::NetworkDevice::NetworkDevice()
 {
     // Save the various index offsets so they only have to be calculated once
     offsets[0] = 1;
-    offsets[1] = offsets[0] + 1;
+    offsets[1] = offsets[0] + sizeof(unsigned int);
     offsets[2] = offsets[1] + sizeof(unsigned int);
     offsets[3] = offsets[2] + sizeof(unsigned int);
-    offsets[4] = offsets[3] + sizeof(unsigned int);
 
     // MAX_PACKET_SIZE is too small if this assert hits
     assert(MAX_PACKET_SIZE > offsets[3] +1);
+    // MAX_PACKET_SIZE is too big if this assert hits
+    assert(MAX_PACKET_SIZE < sizeof(char) - (offsets[3]+1));
     maxPacketDataLen = MAX_PACKET_SIZE - 1;
-    maxMultiPacketDataLen = MAX_PACKET_SIZE - offsets[4];
+    maxMultiPacketDataLen = MAX_PACKET_SIZE - offsets[3];
 }
 
 void netlib::NetworkDevice::Start()
@@ -110,16 +111,15 @@ void netlib::NetworkDevice::ProcessAndSendData(NetworkEvent* packet)
             unsigned int packetSize =  packet->data.size() - startIndex > maxMultiPacketDataLen ? maxMultiPacketDataLen : packet->data.size() - startIndex;
 
             auto pack = new NetworkEvent();
-            pack->data.resize(MAX_PACKET_SIZE);
+            pack->data.resize(packetSize+offsets[3]);
 
             pack->data[0] = (char)MessageType::MULTI_USER_MESSAGE;
-            pack->data[1] = static_cast<char>(packetSize);
             auto packAsChar = reinterpret_cast<const char*>(&i);
 
-            std::copy(idAsChar, idAsChar + sizeof(unsigned int), pack->data.data()+offsets[1]);
-            std::copy(packAsChar, packAsChar + sizeof(unsigned int), pack->data.data()+offsets[2]);
-            std::copy(totalAsChar, totalAsChar + sizeof(unsigned int), pack->data.data()+offsets[3]);
-            std::copy(packet->data.data() + startIndex, packet->data.data() + startIndex+packetSize, pack->data.data()+offsets[4]);
+            std::copy(idAsChar, idAsChar + sizeof(unsigned int), pack->data.data()+offsets[0]);
+            std::copy(packAsChar, packAsChar + sizeof(unsigned int), pack->data.data()+offsets[1]);
+            std::copy(totalAsChar, totalAsChar + sizeof(unsigned int), pack->data.data()+offsets[2]);
+            std::copy(packet->data.data() + startIndex, packet->data.data() + startIndex+packetSize, pack->data.data()+offsets[3]);
 
             pack->senderId = packet->senderId;
 
@@ -135,11 +135,10 @@ void netlib::NetworkDevice::ProcessAndSendData(NetworkEvent* packet)
     else
     {
         auto pack = new NetworkEvent();
-        pack->data.resize(MAX_PACKET_SIZE);
+        pack->data.resize(packet->data.size() + 1);
         pack->data[0] = static_cast<char>(MessageType::SINGLE_USER_MESSAGE);
-        pack->data[1] = static_cast<char>(packet->data.size());
         pack->senderId = packet->senderId;
-        std::copy(packet->data.data(), packet->data.data()+packet->data.size(), pack->data.data()+offsets[1]);
+        std::copy(packet->data.data(), packet->data.data()+packet->data.size(), pack->data.data()+offsets[0]);
 
         delete packet;
 
@@ -160,25 +159,25 @@ void netlib::NetworkDevice::ProcessPacket(NetworkEvent* event)
         messageLock.lock();
         ClearQueue();
         messages.emplace();
-        messages.back().data.resize(event->data[1]);
+        messages.back().data.resize(event->data.size()-1);
         messages.back().senderId = event->senderId;
         //auto& test = messages.back();
-        std::copy(event->data.data() + offsets[1], event->data.data() + offsets[1] + event->data[1], messages.back().data.data());
+        std::copy(event->data.data() + offsets[0], event->data.data() + offsets[0] + event->data.size()-1, messages.back().data.data());
         delete event;
 
         messageLock.unlock();
     }
     else if(event->data[0] == (char)MessageType::MULTI_USER_MESSAGE)
     {
-        auto id = *reinterpret_cast<unsigned int*>(&event->data[offsets[1]]);
-        auto num = *reinterpret_cast<unsigned int*>(&event->data[offsets[2]]);
-        auto total = *reinterpret_cast<unsigned int*>(&event->data[offsets[3]]);
+        auto id = *reinterpret_cast<unsigned int*>(&event->data[offsets[0]]);
+        auto num = *reinterpret_cast<unsigned int*>(&event->data[offsets[1]]);
+        auto total = *reinterpret_cast<unsigned int*>(&event->data[offsets[2]]);
 
         auto pack = new NetworkEvent();
-        pack->data.resize(event->data[1]);
+        pack->data.resize(event->data.size()-offsets[3]);
         pack->senderId = event->senderId;
 
-        std::copy(event->data.data() + offsets[4], event->data.data() + offsets[4] + event->data[1], pack->data.data());
+        std::copy(event->data.data() + offsets[3], event->data.data() + offsets[3] + pack->data.size(), pack->data.data());
         delete event;
 
         // If this is the first packet for this id, add it to the map

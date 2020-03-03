@@ -18,7 +18,7 @@ namespace netlib {
 
         void Stop();
 
-        void SendMessageToServer(const char *data, int dataLength);
+        void SendMessageToServer(const char *data, char dataLength);
 
         bool IsRunning(){return running;};
 
@@ -29,6 +29,8 @@ namespace netlib {
 
         SOCKET sock = INVALID_SOCKET;
         SOCKET sockCopy = INVALID_SOCKET;
+        std::vector<char> packetOverflow;
+        char overflowPacketSize = 0;
 
         std::atomic_bool safeToExit{true};
         std::atomic_bool running{false};

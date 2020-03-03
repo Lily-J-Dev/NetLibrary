@@ -119,19 +119,56 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 void netlib::Client::ProcessNetworkEvents()
 {
     // Loop to send and receive data
-    char buf[MAX_PACKET_SIZE];
+    char buf[MAX_PACKET_SIZE+1];
 
     while(running)
     {
         // Wait for response
-        ZeroMemory(buf, MAX_PACKET_SIZE);
-        int bytesReceived = recv(sock, buf, MAX_PACKET_SIZE, 0);
+        ZeroMemory(buf, MAX_PACKET_SIZE+1);
+        int bytesReceived = recv(sock, buf, MAX_PACKET_SIZE+1, 0);
 
         if (bytesReceived > 0)
         {
             auto packet = new NetworkEvent();
-            packet->data.resize(bytesReceived);
-            memcpy(packet->data.data(),buf, bytesReceived);
+            // If the previous cBuf had overflow bytes
+            if(overflowPacketSize > 0)
+            {
+                char bytesLeft = static_cast<char>(static_cast<int>(overflowPacketSize) - packetOverflow.size());
+                // Copy the overflow bytes into the data packet
+                packet->data.resize(overflowPacketSize);
+                std::copy(packetOverflow.data(), packetOverflow.data() + packetOverflow.size(), packet->data.data());
+                // Copy the remaining bytes from the new cBuf into the packet
+                std::copy(buf, buf + bytesLeft, packet->data.data() + packetOverflow.size());
+                if(bytesReceived > bytesLeft +1)
+                    bytesReceived -= bytesLeft + 1;
+                else
+                    bytesReceived = 0;
+                // If there are more bytes in the buffer than the message should have, store them for the next cBuf
+                if(bytesReceived > 0)
+                {
+                    packetOverflow.resize(bytesReceived);
+                    std::copy(buf + bytesLeft + 1, buf + bytesLeft + 1 + bytesReceived, packetOverflow.data());
+                    bytesLeft = buf[bytesLeft];
+                }
+            }
+            else
+            {
+                // Read the size from the second byte of the received data
+                packet->data.resize(buf[0]);
+                std::copy(buf+1, buf + 1 + buf[0], packet->data.data());
+                if(bytesReceived > buf[0] + 2)
+                    bytesReceived -= buf[0] + 2;
+                else
+                    bytesReceived = 0;
+                // If there are more bytes in the buffer than the message should have, store them for the next cBuf
+                if(bytesReceived > 0)
+                {
+                    packetOverflow.resize(bytesReceived);
+                    std::copy(buf + buf[0] + 2, buf + buf[0] + 2 + bytesReceived, packetOverflow.data());
+                    overflowPacketSize = buf[buf[0]+1];
+                }
+            }
+
             processPacket(packet);
         }
         else
@@ -143,12 +180,17 @@ void netlib::Client::ProcessNetworkEvents()
     safeToExit = true;
 }
 
-void netlib::Client::SendMessageToServer(const char* data, int dataLength)
+void netlib::Client::SendMessageToServer(const char* data, char dataLength)
 {
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)
         return;
-    int sendResult = send(sockCopy, data, dataLength, 0);
+    char* sendData = new char[dataLength+1];
+    sendData[0] = dataLength;
+    std::copy(data, data + dataLength, sendData+1);
+    int sendResult = send(sockCopy, sendData, dataLength+1, 0);
+    delete[] sendData;
+
     if (sendResult == SOCKET_ERROR)
     {
         std::cerr << "Error in sending data error number : " << WSAGetLastError() << std::endl;

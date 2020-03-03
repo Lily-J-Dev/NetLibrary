@@ -147,8 +147,8 @@ void netlib::Server::HandleConnectionEvent()
 void netlib::Server::HandleMessageEvent(const SOCKET& sock)
 {
     // Accept a new message
-    ZeroMemory(cBuf, MAX_PACKET_SIZE);
-    int bytesReceived = recv(sock, cBuf, MAX_PACKET_SIZE, 0);
+    ZeroMemory(cBuf, MAX_PACKET_SIZE+1);
+    int bytesReceived = recv(sock, cBuf, MAX_PACKET_SIZE+1, 0);
 
     if (bytesReceived <= 0)
     {
@@ -169,19 +169,63 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock)
     else
     {
         auto packet = new NetworkEvent();
-        packet->data.resize(bytesReceived);
-        memcpy(packet->data.data(),cBuf, bytesReceived);
+        // If the previous cBuf had overflow bytes
+        if(overflowPacketSize > 0)
+        {
+            char bytesLeft = static_cast<char>(static_cast<int>(overflowPacketSize) - packetOverflow.size());
+            // Copy the overflow bytes into the data packet
+            packet->data.resize(overflowPacketSize);
+            std::copy(packetOverflow.data(), packetOverflow.data() + packetOverflow.size(), packet->data.data());
+            // Copy the remaining bytes from the new cBuf into the packet
+            std::copy(cBuf, cBuf + bytesLeft, packet->data.data() + packetOverflow.size());
+            if(bytesReceived > bytesLeft +1)
+                bytesReceived -= bytesLeft + 1;
+            else
+                bytesReceived = 0;
+            // If there are more bytes in the buffer than the message should have, store them for the next cBuf
+            if(bytesReceived > 0)
+            {
+                packetOverflow.resize(bytesReceived);
+                std::copy(cBuf + bytesLeft + 1, cBuf + bytesLeft + 1 + bytesReceived, packetOverflow.data());
+                bytesLeft = cBuf[bytesLeft];
+            }
+        }
+        else
+        {
+            // Read the size from the second byte of the received data
+            packet->data.resize(cBuf[0]);
+            std::copy(cBuf+1, cBuf + 1 + cBuf[0], packet->data.data());
+
+            if(bytesReceived > cBuf[0] + 2)
+                bytesReceived -= cBuf[0] + 2;
+            else
+                bytesReceived = 0;
+            // If there are more bytes in the buffer than the message should have, store them for the next cBuf
+            if(bytesReceived > 0)
+            {
+                packetOverflow.resize(bytesReceived);
+                std::copy(cBuf + cBuf[0] + 2, cBuf + cBuf[0] + 2 + bytesReceived, packetOverflow.data());
+                overflowPacketSize = cBuf[cBuf[0]+1];
+            }
+        }
+
+        //packet->data.resize(bytesReceived);
+        //memcpy(packet->data.data(),cBuf, bytesReceived);
         packet->senderId = uidLookup[sock];
         processPacket(packet);
     }
 }
 
-void netlib::Server::SendMessageToClient(const char* data, int dataLength, unsigned int client)
+void netlib::Server::SendMessageToClient(const char* data, char dataLength, unsigned int client)
 {
     if(dataLength <= 0)
         return;
     fdLock.lock();
-    int wsResult = send(master.fd_array[indexLookup[client]], data,dataLength, 0);
+    char* sendData = new char[dataLength+1];
+    sendData[0] = dataLength;
+    std::copy(data, data + dataLength, sendData+1);
+    int wsResult = send(master.fd_array[indexLookup[client]], sendData,dataLength+1, 0);
+    delete[] sendData;
 
     if (wsResult == SOCKET_ERROR)
     {

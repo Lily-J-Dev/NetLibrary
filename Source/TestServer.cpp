@@ -10,6 +10,7 @@ TestServer::TestServer()
 
 int TestServer::Update()
 {
+
     using namespace netlib;
     auto events = server.GetNetworkEvents();
     while(!events.empty())
@@ -21,6 +22,8 @@ int TestServer::Update()
             {
                 ClientInfo info = server.GetClientInfo(event.senderId);
                 server.SendMessageToAllExcluding(event.data, event.senderId, info.lobbyID);
+                if(event.data[3] == 'x')
+                    return -1;
                 break;
             }
             case NetworkEvent::EventType::ON_CONNECT:
