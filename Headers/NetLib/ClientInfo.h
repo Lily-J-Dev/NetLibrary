@@ -23,6 +23,8 @@ namespace netlib {
 
 
     private:
+        unsigned int packetID = 0;
+        unsigned int packetsProcessed = 0;
         bool waitingForPing = false;
         std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
     };

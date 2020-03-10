@@ -101,7 +101,7 @@ set_target_properties(
         CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
 )
 
-if(BUILD_NETLIB_TEST)
+#if(BUILD_NETLIB_TEST)
     add_executable(netlib_test
             main.cpp
             Source/TestClient.cpp
@@ -111,4 +111,4 @@ if(BUILD_NETLIB_TEST)
             ${PROJECT_HEADERS_PRIVATE}
             ${PROJECT_HEADERS_PUBLIC})
     target_link_libraries(netlib_test NetLib)
-endif()
+#endif()

@@ -22,7 +22,7 @@ namespace netlib {
         void Stop();
 
         void ProcessAndSendData(NetworkEvent *packet);
-        void ProcessPacket(NetworkEvent *event);
+        void ProcessSharedEvent(NetworkEvent *event);
         void ProcessMultiPacket(unsigned int senderId, unsigned int id);
         virtual void SendPacket(NetworkEvent *data) = 0;
         virtual void TerminateConnection(unsigned int clientUID) = 0;

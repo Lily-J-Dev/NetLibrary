@@ -23,8 +23,8 @@ netlib::NetworkDevice::NetworkDevice()
     assert(MAX_PACKET_SIZE > offsets[3] +1);
     // MAX_PACKET_SIZE is too big if this assert hits
     assert(MAX_PACKET_SIZE < sizeof(char) - (offsets[3]+1));
-    maxPacketDataLen = MAX_PACKET_SIZE - 1;
-    maxMultiPacketDataLen = MAX_PACKET_SIZE - offsets[3];
+    maxPacketDataLen = MAX_PACKET_SIZE - (1 + sizeof(unsigned int));
+    maxMultiPacketDataLen = MAX_PACKET_SIZE - (offsets[3] + sizeof(unsigned int));
 }
 
 void netlib::NetworkDevice::Start()
@@ -82,7 +82,7 @@ void netlib::NetworkDevice::Run()
         }
 
         outQueueLock.unlock();
-        UpdateNetworkStats();
+        //UpdateNetworkStats();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     safeToExit = true;
@@ -149,9 +149,10 @@ void netlib::NetworkDevice::ProcessAndSendData(NetworkEvent* packet)
 }
 
 // Function that gets called by the client/server every time a network message is received.
-void netlib::NetworkDevice::ProcessPacket(NetworkEvent* event)
+void netlib::NetworkDevice::ProcessSharedEvent(NetworkEvent* event)
 {
     // Here is where the data will be processed (decrypt/uncompress/etc)
+
 
 
     if(event->data[0] == (char)MessageType::SINGLE_USER_MESSAGE)

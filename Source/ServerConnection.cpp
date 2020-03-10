@@ -15,6 +15,11 @@ void netlib::ServerConnection::Start(unsigned short port)
 
 void netlib::ServerConnection::SendPacket(NetworkEvent* event)
 {
+    clientInfoLock.lock();
+    event->data.resize(event->data.size() + sizeof(unsigned int));
+    event->WriteData<unsigned int>(connectedClients[event->senderId].packetID, event->data.size() - sizeof(unsigned int));
+    connectedClients[event->senderId].packetID++;
+    clientInfoLock.unlock();
     server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId);
     delete event;
 }
@@ -89,6 +94,39 @@ void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int d
             continue;
         if(info.second.lobbyID == lobbyFilter)
             SendMessageTo(data, dataLen,  info.first);
+    }
+    clientInfoLock.unlock();
+}
+
+void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
+{
+    unsigned int dataSize = event->data.size() - sizeof(unsigned int);
+    auto id = event->ReadData<unsigned int>(dataSize);
+    event->data.resize(dataSize);
+    // If this is the next expected packet, process it immediately
+    clientInfoLock.lock();
+    ClientInfo& info = connectedClients[event->senderId];
+    if(id == info.packetsProcessed)
+    {
+        ProcessSharedEvent(event);
+        info.packetsProcessed++;
+        // If there are stored packets, then check to see if any are the next id
+        while(true)
+        {
+            if(receivedPackets[event->senderId].count(info.packetsProcessed) > 0)
+            {
+                ProcessSharedEvent(receivedPackets[event->senderId][info.packetsProcessed]);
+                receivedPackets[event->senderId].erase(info.packetsProcessed);
+                info.packetsProcessed++;
+            }
+            else break;
+        }
+
+    }
+    // Otherwise store it in the map
+    else
+    {
+        receivedPackets[event->senderId][id] = event;
     }
     clientInfoLock.unlock();
 }
@@ -238,14 +276,14 @@ void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned in
 {
     auto event = new NetworkEvent();
     event->senderId = client;
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(1 + sizeof(unsigned int));
     event->data[0] = (char)MessageType::SET_ACTIVE_LOBBY;
     event->WriteData<unsigned int>(lobby, 1);
     SendEvent(event);
 
     // Tell all other clients a new client has joined a lobby
     event = new NetworkEvent();
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(1 + (sizeof(unsigned int) * 2));
     event->data[0] = (char)MessageType::NEW_LOBBY_CLIENT;
     event->WriteData<unsigned int>(lobby, 1);
     event->WriteData<unsigned int>(client, 1 + sizeof(unsigned int));
@@ -271,7 +309,7 @@ void netlib::ServerConnection::AddClientToLobby(unsigned int client, unsigned in
 
     event = new NetworkEvent();
     event->senderId = client;
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(1 + (sizeof(unsigned int) * 3));
     event->data[0] = (char)MessageType::SET_LOBBY_SLOT;
     lobbyLock.lock();
     event->WriteData<unsigned int>(lobby, 1);
@@ -355,7 +393,7 @@ void netlib::ServerConnection::RemoveClientFromLobby(unsigned int clientID, unsi
             lobbies[lobbyID].memberInfo.erase(it);
             lobbies[lobbyID].clientsInRoom--;
             auto event = new NetworkEvent();
-            event->data.resize(MAX_PACKET_SIZE);
+            event->data.resize(1 + (sizeof(unsigned int) * 2));
             event->data[0] = (char)MessageType::LOBBY_CLIENT_LEFT;
             event->WriteData(lobbyID, 1);
             event->WriteData(clientID, 1 + sizeof(unsigned int));
@@ -369,7 +407,7 @@ void netlib::ServerConnection::RemoveClientFromLobby(unsigned int clientID, unsi
         if(disconnectedMembers.count(lobbyID) > 0)
             disconnectedMembers.erase(lobbyID);
         auto event = new NetworkEvent();
-        event->data.resize(MAX_PACKET_SIZE);
+        event->data.resize(1 + sizeof(unsigned int));
         event->data[0] = (char)MessageType::REMOVE_LOBBY;
         event->WriteData(lobbyID, 1);
         SendEventToAll(event);
@@ -405,7 +443,7 @@ void netlib::ServerConnection::ProcessNewClient(ClientInfo info)
     messageLock.unlock();
 
     auto packet = new NetworkEvent();
-    packet->data.resize(MAX_PACKET_SIZE);
+    packet->data.resize(1 + sizeof(unsigned int));
     packet->data[0] = (char)MessageType::SET_CLIENT_UID;
     packet->senderId = info.uid;
     packet->WriteData<unsigned int>(info.uid, 1);
@@ -490,7 +528,7 @@ void netlib::ServerConnection::AddOpenLobby(unsigned int lobbyID, unsigned int c
             SendEvent(event);
 
         event = new NetworkEvent();
-        event->data.resize(MAX_PACKET_SIZE);
+        event->data.resize(2 + (sizeof(unsigned int) * 3));
         event->data[0] = (char) MessageType::SET_CLIENT_READY;
         event->WriteData<unsigned int>(lobbyID, 1);
         event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
@@ -508,7 +546,7 @@ void netlib::ServerConnection::AddOpenLobby(unsigned int lobbyID, unsigned int c
 
         event = new NetworkEvent();
         event->senderId = clientUID;
-        event->data.resize(MAX_PACKET_SIZE);
+        event->data.resize(1 + (sizeof(unsigned int) * 3));
         event->data[0] = (char)MessageType::SET_LOBBY_SLOT;
         event->WriteData<unsigned int>(lobby.lobbyID, 1);
         event->WriteData<unsigned int>(member.uid, 1 + sizeof(unsigned int));
@@ -572,7 +610,7 @@ void netlib::ServerConnection::UpdateNetworkStats()
         {
             client.second.waitingForPing = true;
             auto packet = new NetworkEvent();
-            packet->data.resize(MAX_PACKET_SIZE);
+            packet->data.resize(1);
             packet->data[0] = (char) MessageType::PING_REQUEST;
             packet->senderId = client.second.uid;
             outQueueLock.lock();
@@ -583,7 +621,7 @@ void netlib::ServerConnection::UpdateNetworkStats()
             if(lobbies.count(client.second.lobbyID) > 0 && lobbies[client.second.lobbyID].memberInfo[0].uid == client.first)
             {
                 auto event = new NetworkEvent();
-                event->data.resize(MAX_PACKET_SIZE);
+                event->data.resize(1 + sizeof(unsigned int) + sizeof(int) + sizeof(float));
                 event->data[0] = (char)MessageType::UPDATE_PEER_CONNECTION_INFO;
                 int offset = 1;
                 event->WriteData<unsigned int>(client.second.lobbyID, offset);

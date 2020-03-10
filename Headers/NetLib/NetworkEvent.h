@@ -36,7 +36,7 @@ namespace netlib {
         };
 
         template <class T>
-        T ReadData(int readPos)
+        T ReadData(unsigned int readPos)
         {
             return *reinterpret_cast<T*>(data.data() + readPos);
         };

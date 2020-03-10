@@ -62,6 +62,7 @@ namespace netlib {
         /// Sets the name that will be displayed in lobbies
         void SetLobbyName(std::string newName);
     private:
+        void ProcessPacket(NetworkEvent *event);
         void ProcessDeviceSpecificEvent(NetworkEvent *event) override;
         void SendPacket(NetworkEvent *event) override;
         void UpdateNetworkStats() override;
@@ -72,8 +73,11 @@ namespace netlib {
 
         unsigned int uid = 0;
         ConnectionInfo connectionInfo;
-
         std::mutex clientInfoLock;
+
+        unsigned int packetID = 0;
+        unsigned int packetsProcessed = 0;
+        std::map<unsigned int, netlib::NetworkEvent*> receivedPackets;
 
         std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
         bool waitingForPing = false;

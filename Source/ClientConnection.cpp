@@ -35,6 +35,36 @@ bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, unsigned sho
     return false;
 }
 
+void netlib::ClientConnection::ProcessPacket(netlib::NetworkEvent *event)
+{
+    unsigned int dataSize = event->data.size() - sizeof(unsigned int);
+    auto id = event->ReadData<unsigned int>(dataSize);
+    event->data.resize(dataSize);
+    // If this is the next expected packet, process it immediately
+    if(id == packetsProcessed)
+    {
+        ProcessSharedEvent(event);
+        packetsProcessed++;
+        // If there are stored packets, then check to see if any are the next id
+        while(true)
+        {
+            if(receivedPackets.count(packetsProcessed) > 0)
+            {
+                ProcessSharedEvent(receivedPackets[packetsProcessed]);
+                receivedPackets.erase(packetsProcessed);
+                packetsProcessed++;
+            }
+            else break;
+        }
+
+    }
+    // Otherwise store it in the map
+    else
+    {
+        receivedPackets[id] = event;
+    }
+}
+
 void netlib::ClientConnection::ProcessDisconnect()
 {
     messageLock.lock();
@@ -47,7 +77,11 @@ void netlib::ClientConnection::ProcessDisconnect()
 
 void netlib::ClientConnection::SendPacket(NetworkEvent* event)
 {
+    event->data.resize(event->data.size() + sizeof(unsigned int));
+    event->WriteData<unsigned int>(packetID, event->data.size() - sizeof(unsigned int));
+
     client.SendMessageToServer(event->data.data(), event->data.size());
+    packetID++;
     delete event;
 }
 
@@ -324,7 +358,7 @@ void netlib::ClientConnection::UpdateNetworkStats()
     {
         waitingForPing = true;
         auto packet = new NetworkEvent();
-        packet->data.resize(MAX_PACKET_SIZE);
+        packet->data.resize(1);
         packet->data[0] = (char)MessageType::PING_REQUEST;
         outQueueLock.lock();
         outQueue.push(packet);
@@ -400,7 +434,7 @@ void netlib::ClientConnection::CreateLobby(std::string lobbyName, int lobbySize)
 void netlib::ClientConnection::JoinLobby(unsigned int lobbyUID)
 {
     auto event = new NetworkEvent();
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(1 + sizeof(unsigned int));
     event->data[0] = (char)MessageType::JOIN_LOBBY;
     event->WriteData(lobbyUID, 1);
     SendEvent(event);
@@ -410,7 +444,7 @@ void netlib::ClientConnection::JoinLobby(unsigned int lobbyUID)
 void netlib::ClientConnection::RemoveFromLobby(unsigned int playerUID)
 {
     auto event = new NetworkEvent();
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(1 + (sizeof(unsigned int) * 2));
     event->data[0] = (char)MessageType::REMOVE_FROM_LOBBY;
     event->WriteData(playerUID, 1);
     event->WriteData(activeLobby, 1 + sizeof(unsigned int));
@@ -422,7 +456,7 @@ void netlib::ClientConnection::SetReady(bool isReady)
     if(activeLobby == 0)
         return;
     auto event = new NetworkEvent();
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(2 + (sizeof(unsigned int) * 3));
     event->data[0] = (char)MessageType::SET_CLIENT_READY;
     event->WriteData<unsigned int>(activeLobby, 1);
     event->WriteData<unsigned int>(uid, 1 + sizeof(unsigned int));
@@ -441,7 +475,7 @@ void netlib::ClientConnection::SetLobbyOpen(bool isOpen)
     if(activeLobby == 0)
         return;
     auto event = new NetworkEvent();
-    event->data.resize(MAX_PACKET_SIZE);
+    event->data.resize(2 + (sizeof(unsigned int) * 3));
     event->data[0] = (char)MessageType::SET_LOBBY_OPEN;
     event->WriteData<unsigned int>(activeLobby, 1);
     event->WriteData<unsigned int>(uid, 1 + sizeof(unsigned int));

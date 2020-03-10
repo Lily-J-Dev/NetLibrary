@@ -61,11 +61,14 @@ namespace netlib {
         void AddClientToLobby(unsigned int client, unsigned int lobby, bool forceSlot = false, unsigned int slot = 0);
         void AddOpenLobby(unsigned int lobbyID, unsigned int playerUID, bool sendToAll = false);
         void SendEventToAll(NetworkEvent* event);
+        void ProcessPacket(NetworkEvent* event);
 
         Server server;
         std::map<unsigned int, ClientInfo> connectedClients;
 
         std::mutex clientInfoLock;
+
+        std::map<unsigned int, std::map<unsigned int, netlib::NetworkEvent*>> receivedPackets;
 
         // Lobby
         unsigned int lobbyUID = 1;
