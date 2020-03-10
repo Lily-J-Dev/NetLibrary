@@ -16,6 +16,14 @@ void netlib::ServerConnection::Start(unsigned short port)
 void netlib::ServerConnection::SendPacket(NetworkEvent* event)
 {
     clientInfoLock.lock();
+    // Don't add packet id if its a receipt
+    if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
+    {
+        server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId);
+        clientInfoLock.unlock();
+        return;
+    }
+
     event->data.resize(event->data.size() + sizeof(unsigned int));
     event->WriteData<unsigned int>(connectedClients[event->senderId].packetID, event->data.size() - sizeof(unsigned int));
     connectedClients[event->senderId].packetID++;
@@ -98,15 +106,58 @@ void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int d
     clientInfoLock.unlock();
 }
 
+void netlib::ServerConnection::CheckForResends()
+{
+    clientInfoLock.lock();
+    for(auto& client : sentPackets)
+    {
+        for (auto &packet : client.second)
+        {
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - packet.second).count() >
+                connectedClients[client.first].connectionInfo.ping * RESEND_DELAY_MOD)
+            {
+                server.SendMessageToClient(packet.first->data.data(), packet.first->data.size(), client.first);
+                packet.second = clock::now();
+            }
+        }
+    }
+    clientInfoLock.unlock();
+}
+
 void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
 {
+    if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
+    {
+        auto id = event->ReadData<unsigned int>(1);
+        for(const auto& packet : sentPackets[event->senderId])
+        {
+            if(packet.first->packetID == id)
+            {
+                sentPackets[event->senderId].remove(packet);
+                return;
+            }
+        }
+        return;
+    }
+
     unsigned int dataSize = event->data.size() - sizeof(unsigned int);
-    auto id = event->ReadData<unsigned int>(dataSize);
+    event->packetID = event->ReadData<unsigned int>(dataSize);
     event->data.resize(dataSize);
+
+    // Send a receipt of this packet
+    auto packet = new NetworkEvent();
+    packet->data.resize(1 + sizeof(unsigned int));
+    packet->data[0] = (char)netlib::MessageType::PACKET_RECEIPT;
+    packet->WriteData<unsigned int>(event->packetID, 1);
+    packet->senderId = event->senderId;
+    outQueueLock.lock();
+    outQueue.push(packet);
+    outQueueLock.unlock();
+
     // If this is the next expected packet, process it immediately
     clientInfoLock.lock();
     ClientInfo& info = connectedClients[event->senderId];
-    if(id == info.packetsProcessed)
+    if(event->packetID == info.packetsProcessed)
     {
         ProcessSharedEvent(event);
         info.packetsProcessed++;
@@ -126,7 +177,7 @@ void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
     // Otherwise store it in the map
     else
     {
-        receivedPackets[event->senderId][id] = event;
+        receivedPackets[event->senderId][event->packetID] = event;
     }
     clientInfoLock.unlock();
 }

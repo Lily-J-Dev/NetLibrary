@@ -3,10 +3,12 @@
 namespace netlib {
     const int MAX_PACKET_SIZE = 100;
     const float PING_FREQUENCY = 1000;
+    const float RESEND_DELAY_MOD = 1.3f; // This number multiplied by current ping is how long a device will wait for a packet receipt before resending
 
     // MessageType is for internal use only
     // Every network message will start with a MessageType enum which defines how the rest of the message should be read.
     enum class MessageType : char {
+        PACKET_RECEIPT, // Send each time a device receives a message - uint(packetID)
         SINGLE_USER_MESSAGE, // A single packet message from the user - char... (data)
         MULTI_USER_MESSAGE, // A multi packet message from the user - uint(packetID) - uint(packetNum) -> uint(totalPackets) -> char...(data)
         SET_CLIENT_UID, // An internal message from the server to set the clients UID - uint(client uid)

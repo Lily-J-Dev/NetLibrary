@@ -6,6 +6,7 @@
 #else
 #include "NetLib/Linux/Server.h"
 #endif
+#include <forward_list>
 #include "NetworkDevice.h"
 #include "Lobby.h"
 
@@ -62,6 +63,7 @@ namespace netlib {
         void AddOpenLobby(unsigned int lobbyID, unsigned int playerUID, bool sendToAll = false);
         void SendEventToAll(NetworkEvent* event);
         void ProcessPacket(NetworkEvent* event);
+        void CheckForResends() override;
 
         Server server;
         std::map<unsigned int, ClientInfo> connectedClients;
@@ -69,6 +71,9 @@ namespace netlib {
         std::mutex clientInfoLock;
 
         std::map<unsigned int, std::map<unsigned int, netlib::NetworkEvent*>> receivedPackets;
+        using clock = std::chrono::steady_clock;
+        using time = clock::time_point;
+        std::map<unsigned int, std::forward_list<std::pair<netlib::NetworkEvent*, time>>> sentPackets;
 
         // Lobby
         unsigned int lobbyUID = 1;

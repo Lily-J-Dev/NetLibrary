@@ -37,11 +37,35 @@ bool netlib::ClientConnection::ConnectToIP(const std::string& ipv4, unsigned sho
 
 void netlib::ClientConnection::ProcessPacket(netlib::NetworkEvent *event)
 {
+    if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
+    {
+        auto id = event->ReadData<unsigned int>(1);
+        for(const auto& packet : sentPackets)
+        {
+            if(packet.first->packetID == id)
+            {
+                sentPackets.remove(packet);
+                return;
+            }
+        }
+        return;
+    }
+
     unsigned int dataSize = event->data.size() - sizeof(unsigned int);
-    auto id = event->ReadData<unsigned int>(dataSize);
+    event->packetID = event->ReadData<unsigned int>(dataSize);
     event->data.resize(dataSize);
+
+    // Send a receipt of this packet
+    auto packet = new NetworkEvent();
+    packet->data.resize(1 + sizeof(unsigned int));
+    packet->data[0] = (char)netlib::MessageType::PACKET_RECEIPT;
+    packet->WriteData<unsigned int>(event->packetID, 1);
+    outQueueLock.lock();
+    outQueue.push(packet);
+    outQueueLock.unlock();
+
     // If this is the next expected packet, process it immediately
-    if(id == packetsProcessed)
+    if(event->packetID == packetsProcessed)
     {
         ProcessSharedEvent(event);
         packetsProcessed++;
@@ -61,7 +85,7 @@ void netlib::ClientConnection::ProcessPacket(netlib::NetworkEvent *event)
     // Otherwise store it in the map
     else
     {
-        receivedPackets[id] = event;
+        receivedPackets[event->packetID] = event;
     }
 }
 
@@ -77,12 +101,35 @@ void netlib::ClientConnection::ProcessDisconnect()
 
 void netlib::ClientConnection::SendPacket(NetworkEvent* event)
 {
+    // Don't add packet id if its a receipt
+    if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
+    {
+        client.SendMessageToServer(event->data.data(), event->data.size());
+        return;
+    }
+
     event->data.resize(event->data.size() + sizeof(unsigned int));
     event->WriteData<unsigned int>(packetID, event->data.size() - sizeof(unsigned int));
 
     client.SendMessageToServer(event->data.data(), event->data.size());
     packetID++;
-    delete event;
+
+    sentPackets.push_front(std::pair<netlib::NetworkEvent*, std::chrono::steady_clock::time_point>
+            (event, std::chrono::steady_clock::now()));
+}
+
+void netlib::ClientConnection::CheckForResends()
+{
+    clientInfoLock.lock();
+    for(auto& packet : sentPackets)
+    {
+        if(std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - packet.second).count() > connectionInfo.ping * RESEND_DELAY_MOD)
+        {
+            client.SendMessageToServer(packet.first->data.data(), packet.first->data.size());
+            packet.second = clock::now();
+        }
+    }
+    clientInfoLock.unlock();
 }
 
 void netlib::ClientConnection::SendMessageToServer(const std::vector<char>& data)

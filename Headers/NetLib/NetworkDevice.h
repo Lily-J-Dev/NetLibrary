@@ -27,6 +27,7 @@ namespace netlib {
         virtual void SendPacket(NetworkEvent *data) = 0;
         virtual void TerminateConnection(unsigned int clientUID) = 0;
         virtual void ProcessDeviceSpecificEvent(NetworkEvent *data) = 0;
+        virtual void CheckForResends() = 0;
         virtual void UpdateNetworkStats() = 0;
 
         void SendEvent(NetworkEvent* event);

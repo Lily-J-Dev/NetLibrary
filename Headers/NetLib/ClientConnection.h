@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <map>
+#include <forward_list>
 #if defined WIN32 || defined _WIN32
 #include "NetLib/Windows/Client.h"
 #else
@@ -66,6 +67,7 @@ namespace netlib {
         void ProcessDeviceSpecificEvent(NetworkEvent *event) override;
         void SendPacket(NetworkEvent *event) override;
         void UpdateNetworkStats() override;
+        void CheckForResends() override;
         void ProcessDisconnect();
         void TerminateConnection(unsigned int clientUID) override {uid = clientUID;};
 
@@ -78,8 +80,11 @@ namespace netlib {
         unsigned int packetID = 0;
         unsigned int packetsProcessed = 0;
         std::map<unsigned int, netlib::NetworkEvent*> receivedPackets;
+        using clock = std::chrono::steady_clock;
+        using time = clock::time_point;
+        std::forward_list<std::pair<netlib::NetworkEvent*, time>> sentPackets;
 
-        std::chrono::steady_clock::time_point timeOfLastPing = std::chrono::steady_clock::now();
+        time timeOfLastPing = clock::now();
         bool waitingForPing = false;
 
         std::mutex lobbyLock;

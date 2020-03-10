@@ -5,6 +5,8 @@
 namespace netlib {
     struct NetworkEvent
     {
+        friend class ClientConnection;
+        friend class ServerConnection;
         enum class EventType : int
          {
             // These events are created by the various SendMessageToX methods on client/server, the contents of the
@@ -40,6 +42,9 @@ namespace netlib {
         {
             return *reinterpret_cast<T*>(data.data() + readPos);
         };
+
+    private:
+        unsigned int packetID = 0;
     };
 }
 #endif //NETLIB_NETWORKEVENT_H
