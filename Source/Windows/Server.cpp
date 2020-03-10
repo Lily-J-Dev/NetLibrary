@@ -41,6 +41,7 @@ bool netlib::Server::Start(unsigned short port)
 
     // Create a socket
     listening = socket(AF_INET, SOCK_STREAM, 0);
+    udp = socket(AF_INET, SOCK_DGRAM, 0);
     if (listening == INVALID_SOCKET)
     {
         std::cerr << "Failed to create socket error code: " << WSAGetLastError() << std::endl;
@@ -61,6 +62,7 @@ bool netlib::Server::Start(unsigned short port)
     FD_ZERO(&master);
 
     FD_SET(listening, &master);
+    FD_SET(udp, &master);
 
     running = true;
     safeToExit = false;
@@ -91,6 +93,10 @@ void netlib::Server::ProcessNetworkEvents()
             if (sock == listening)
             {
                 HandleConnectionEvent();
+            }
+            else if(sock == udp)
+            {
+
             }
             else
             {

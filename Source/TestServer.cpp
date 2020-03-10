@@ -22,7 +22,7 @@ int TestServer::Update()
             {
                 ClientInfo info = server.GetClientInfo(event.senderId);
                 server.SendMessageToAllExcluding(event.data, event.senderId, info.lobbyID);
-                if(event.data[3] == 'x')
+                if(event.data.size() > 2 && event.data[3] == 'x')
                     return -1;
                 break;
             }

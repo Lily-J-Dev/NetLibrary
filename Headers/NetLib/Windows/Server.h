@@ -37,6 +37,7 @@ namespace netlib {
 
         fd_set master;
         SOCKET listening = INVALID_SOCKET;
+        SOCKET udp = INVALID_SOCKET;
         sockaddr_in hint;
 
         std::map<SOCKET, unsigned int> uidLookup; // Get the UID of the given socket

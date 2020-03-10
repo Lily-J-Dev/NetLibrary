@@ -26,7 +26,7 @@ void netlib::Client::Stop()
 int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 {
     //std::cout << "Initializing Client..." << std::endl;
-
+    data.resize((MAX_PACKET_SIZE+1)*2);
     // Initilise winsock
     WSAData data;
     WORD ver = MAKEWORD(2, 2);
@@ -41,6 +41,7 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
     // Create socket
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
+    udp = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET)
     {
         std::cerr << "Failed to create socket error code: " << WSAGetLastError() << std::endl;
@@ -105,6 +106,11 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 
     //std::cout << "Client successfully initialised!" << std::endl;
 
+    FD_ZERO(&master);
+
+    FD_SET(sock, &master);
+    FD_SET(udp, &master);
+
     // Create a copy to avoid threading issues when using the socket
     sockCopy = sock;
     running = true;
@@ -119,46 +125,60 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 void netlib::Client::ProcessNetworkEvents()
 {
     // Loop to send and receive data
-    std::vector<char> data;
-    data.resize((MAX_PACKET_SIZE+1)*2);
-    unsigned int readPos = 0;
-    unsigned int writePos = 0;
-    int bytesReceived = 0;
 
     while(running)
     {
-        // Wait for response
-        int newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE+1, 0);
+        TIMEVAL tv;
+        tv.tv_sec = 0;
+        tv.tv_usec = 100000;
+        fd_set mCopy = master;
+        unsigned int socketCount = select(0, &mCopy, nullptr, nullptr, &tv);
 
-        if (newBytes > 0)
+        for (unsigned int i = 0; i < socketCount; i++)
         {
-            bytesReceived += newBytes;
-            // First byte of a packet tells us the length of the remaining data
-            while(data[readPos] < bytesReceived)
+            SOCKET s = mCopy.fd_array[i];
+            if(s == sock)
             {
-                auto packet = new NetworkEvent();
-                packet->data.resize(data[readPos]);
-                std::copy(data.data() + readPos + 1, data.data() + readPos + data[readPos], packet->data.data());
-                bytesReceived -= data[readPos] + 1;
-                readPos += data[readPos] + 1;
-                processPacket(packet);
+                HandleMessageEvent(s);
             }
-
-            if(bytesReceived != 0)
+            else if(s == udp)
             {
-                std::copy(data.data() + readPos, data.data() + readPos + data[readPos], data.data());
-                writePos = data[0];
+                std::cout << "UDP get" << std::endl;
             }
-            else writePos = 0;
-            readPos = 0;
-        }
-        else
-        {
-            running = false;
-            processDisconnect();
+            else std::cout << "Should never print" << std::endl;
         }
     }
     safeToExit = true;
+}
+
+void netlib::Client::HandleMessageEvent(const SOCKET& s)
+{
+    int newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE + 1, 0);
+    if (newBytes > 0)
+    {
+        bytesReceived += newBytes;
+        // First byte of a packet tells us the length of the remaining data
+        while (data[readPos] < bytesReceived) {
+            auto packet = new NetworkEvent();
+            packet->data.resize(data[readPos]);
+            std::copy(data.data() + readPos + 1, data.data() + readPos + data[readPos],
+                      packet->data.data());
+            bytesReceived -= data[readPos] + 1;
+            readPos += data[readPos] + 1;
+            processPacket(packet);
+        }
+
+        if (bytesReceived != 0) {
+            std::copy(data.data() + readPos, data.data() + readPos + data[readPos], data.data());
+            writePos = data[0];
+        } else writePos = 0;
+        readPos = 0;
+    }
+    else
+    {
+        running = false;
+        processDisconnect();
+    }
 }
 
 void netlib::Client::SendMessageToServer(const char* data, char dataLength)

@@ -26,11 +26,20 @@ namespace netlib {
         std::function<void()> processDisconnect;
     private:
         void ProcessNetworkEvents();
+        void HandleMessageEvent(const SOCKET& s);
+
+        fd_set master;
 
         SOCKET sock = INVALID_SOCKET;
+        SOCKET udp = INVALID_SOCKET;
         SOCKET sockCopy = INVALID_SOCKET;
 
         std::atomic_bool safeToExit{true};
         std::atomic_bool running{false};
+
+        std::vector<char> data;
+        unsigned int readPos = 0;
+        unsigned int writePos = 0;
+        int bytesReceived = 0;
     };
 }
