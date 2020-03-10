@@ -119,57 +119,38 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 void netlib::Client::ProcessNetworkEvents()
 {
     // Loop to send and receive data
-    char buf[MAX_PACKET_SIZE+1];
+    std::vector<char> data;
+    data.resize((MAX_PACKET_SIZE+1)*2);
+    unsigned int readPos = 0;
+    unsigned int writePos = 0;
+    int bytesReceived = 0;
 
     while(running)
     {
         // Wait for response
-        ZeroMemory(buf, MAX_PACKET_SIZE+1);
-        int bytesReceived = recv(sock, buf, MAX_PACKET_SIZE+1, 0);
+        int newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE+1, 0);
 
-        if (bytesReceived > 0)
+        if (newBytes > 0)
         {
-            auto packet = new NetworkEvent();
-            // If the previous cBuf had overflow bytes
-            if(overflowPacketSize > 0)
+            bytesReceived += newBytes;
+            // First byte of a packet tells us the length of the remaining data
+            while(data[readPos] < bytesReceived)
             {
-                char bytesLeft = static_cast<char>(static_cast<int>(overflowPacketSize) - packetOverflow.size());
-                // Copy the overflow bytes into the data packet
-                packet->data.resize(overflowPacketSize);
-                std::copy(packetOverflow.data(), packetOverflow.data() + packetOverflow.size(), packet->data.data());
-                // Copy the remaining bytes from the new cBuf into the packet
-                std::copy(buf, buf + bytesLeft, packet->data.data() + packetOverflow.size());
-                if(bytesReceived > bytesLeft +1)
-                    bytesReceived -= bytesLeft + 1;
-                else
-                    bytesReceived = 0;
-                // If there are more bytes in the buffer than the message should have, store them for the next cBuf
-                if(bytesReceived > 0)
-                {
-                    packetOverflow.resize(bytesReceived);
-                    std::copy(buf + bytesLeft + 1, buf + bytesLeft + 1 + bytesReceived, packetOverflow.data());
-                    bytesLeft = buf[bytesLeft];
-                }
-            }
-            else
-            {
-                // Read the size from the second byte of the received data
-                packet->data.resize(buf[0]);
-                std::copy(buf+1, buf + 1 + buf[0], packet->data.data());
-                if(bytesReceived > buf[0] + 2)
-                    bytesReceived -= buf[0] + 2;
-                else
-                    bytesReceived = 0;
-                // If there are more bytes in the buffer than the message should have, store them for the next cBuf
-                if(bytesReceived > 0)
-                {
-                    packetOverflow.resize(bytesReceived);
-                    std::copy(buf + buf[0] + 2, buf + buf[0] + 2 + bytesReceived, packetOverflow.data());
-                    overflowPacketSize = buf[buf[0]+1];
-                }
+                auto packet = new NetworkEvent();
+                packet->data.resize(data[readPos]);
+                std::copy(data.data() + readPos + 1, data.data() + readPos + data[readPos], packet->data.data());
+                bytesReceived -= data[readPos] + 1;
+                readPos += data[readPos] + 1;
+                processPacket(packet);
             }
 
-            processPacket(packet);
+            if(bytesReceived != 0)
+            {
+                std::copy(data.data() + readPos, data.data() + readPos + data[readPos], data.data());
+                writePos = data[0];
+            }
+            else writePos = 0;
+            readPos = 0;
         }
         else
         {

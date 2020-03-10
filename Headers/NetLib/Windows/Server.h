@@ -38,12 +38,15 @@ namespace netlib {
         fd_set master;
         SOCKET listening = INVALID_SOCKET;
         sockaddr_in hint;
-        char cBuf[MAX_PACKET_SIZE];
-        std::vector<char> packetOverflow;
-        char overflowPacketSize = 0;
+
         std::map<SOCKET, unsigned int> uidLookup; // Get the UID of the given socket
         std::map<unsigned int, size_t> indexLookup; // Gets the index in the master fd_set of the socket of a given ID
         unsigned int nextUid = 1;
+
+        std::vector<char> data;
+        unsigned int readPos = 0;
+        unsigned int writePos = 0;
+        int bytesReceived = 0;
 
         std::atomic_bool running{false};
         std::atomic_bool safeToExit{true};
