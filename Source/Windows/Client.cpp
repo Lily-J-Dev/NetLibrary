@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
+#include <inaddr.h>
 #include "NetLib/Constants.h"
 
 #pragma comment (lib, "Ws2_32.lib")
@@ -19,6 +20,7 @@ void netlib::Client::Stop()
         running = false;
         while(!safeToExit);
         closesocket(sock);
+        closesocket(udp);
         WSACleanup();
     }
 }
@@ -41,10 +43,16 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
     // Create socket
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
-    udp = socket(AF_INET, SOCK_DGRAM, 0);
+    udp = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if(udp == INVALID_SOCKET)
+    {
+        std::cerr << "Failed to create UDP socket error code: " << WSAGetLastError() << std::endl;
+        WSACleanup();
+        return false;
+    }
     if (sock == INVALID_SOCKET)
     {
-        std::cerr << "Failed to create socket error code: " << WSAGetLastError() << std::endl;
+        std::cerr << "Failed to create TCP socket error code: " << WSAGetLastError() << std::endl;
         WSACleanup();
         return false;
     }
@@ -111,6 +119,10 @@ int netlib::Client::Start(const std::string& ipv4, unsigned short port)
     FD_SET(sock, &master);
     FD_SET(udp, &master);
 
+    si.sin_family = AF_INET;
+    si.sin_port = htons(port);
+    si.sin_addr.S_un.S_addr = inet_addr(ipv4.c_str());
+
     // Create a copy to avoid threading issues when using the socket
     sockCopy = sock;
     running = true;
@@ -139,11 +151,11 @@ void netlib::Client::ProcessNetworkEvents()
             SOCKET s = mCopy.fd_array[i];
             if(s == sock)
             {
-                HandleMessageEvent(s);
+                HandleMessageEvent(s, true);
             }
             else if(s == udp)
             {
-                std::cout << "UDP get" << std::endl;
+                HandleMessageEvent(s, false);
             }
             else std::cout << "Should never print" << std::endl;
         }
@@ -151,14 +163,45 @@ void netlib::Client::ProcessNetworkEvents()
     safeToExit = true;
 }
 
-void netlib::Client::HandleMessageEvent(const SOCKET& s)
+void netlib::Client::HandleMessageEvent(const SOCKET& s, bool isTCP)
 {
-    int newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE + 1, 0);
+    int newBytes;
+    unsigned int clientID;
+    if(isTCP)
+    {
+        newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE + 1, 0);
+    }
+    else
+    {
+        int len = sizeof(si);
+        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (sockaddr *) &si, &len);
+        if(newBytes == SOCKET_ERROR)
+        {
+            std::cerr << "Error in receiving data from UDP socket : " << WSAGetLastError() << std::endl;
+        }
+        if(newBytes <= 0)
+            return;
+    }
     if (newBytes > 0)
     {
         bytesReceived += newBytes;
         // First byte of a packet tells us the length of the remaining data
         while (data[readPos] < bytesReceived) {
+            if(!isTCP)
+            {
+                if(uidOnServer == *reinterpret_cast<unsigned int*>(&data[readPos]))
+                {
+                    readPos += sizeof(unsigned int);
+                    bytesReceived -= sizeof(unsigned int);
+                }
+                else
+                {
+                    readPos += sizeof(unsigned int);
+                    bytesReceived -= data[readPos] + 1 + sizeof(unsigned int);
+                    readPos += data[readPos] + 1;
+                    continue;
+                }
+            }
             auto packet = new NetworkEvent();
             packet->data.resize(data[readPos]);
             std::copy(data.data() + readPos + 1, data.data() + readPos + data[readPos],
@@ -186,14 +229,36 @@ void netlib::Client::SendMessageToServer(const char* data, char dataLength)
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)
         return;
-    char* sendData = new char[dataLength+1];
-    sendData[0] = dataLength;
-    std::copy(data, data + dataLength, sendData+1);
-    int sendResult = send(sockCopy, sendData, dataLength+1, 0);
-    delete[] sendData;
+
+    int sendResult;
+    if(uidSet)
+    {
+        char* sendData = new char[dataLength+1+sizeof(unsigned int)];
+        sendData[sizeof(unsigned int)] = dataLength;
+        std::copy(uidAsChar, uidAsChar + sizeof(unsigned int), sendData);
+        std::copy(data, data + dataLength, sendData+1+ sizeof(unsigned int));
+        sendResult = sendto(udp, sendData, dataLength + 1 + sizeof(unsigned int), 0, (sockaddr *) &si, sizeof(si));
+        delete[] sendData;
+    }
+    else
+    {
+        char *sendData = new char[dataLength + 1];
+        sendData[0] = dataLength;
+        std::copy(data, data + dataLength, sendData + 1);
+        sendResult = send(sockCopy, sendData, dataLength + 1, 0);
+        delete[] sendData;
+    }
+
 
     if (sendResult == SOCKET_ERROR)
     {
         std::cerr << "Error in sending data error number : " << WSAGetLastError() << std::endl;
     }
+}
+
+void netlib::Client::SetUID(unsigned int uid)
+{
+    uidOnServer = uid;
+    uidAsChar = reinterpret_cast<char*>(&uidOnServer);
+    uidSet = true;
 }

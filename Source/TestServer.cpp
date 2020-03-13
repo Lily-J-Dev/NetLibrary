@@ -20,6 +20,7 @@ int TestServer::Update()
         {
             case NetworkEvent::EventType::MESSAGE:
             {
+                std::cout << "Message from client " << event.senderId << " :" << event.data.data() << std::endl;
                 ClientInfo info = server.GetClientInfo(event.senderId);
                 server.SendMessageToAllExcluding(event.data, event.senderId, info.lobbyID);
                 if(event.data.size() > 2 && event.data[3] == 'x')

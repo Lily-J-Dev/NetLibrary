@@ -19,7 +19,7 @@ namespace netlib {
 
         void Stop();
 
-        void SendMessageToClient(const char *data, char dataLength, unsigned int client);
+        void SendMessageToClient(const char *data, char dataLength, unsigned int client, bool sendTCP);
         void DisconnectClient(unsigned int client);
 
         bool IsRunning(){return running;};
@@ -33,7 +33,7 @@ namespace netlib {
 
         void HandleConnectionEvent();
 
-        void HandleMessageEvent(const SOCKET &sock);
+        void HandleMessageEvent(const SOCKET &sock, bool isTCP);
 
         fd_set master;
         SOCKET listening = INVALID_SOCKET;
@@ -42,6 +42,8 @@ namespace netlib {
 
         std::map<SOCKET, unsigned int> uidLookup; // Get the UID of the given socket
         std::map<unsigned int, size_t> indexLookup; // Gets the index in the master fd_set of the socket of a given ID
+        std::map<unsigned int, struct sockaddr_in> addrLookup;
+        std::vector<unsigned int> pendingAddr;
         unsigned int nextUid = 1;
 
         std::vector<char> data;

@@ -19,7 +19,7 @@ void netlib::ServerConnection::SendPacket(NetworkEvent* event)
     // Don't add packet id if its a receipt
     if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
     {
-        server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId);
+        server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId, false);
         clientInfoLock.unlock();
         return;
     }
@@ -28,7 +28,8 @@ void netlib::ServerConnection::SendPacket(NetworkEvent* event)
     event->WriteData<unsigned int>(connectedClients[event->senderId].packetID, event->data.size() - sizeof(unsigned int));
     connectedClients[event->senderId].packetID++;
     clientInfoLock.unlock();
-    server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId);
+    server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId,
+                               event->data[0] == (char) netlib::MessageType::SET_CLIENT_UID);
     delete event;
 }
 
@@ -116,7 +117,7 @@ void netlib::ServerConnection::CheckForResends()
             if (std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - packet.second).count() >
                 connectedClients[client.first].connectionInfo.ping * RESEND_DELAY_MOD)
             {
-                server.SendMessageToClient(packet.first->data.data(), packet.first->data.size(), client.first);
+                server.SendMessageToClient(packet.first->data.data(), packet.first->data.size(), client.first, false);
                 packet.second = clock::now();
             }
         }
@@ -159,7 +160,9 @@ void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
     ClientInfo& info = connectedClients[event->senderId];
     if(event->packetID == info.packetsProcessed)
     {
+        clientInfoLock.unlock();
         ProcessSharedEvent(event);
+        clientInfoLock.lock();
         info.packetsProcessed++;
         // If there are stored packets, then check to see if any are the next id
         while(true)

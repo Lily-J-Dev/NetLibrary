@@ -104,14 +104,14 @@ void netlib::ClientConnection::SendPacket(NetworkEvent* event)
     // Don't add packet id if its a receipt
     if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
     {
-        client.SendMessageToServer(event->data.data(), event->data.size());
+        client.SendMessageToServer(event->data.data(), (char)event->data.size());
         return;
     }
 
     event->data.resize(event->data.size() + sizeof(unsigned int));
-    event->WriteData<unsigned int>(packetID, event->data.size() - sizeof(unsigned int));
+    event->WriteData<unsigned int>(packetID, (char)(event->data.size() - sizeof(unsigned int)));
 
-    client.SendMessageToServer(event->data.data(), event->data.size());
+    client.SendMessageToServer(event->data.data(), (char)event->data.size());
     packetID++;
 
     sentPackets.push_front(std::pair<netlib::NetworkEvent*, std::chrono::steady_clock::time_point>
@@ -125,7 +125,7 @@ void netlib::ClientConnection::CheckForResends()
     {
         if(std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - packet.second).count() > connectionInfo.ping * RESEND_DELAY_MOD)
         {
-            client.SendMessageToServer(packet.first->data.data(), packet.first->data.size());
+            client.SendMessageToServer(packet.first->data.data(), (char)packet.first->data.size());
             packet.second = clock::now();
         }
     }
@@ -164,6 +164,7 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
             messages.emplace();
             messages.front().eventType = NetworkEvent::EventType::ON_CONNECT;
             messageLock.unlock();
+            client.SetUID(uid);
             delete event;
             break;
         }
