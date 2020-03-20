@@ -240,7 +240,7 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
         }
         readPos = 0;
     }
-    else
+    else if(isTCP)
     {
         fdLock.lock();
         closesocket(sock);

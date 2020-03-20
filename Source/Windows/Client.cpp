@@ -181,8 +181,13 @@ void netlib::Client::HandleMessageEvent(const SOCKET& s, bool isTCP)
     {
         int len = sizeof(si);
         newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (sockaddr *) &si, &len);
-        if(newBytes == SOCKET_ERROR)
-        {
+        if(newBytes == SOCKET_ERROR) {
+            if (WSAGetLastError() == 10054)
+            {
+                running = false;
+                processDisconnect();
+                return;
+            }
             std::cerr << "Error in receiving data from UDP socket : " << WSAGetLastError() << std::endl;
         }
         if(newBytes <= 0)
