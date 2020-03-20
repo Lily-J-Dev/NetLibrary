@@ -3,6 +3,7 @@
 namespace netlib {
     const int MAX_PACKET_SIZE = 100;
     const float PING_FREQUENCY = 100;
+    const int MAX_RESEND_DELAY = 500; // The longest a client/server will wait before re-sending a packet, a high number here could cause high loss connections to run extremely slowly
     const float RESEND_DELAY_MOD = 1.3f; // This number multiplied by current ping is how long a device will wait for a packet receipt before resending
 
     // MessageType is for internal use only
