@@ -25,7 +25,8 @@ void netlib::Server::Stop()
 
 bool netlib::Server::Start(unsigned short port)
 {
-    data.resize((MAX_PACKET_SIZE+1)*2);
+    dataTCP.resize((MAX_PACKET_SIZE+1)*2);
+    dataUDP.resize((MAX_PACKET_SIZE+1)*2);
     //std::cout << "Initializing Server..." << std::endl;
 
     // Initialize winsock
@@ -166,6 +167,10 @@ void netlib::Server::HandleConnectionEvent()
 void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
 {
     // Accept a new message
+    auto& data = isTCP ? dataTCP : dataUDP;
+    auto& writePos =  isTCP ? writePosTCP : writePosUDP;
+    auto& bytesReceived =  isTCP ? bytesReceivedTCP : bytesReceivedUDP;
+    int offset = isTCP ? 1 : 1 + sizeof(unsigned int);
     struct sockaddr_in si;
     int newBytes;
     unsigned int clientID;
@@ -185,7 +190,7 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
     {
         bytesReceived += newBytes;
         // First byte of a packet tells us the length of the remaining data
-        while(data[readPos] < bytesReceived)
+        while(bytesReceived > 0 && data[readPos] + offset <= bytesReceived)
         {
             if(isTCP)
             {
@@ -213,14 +218,26 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
             readPos += data[readPos] + 1;
             packet->senderId = clientID;
             processPacket(packet);
-    }
+        }
 
         if(bytesReceived != 0)
         {
-            std::copy(data.data() + readPos, data.data() + readPos + data[readPos], data.data());
-            writePos = data[0];
+            if(isTCP)
+            {
+                std::copy(data.data() + readPos, data.data() + readPos + data[readPos] + 1, data.data());
+            }
+            else
+            {
+                std::copy(data.data() + readPos, data.data() + readPos + data[readPos] + 1 + sizeof(unsigned int), data.data());
+            }
+            writePos = bytesReceived;
         }
-        else writePos = 0;
+        else
+        {
+            writePos = 0;
+            for(int i = 0; i < data.size(); i++)
+                data[i] = 0;
+        }
         readPos = 0;
     }
     else

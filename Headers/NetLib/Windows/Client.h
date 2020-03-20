@@ -42,9 +42,15 @@ namespace netlib {
         std::atomic_bool safeToExit{true};
         std::atomic_bool running{false};
 
-        std::vector<char> data;
+
         unsigned int readPos = 0;
-        unsigned int writePos = 0;
-        int bytesReceived = 0;
+
+        int bytesReceivedTCP = 0;
+        int bytesReceivedUDP = 0;
+        std::vector<char> dataTCP;
+        unsigned int writePosTCP = 0;
+        std::vector<char> dataUDP;
+        unsigned int writePosUDP = 0;
+
     };
 }

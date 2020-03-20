@@ -20,17 +20,22 @@ void netlib::ServerConnection::SendPacket(NetworkEvent* event)
     if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
     {
         server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId, false);
+        std::cout << "Send receipt: " << event->ReadData<unsigned int>(1) << std::endl;
         clientInfoLock.unlock();
+        delete event;
         return;
     }
 
     event->data.resize(event->data.size() + sizeof(unsigned int));
     event->WriteData<unsigned int>(connectedClients[event->senderId].packetID, event->data.size() - sizeof(unsigned int));
+    event->packetID = connectedClients[event->senderId].packetID;
     connectedClients[event->senderId].packetID++;
     clientInfoLock.unlock();
     server.SendMessageToClient(event->data.data(), event->data.size(), event->senderId,
                                event->data[0] == (char) netlib::MessageType::SET_CLIENT_UID);
-    delete event;
+    sentPackets[event->senderId].push_front(std::pair<netlib::NetworkEvent*, std::chrono::steady_clock::time_point>
+                                                    (event, std::chrono::steady_clock::now()));
+    std::cout << "Send Message: " << event->ReadData<unsigned int>(event->data.size() - sizeof(unsigned int)) << std::endl;
 }
 
 // Sends a message to only the specified client
@@ -64,7 +69,11 @@ void netlib::ServerConnection::SendMessageToAll(const std::vector<char>& data, u
     for(const auto &info : connectedClients)
     {
         if(info.second.lobbyID == lobbyFilter)
+        {
+            clientInfoLock.unlock();
             SendMessageTo(data, info.second.uid);
+            clientInfoLock.lock();
+        }
     }
     clientInfoLock.unlock();
 }
@@ -75,7 +84,11 @@ void netlib::ServerConnection::SendMessageToAll(const char* data, int dataLen, u
     for(const auto &info : connectedClients)
     {
         if(info.second.lobbyID == lobbyFilter)
+        {
+            clientInfoLock.unlock();
             SendMessageTo(data, dataLen, info.second.uid);
+            clientInfoLock.lock();
+        }
     }
     clientInfoLock.unlock();
 }
@@ -89,7 +102,11 @@ void netlib::ServerConnection::SendMessageToAllExcluding(const std::vector<char>
         if(info.first == clientUID)
             continue;
         if(info.second.lobbyID == lobbyFilter)
+        {
+            clientInfoLock.unlock();
             SendMessageTo(data, info.first);
+            clientInfoLock.lock();
+        }
     }
     clientInfoLock.unlock();
 }
@@ -102,7 +119,11 @@ void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int d
         if(info.first == clientUID)
             continue;
         if(info.second.lobbyID == lobbyFilter)
-            SendMessageTo(data, dataLen,  info.first);
+        {
+            clientInfoLock.unlock();
+            SendMessageTo(data, dataLen, info.first);
+            clientInfoLock.lock();
+        }
     }
     clientInfoLock.unlock();
 }
@@ -118,6 +139,7 @@ void netlib::ServerConnection::CheckForResends()
                 connectedClients[client.first].connectionInfo.ping * RESEND_DELAY_MOD)
             {
                 server.SendMessageToClient(packet.first->data.data(), packet.first->data.size(), client.first, false);
+                std::cout << "Resending packet: " << packet.first->ReadData<unsigned int>(packet.first->data.size() - sizeof(unsigned int)) << std::endl;
                 packet.second = clock::now();
             }
         }
@@ -129,11 +151,15 @@ void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
 {
     if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
     {
+        std::lock_guard<std::mutex> guard(clientInfoLock);
         auto id = event->ReadData<unsigned int>(1);
-        for(const auto& packet : sentPackets[event->senderId])
+        std::cout << "Rec packet receipt: " << id << std::endl;
+        for(auto& packet : sentPackets[event->senderId])
         {
+            auto test = packet.first->packetID;
             if(packet.first->packetID == id)
             {
+                delete packet.first;
                 sentPackets[event->senderId].remove(packet);
                 return;
             }
@@ -155,11 +181,14 @@ void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
     outQueue.push(packet);
     outQueueLock.unlock();
 
+
     // If this is the next expected packet, process it immediately
     clientInfoLock.lock();
     ClientInfo& info = connectedClients[event->senderId];
+    std::cout << "Rec packet: " << event->packetID << "  Expected: " << info.packetsProcessed << std::endl;
     if(event->packetID == info.packetsProcessed)
     {
+        unsigned int id = event->senderId;
         clientInfoLock.unlock();
         ProcessSharedEvent(event);
         clientInfoLock.lock();
@@ -167,21 +196,25 @@ void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
         // If there are stored packets, then check to see if any are the next id
         while(true)
         {
-            if(receivedPackets[event->senderId].count(info.packetsProcessed) > 0)
+            if(receivedPackets[id].count(info.packetsProcessed) > 0)
             {
-                ProcessSharedEvent(receivedPackets[event->senderId][info.packetsProcessed]);
-                receivedPackets[event->senderId].erase(info.packetsProcessed);
+                std::cout << "Processing stored packet: " << info.packetsProcessed << std::endl;
+                clientInfoLock.unlock();
+                ProcessSharedEvent(receivedPackets[id][info.packetsProcessed]);
+                clientInfoLock.lock();
+                receivedPackets[id].erase(info.packetsProcessed);
                 info.packetsProcessed++;
             }
             else break;
         }
 
     }
+    // If the packet is a duplicate delete it
+    else if(event->packetID < info.packetsProcessed || receivedPackets.count(event->packetID) != 0)
+        delete event;
     // Otherwise store it in the map
     else
-    {
         receivedPackets[event->senderId][event->packetID] = event;
-    }
     clientInfoLock.unlock();
 }
 
@@ -641,6 +674,7 @@ void netlib::ServerConnection::ProcessDisconnectedClient(unsigned int clientUID)
     }
     clientInfoLock.lock();
     connectedClients.erase(clientUID);
+    sentPackets.erase(clientUID);
     clientInfoLock.unlock();
 
     messageLock.lock();

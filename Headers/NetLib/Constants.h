@@ -2,7 +2,7 @@
 #define CTP_CONSTANTS_H
 namespace netlib {
     const int MAX_PACKET_SIZE = 100;
-    const float PING_FREQUENCY = 1000;
+    const float PING_FREQUENCY = 100;
     const float RESEND_DELAY_MOD = 1.3f; // This number multiplied by current ping is how long a device will wait for a packet receipt before resending
 
     // MessageType is for internal use only
