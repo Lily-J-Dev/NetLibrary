@@ -6,6 +6,7 @@
 #include <string.h>
 #include <string>
 #include <thread>
+#include <algorithm>
 #include "Server.h"
 
 netlib::Server::~Server()
@@ -19,9 +20,12 @@ netlib::Server::~Server()
 
 bool netlib::Server::Start(int port)
 {
+    dataTCP.resize((MAX_PACKET_SIZE+1)*2);
+    dataUDP.resize((MAX_PACKET_SIZE+1)*2);
     fdLock = new std::mutex();
     // Create a socket
     listening = socket(AF_INET, SOCK_STREAM, 0);
+    udp = socket(AF_INET, SOCK_DGRAM, 0);
     if(listening == -1)
     {
         std::cerr << "Failed to create socket" << std::endl;
@@ -36,7 +40,14 @@ bool netlib::Server::Start(int port)
 
     if(bind(listening, (sockaddr*)&hint, sizeof(hint)) == -1)
     {
-        std::cerr << "Failed to bind socket to IP or Port" << std::endl;
+        std::cerr << "Failed to bind TCP socket to IP or Port" << std::endl;
+        std::cerr << gai_strerror(errno) << std::endl;
+        return false;
+    }
+
+    if(bind(udp, (sockaddr*)&hint, sizeof(hint)) == -1)
+    {
+        std::cerr << "Failed to bind UDP socket to IP or Port" << std::endl;
         std::cerr << gai_strerror(errno) << std::endl;
         return false;
     }
@@ -50,6 +61,7 @@ bool netlib::Server::Start(int port)
     FD_ZERO(&master);
 
     FD_SET(listening, &master);
+    FD_SET(udp, &master);
 
     running = true;
     safeToExit = false;
@@ -69,6 +81,8 @@ void netlib::Server::Stop()
 
         shutdown(listening, SHUT_RDWR);
         close(listening);
+        shutdown(udp, SHUT_RDWR);
+        close(udp);
         for (auto const &socket : sockets)
         {
             shutdown(socket, SHUT_RDWR);
@@ -88,7 +102,7 @@ void netlib::Server::ProcessNetworkEvents()
         timeval tv;
         tv.tv_sec = 0;
         tv.tv_usec = 100000;
-        unsigned int socketCount = select(SOMAXCONN + 1, &mCopy, nullptr, nullptr, &tv);
+        unsigned int socketCount = select(SOMAXCONN, &mCopy, nullptr, nullptr, &tv);
 
 
         if (FD_ISSET(listening, &mCopy))
@@ -97,12 +111,18 @@ void netlib::Server::ProcessNetworkEvents()
         }
         else
         {
+            if(FD_ISSET(udp, &mCopy))
+            {
+                HandleMessageEvent(udp, false);
+            }
             fdLock->lock();
             for (auto const &socket : sockets)
             {
                 if (FD_ISSET(socket, &mCopy))
                 {
-                    HandleMessageEvent(socket);
+                    fdLock->unlock();
+                    HandleMessageEvent(socket, true);
+                    fdLock->lock();
                     break;
                 }
             }
@@ -136,7 +156,8 @@ void netlib::Server::HandleConnectionEvent()
     // Assign the connection a uid
     ClientInfo newClient;
     // Since unix sockets are represented as an int, we can just use those directly for the uid
-    newClient.uid = clientSocket; // But also add 1, as 0 needs to be server
+    newClient.uid = clientSocket;
+    pendingAddr.push_back(clientSocket);
 
     memset(host, 0, NI_MAXHOST);
     memset(svc, 0, NI_MAXSERV);
@@ -169,38 +190,132 @@ void netlib::Server::HandleConnectionEvent()
     processNewClient(newClient);
 }
 
-void netlib::Server::HandleMessageEvent(int sock) {
-    memset(cBuf, 0, MAX_PACKET_SIZE);
-
-    int bytesReceived = recv(sock, cBuf, MAX_PACKET_SIZE, 0);
-    if (bytesReceived <= 0)
+void netlib::Server::HandleMessageEvent(int sock, bool isTCP)
+{
+    // Accept a new message
+    auto& data = isTCP ? dataTCP : dataUDP;
+    auto& writePos =  isTCP ? writePosTCP : writePosUDP;
+    auto& bytesReceived =  isTCP ? bytesReceivedTCP : bytesReceivedUDP;
+    int offset = isTCP ? 1 : 1 + sizeof(unsigned int);
+    struct sockaddr_in si;
+    int newBytes;
+    unsigned int clientID;
+    if(isTCP)
     {
-        close(sock);
-        FD_CLR(sock, &master);
-        sockets.remove(sock);
-        //std::cout << "Client disconnected" << std::endl;
-        processDisconnectedClient(sock);
+        newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE+1, 0);
     }
     else
     {
-        auto packet = new NetworkEvent();
-        packet->data.resize(bytesReceived);
-        memcpy(packet->data.data(), cBuf, bytesReceived);
-        packet->senderId = sock;
-        processPacket(packet);
+        socklen_t sockLen = sizeof(si);
+        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (struct sockaddr *)&si,&sockLen);
+        if(newBytes == 0)
+            return;
     }
+
+    if (newBytes > 0)
+    {
+        bytesReceived += newBytes;
+        // First byte of a packet tells us the length of the remaining data
+        while(bytesReceived > 0 && data[readPos] + offset <= bytesReceived)
+        {
+            if(isTCP)
+            {
+                clientID = sock;
+            }
+            else
+            {
+                clientID = *reinterpret_cast<unsigned int*>(&data[readPos]);
+                for(auto it = pendingAddr.begin(); it != pendingAddr.end(); it++)
+                {
+                    if(*it == clientID)
+                    {
+                        addrLookup[clientID] = si;
+                        pendingAddr.erase(it);
+                        break;
+                    }
+                }
+                readPos += sizeof(unsigned int);
+                bytesReceived -= sizeof(unsigned int);
+            }
+            auto packet = new NetworkEvent();
+            packet->data.resize(data[readPos]);
+            std::copy(data.data() + readPos + 1, data.data() + readPos + data[readPos], packet->data.data());
+            bytesReceived -= data[readPos] + 1;
+            readPos += data[readPos] + 1;
+            packet->senderId = clientID;
+            processPacket(packet);
+        }
+
+        if(bytesReceived != 0)
+        {
+            if(isTCP)
+            {
+                std::copy(data.data() + readPos, data.data() + readPos + data[readPos] + 1, data.data());
+            }
+            else
+            {
+                std::copy(data.data() + readPos, data.data() + readPos + data[readPos] + 1 + sizeof(unsigned int), data.data());
+            }
+            writePos = bytesReceived;
+        }
+        else
+        {
+            writePos = 0;
+            for(int i = 0; i < data.size(); i++)
+                data[i] = 0;
+        }
+        readPos = 0;
+    }
+    else if(isTCP) {
+        std::cerr << strerror(errno) << std::endl;
+        fdLock->lock();
+        shutdown(sock, SHUT_RDWR);
+        close(sock);
+        FD_CLR(sock, &master);
+
+        processDisconnectedClient(sock);
+
+        fdLock->unlock();
+    }
+
 }
 
-void netlib::Server::SendMessageToClient(const char *data, int dataLength, unsigned int client)
+void netlib::Server::SendMessageToClient(const char *data, char dataLength, unsigned int client, bool sendTCP)
 {
-    if(dataLength > 0)
+    if(dataLength <= 0)
+        return;
+    fdLock->lock();
+    int wsResult;
+
+    if(!sendTCP && std::count(pendingAddr.begin(), pendingAddr.end(), client) == 0)
     {
-        send(client, data, dataLength, 0);
+        char* sendData = new char[dataLength+1+sizeof(unsigned int)];
+        sendData[sizeof(unsigned int)] = dataLength;
+        char* clientAsChar = reinterpret_cast<char*>(&client);
+        std::copy(clientAsChar, clientAsChar + sizeof(unsigned int), sendData);
+        std::copy(data, data + dataLength, sendData+1+ sizeof(unsigned int));
+        wsResult = sendto(udp, sendData,dataLength + 1 + sizeof(unsigned int), 0, (sockaddr*)&addrLookup[client], sizeof(addrLookup[client]));
+        delete[] sendData;
     }
+    else
+    {
+        char *sendData = new char[dataLength + 1];
+        sendData[0] = dataLength;
+        std::copy(data, data + dataLength, sendData + 1);
+        wsResult = send(client, sendData,dataLength+1, 0);
+        delete[] sendData;
+    }
+
+    if (wsResult == -1)
+    {
+        std::cerr << "Failed to send message." << std::endl;
+    }
+    fdLock->unlock();
 }
 
 void netlib::Server::DisconnectClient(unsigned int client)
 {
+    shutdown(client, SHUT_RDWR);
     close(client);
     FD_CLR(client, &master);
     sockets.remove(client);

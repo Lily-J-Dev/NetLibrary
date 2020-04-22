@@ -39,6 +39,7 @@ int TestClient::Update()
             case netlib::NetworkEvent::EventType::ON_DISCONNECT:
             {
                 std::cout << "Remotely disconnected from server." << std::endl;
+                inputRunning = false;
                 break;
             }
             case netlib::NetworkEvent::EventType::ON_LOBBY_JOIN:

@@ -24,7 +24,7 @@ public:
     bool Start(int port);
     void Stop();
 
-    void SendMessageToClient(const char* data, int dataLength, unsigned int client);
+    void SendMessageToClient(const char* data, char dataLength, unsigned int client, bool sendTCP);
     void DisconnectClient(unsigned int client);
 
     std::function<void(netlib::NetworkEvent*)> processPacket;
@@ -36,10 +36,11 @@ public:
 private:
     void ProcessNetworkEvents();
     void HandleConnectionEvent();
-    void HandleMessageEvent(int sock);
+    void HandleMessageEvent(int sock, bool isTCP);
 
     fd_set master;
-    unsigned int listening = 0;
+    int udp = 0;
+    int listening = 0;
     sockaddr_in hint;
     char cBuf[netlib::MAX_PACKET_SIZE];
 
@@ -47,5 +48,17 @@ private:
     std::atomic_bool safeToExit{true};
     std::mutex* fdLock;
     std::forward_list<int> sockets;
+
+    unsigned int readPos = 0;
+
+    std::map<unsigned int, struct sockaddr_in> addrLookup;
+    std::vector<unsigned int> pendingAddr;
+
+    int bytesReceivedTCP = 0;
+    int bytesReceivedUDP = 0;
+    std::vector<char> dataTCP;
+    unsigned int writePosTCP = 0;
+    std::vector<char> dataUDP;
+    unsigned int writePosUDP = 0;
 };
 }
