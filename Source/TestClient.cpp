@@ -1,6 +1,8 @@
 #include <thread>
 #include "NetLib/TestClient.h"
 
+#include "NetLib/DataEncryptor.h"
+
 TestClient::TestClient()
 {
     std::cout << "Enter server IP: ";
@@ -28,8 +30,10 @@ int TestClient::Update()
             }
             case netlib::NetworkEvent::EventType::MESSAGE:
             {
-                auto test = events.front();
-                std::cout << events.front().data.data() << std::endl;
+                std::vector<char> data;
+                data.push_back('a');
+                client.SendMessageToServer(data);
+                //std::cout << events.front().data.data() << std::endl;
                 break;
             }
             case netlib::NetworkEvent::EventType::ON_DISCONNECT:

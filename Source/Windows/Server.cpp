@@ -25,8 +25,8 @@ void netlib::Server::Stop()
 
 bool netlib::Server::Start(unsigned short port)
 {
-    dataTCP.resize((MAX_PACKET_SIZE+1)*2);
-    dataUDP.resize((MAX_PACKET_SIZE+1)*2);
+    dataTCP.resize(MAX_PACKET_SIZE_INTERNAL*2);
+    dataUDP.resize(MAX_PACKET_SIZE_INTERNAL*2);
     //std::cout << "Initializing Server..." << std::endl;
 
     // Initialize winsock
@@ -176,12 +176,12 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
     unsigned int clientID;
     if(isTCP)
     {
-        newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE+1, 0);
+        newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0);
     }
     else
     {
         int len = sizeof(si);
-        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (struct sockaddr *)&si,&len);
+        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0, (struct sockaddr *)&si,&len);
         if(newBytes == 0)
             return;
     }
@@ -261,6 +261,7 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
 
 void netlib::Server::SendMessageToClient(const char* data, char dataLength, unsigned int client, bool sendTCP)
 {
+    //sendTCP = true;
     if(dataLength <= 0)
         return;
     fdLock.lock();

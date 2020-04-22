@@ -182,8 +182,8 @@ void netlib::ClientConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
         {
             using clock = std::chrono::steady_clock;
             clientInfoLock.lock();
-            connectionInfo.ping = static_cast<float>(
-                    std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count());
+            //connectionInfo.ping = static_cast<float>(
+            //        std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - timeOfLastPing).count());
             waitingForPing = false;
             clientInfoLock.unlock();
             delete event;

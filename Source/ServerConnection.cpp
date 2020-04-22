@@ -129,10 +129,15 @@ void netlib::ServerConnection::SendMessageToAllExcluding(const char* data, int d
 void netlib::ServerConnection::CheckForResends()
 {
     clientInfoLock.lock();
+    int pingPackCount = 0;
+    int totalPacks = 0;
     for(auto& client : sentPackets)
     {
         for (auto &packet : client.second)
         {
+            totalPacks++;
+            if(packet.first->data[0] == (char)MessageType::MULTI_USER_MESSAGE)
+                pingPackCount++;
             float modifiedPing = connectedClients[client.first].connectionInfo.ping * RESEND_DELAY_MOD;
             float waitTime = modifiedPing < MAX_RESEND_DELAY ? modifiedPing : MAX_RESEND_DELAY;
             if (std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - packet.second).count() > waitTime)
@@ -147,13 +152,13 @@ void netlib::ServerConnection::CheckForResends()
 
 void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
 {
+
     if(event->data[0] == (char)netlib::MessageType::PACKET_RECEIPT)
     {
         std::lock_guard<std::mutex> guard(clientInfoLock);
         auto id = event->ReadData<unsigned int>(1);
         for(auto& packet : sentPackets[event->senderId])
         {
-            auto test = packet.first->packetID;
             if(packet.first->packetID == id)
             {
                 delete packet.first;
@@ -202,15 +207,18 @@ void netlib::ServerConnection::ProcessPacket(netlib::NetworkEvent *event)
             }
             else break;
         }
-
     }
     // If the packet is a duplicate delete it
     else if(event->packetID < info.packetsProcessed || receivedPackets.count(event->packetID) != 0)
+    {
         delete event;
+    }
+
     // Otherwise store it in the map
     else
         receivedPackets[event->senderId][event->packetID] = event;
     clientInfoLock.unlock();
+
 }
 
 void netlib::ServerConnection::ProcessDeviceSpecificEvent(NetworkEvent *event)
@@ -728,7 +736,6 @@ void netlib::ServerConnection::UpdateNetworkStats()
 
                 delete event;
             }
-
         }
     }
     lobbyLock.unlock();

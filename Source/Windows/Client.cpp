@@ -28,8 +28,8 @@ void netlib::Client::Stop()
 int netlib::Client::Start(const std::string& ipv4, unsigned short port)
 {
     //std::cout << "Initializing Client..." << std::endl;
-    dataUDP.resize((MAX_PACKET_SIZE+1)*2);
-    dataTCP.resize((MAX_PACKET_SIZE+1)*2);
+    dataUDP.resize(MAX_PACKET_SIZE_INTERNAL*2);
+    dataTCP.resize(MAX_PACKET_SIZE_INTERNAL*2);
     // Initilise winsock
     WSAData data;
     WORD ver = MAKEWORD(2, 2);
@@ -175,12 +175,12 @@ void netlib::Client::HandleMessageEvent(const SOCKET& s, bool isTCP)
     unsigned int clientID;
     if(isTCP)
     {
-        newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE + 1, 0);
+        newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0);
     }
     else
     {
         int len = sizeof(si);
-        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (sockaddr *) &si, &len);
+        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0, (sockaddr *) &si, &len);
         if(newBytes == SOCKET_ERROR) {
             if (WSAGetLastError() == 10054)
             {
@@ -253,7 +253,6 @@ void netlib::Client::SendMessageToServer(const char* data, char dataLength)
     // If there is no data, just return as winsock uses 0-length messages to signal exit.
     if(dataLength <= 0)
         return;
-
     int sendResult;
     if(uidSet)
     {

@@ -200,10 +200,15 @@ void netlib::NetworkDevice::ProcessSharedEvent(NetworkEvent* event)
     }
     else if(event->data[0] == (char)MessageType::PING_REQUEST)
     {
-        event->data[0] = (char)MessageType::PING_RESPONSE;
+        event->data[0] = (char)MessageType::DEFAULT;
+        auto resp = new NetworkEvent();
+        resp->data.resize(1);
+        resp->data[0] = (char)MessageType::PING_RESPONSE;
+        resp->senderId = event->senderId;
         outQueueLock.lock();
-        outQueue.push(event);
+        outQueue.push(resp);
         outQueueLock.unlock();
+        delete event;
     }
     else
     {

@@ -29,6 +29,7 @@ set( PROJECT_HEADERS_PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/Constants.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/MultiPacketContainer.h"
         "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/NetworkDevice.h"
+        "${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/DataEncryptor.h"
 
         ## PLATFORM HEADERS
         ## $<$<PLATFORM_ID:Darwin:${CMAKE_CURRENT_LIST_DIR}/Headers/NetLib/OSX/Client.h>
@@ -42,6 +43,7 @@ set( PROJECT_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/Source/ClientConnection.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Source/NetworkDevice.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/Source/ServerConnection.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/Source/DataEncryptor.cpp"
 
         ## PLATFORM SOURCES
         ## $<$<PLATFORM_ID:Darwin:${CMAKE_CURRENT_LIST_DIR}/Source/OSX/Client.cpp>

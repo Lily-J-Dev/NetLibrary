@@ -2,6 +2,7 @@
 #define CTP_CONSTANTS_H
 namespace netlib {
     const int MAX_PACKET_SIZE = 100;
+    const int MAX_PACKET_SIZE_INTERNAL = MAX_PACKET_SIZE + 1 + sizeof(unsigned int);
     const float PING_FREQUENCY = 100;
     const int MAX_RESEND_DELAY = 500; // The longest a client/server will wait before re-sending a packet, a high number here could cause high loss connections to run extremely slowly
     const float RESEND_DELAY_MOD = 1.3f; // This number multiplied by current ping is how long a device will wait for a packet receipt before resending
@@ -9,6 +10,7 @@ namespace netlib {
     // MessageType is for internal use only
     // Every network message will start with a MessageType enum which defines how the rest of the message should be read.
     enum class MessageType : char {
+        DEFAULT, // Messages of this type will be ignored
         PACKET_RECEIPT, // Send each time a device receives a message - uint(packetID)
         SINGLE_USER_MESSAGE, // A single packet message from the user - char... (data)
         MULTI_USER_MESSAGE, // A multi packet message from the user - uint(packetID) - uint(packetNum) -> uint(totalPackets) -> char...(data)
