@@ -254,7 +254,8 @@ void netlib::Client::SendMessageToServer(const char* data, char dataLength)
     if(dataLength <= 0)
         return;
     int sendResult;
-    if(uidSet)
+    //if(uidSet)
+    if(false)
     {
         char* sendData = new char[dataLength+1+sizeof(unsigned int)];
         sendData[sizeof(unsigned int)] = dataLength;

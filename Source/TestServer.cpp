@@ -21,18 +21,21 @@ int TestServer::Update()
             case NetworkEvent::EventType::MESSAGE:
             {
                 testDataIterations++;
-                if(testDataIterations < 1000) {
+                if(testDataIterations < 100) {
+
+                    std::cout << "Iteration: " << testDataIterations << std::endl;
                     auto timeForSend = std::chrono::duration_cast<std::chrono::milliseconds>(
                             clock::now() - timeOfSend).count();
                     timeOfSend = clock::now();
                     testData.resize(102400);
                     server.SendMessageTo(testData, event.senderId);
                     totalTime += timeForSend;
+                    std::cout << "Time to send: " << timeForSend << std::endl;
                     break;
                 }
                 else
                 {
-                    std::cout << "Over 1,000 iterations, the average time to send 100kb of data was: " << totalTime / 10000 << "ms" << std::endl;
+                    std::cout << "Over 100 iterations, the average time to send 100kb of data was: " << totalTime / 100 << "ms" << std::endl;
                 }
                 std::cout << "Message from client " << event.senderId << " :" << event.data.data() << std::endl;
                 ClientInfo info = server.GetClientInfo(event.senderId);

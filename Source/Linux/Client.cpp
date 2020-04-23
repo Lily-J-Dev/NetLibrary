@@ -29,8 +29,8 @@ void netlib::Client::Stop()
 
 bool netlib::Client::Start(const std::string &ipv4, int port)
 {
-    dataUDP.resize((MAX_PACKET_SIZE+1)*2);
-    dataTCP.resize((MAX_PACKET_SIZE+1)*2);
+    dataUDP.resize(MAX_PACKET_SIZE_INTERNAL*2);
+    dataTCP.resize(MAX_PACKET_SIZE_INTERNAL*2);
     //std::cout << "Initializing Client..." << std::endl;
     // Create a socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -145,7 +145,7 @@ void netlib::Client::HandleMessageEvent(int s, bool isTCP)
 
     if(isTCP)
     {
-        newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE + 1, 0);
+        newBytes = recv(s, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0);
         if(newBytes == -1) {
 
             std::cerr << "Error in receiving data from TCP socket : " << strerror(errno) << std::endl;
@@ -154,7 +154,7 @@ void netlib::Client::HandleMessageEvent(int s, bool isTCP)
     else
     {
         socklen_t len = sizeof(si);
-        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (sockaddr *) &si, &len);
+        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0, (sockaddr *) &si, &len);
         if(newBytes == -1) {
 
             std::cerr << "Error in receiving data from UDP socket : " << strerror(errno) << std::endl;

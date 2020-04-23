@@ -20,8 +20,8 @@ netlib::Server::~Server()
 
 bool netlib::Server::Start(int port)
 {
-    dataTCP.resize((MAX_PACKET_SIZE+1)*2);
-    dataUDP.resize((MAX_PACKET_SIZE+1)*2);
+    dataTCP.resize(MAX_PACKET_SIZE_INTERNAL*2);
+    dataUDP.resize(MAX_PACKET_SIZE_INTERNAL*2);
     fdLock = new std::mutex();
     // Create a socket
     listening = socket(AF_INET, SOCK_STREAM, 0);
@@ -202,12 +202,12 @@ void netlib::Server::HandleMessageEvent(int sock, bool isTCP)
     unsigned int clientID;
     if(isTCP)
     {
-        newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE+1, 0);
+        newBytes = recv(sock, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0);
     }
     else
     {
         socklen_t sockLen = sizeof(si);
-        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE + 1, 0, (struct sockaddr *)&si,&sockLen);
+        newBytes = recvfrom(udp, data.data() + writePos, MAX_PACKET_SIZE_INTERNAL, 0, (struct sockaddr *)&si,&sockLen);
         if(newBytes == 0)
             return;
     }

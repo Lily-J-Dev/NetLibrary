@@ -261,7 +261,6 @@ void netlib::Server::HandleMessageEvent(const SOCKET& sock, bool isTCP)
 
 void netlib::Server::SendMessageToClient(const char* data, char dataLength, unsigned int client, bool sendTCP)
 {
-    //sendTCP = true;
     if(dataLength <= 0)
         return;
     fdLock.lock();
